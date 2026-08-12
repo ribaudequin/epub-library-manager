@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biblioteca de Epubs</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Biblioteca de Epubs</h1>
+    <div class="actions">
+      <button id="btn-select">Selecionar pasta</button>
+      <button id="btn-scan" class="hidden">Atualizar biblioteca</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="empty-state" class="hidden">
+      <p>Nenhuma biblioteca selecionada.</p>
+      <p>Clique em «Selecionar pasta» para escolher a pasta raiz que contém as séries.</p>
+    </div>
+
+    <section id="series-view" class="hidden">
+      <div id="series-grid"></div>
+    </section>
+
+    <section id="series-detail" class="hidden">
+      <button id="btn-back">← Voltar às séries</button>
+      <div id="detail-header">
+        <img id="detail-cover" class="placeholder" src="" alt="" />
+        <div id="detail-meta">
+          <h2 id="detail-title"></h2>
+          <p id="detail-count"></p>
+          <p id="detail-read-count"></p>
+          <div id="detail-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <span id="detail-progress-label"></span>
+          </div>
+        </div>
+      </div>
+      <div id="volume-list"></div>
+    </section>
+  </main>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
