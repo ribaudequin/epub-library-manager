@@ -9,10 +9,10 @@
 - [x] UI: detalhe da série + marcar lido/não lido/pendente
 
 ## Próximos passos
-- [ ] Regenerar AppImage com `@xmldom/xmldom`
 - [ ] Melhorias (lazy-load de capas via IPC; ordenação, pesquisa, tema)
 - [ ] Teste em máquina real (sem `--disable-gpu`)
 
 ## Progresso
-- **Concluído**: fase 1 + correção de capas (0/2417 sem capa)
-- **Testado**: scan, persistência de estado, AppImage arranca
+- **Concluído**: fase 1 + correção de capas (0/2417 sem capa) + AppImage sem xml2js
+- **Testado**: scan, persistência de estado, AppImage arranca (sem erro de módulo)
+- **Adicionado**: `npm test` validação de módulos; git init com commit inicial

@@ -8,7 +8,7 @@
   - Antes de compactar a sessão, atualizar o MEMORY.md primeiro.
 - Nível técnico: medio / avançado
 - idade: 46 anos
-- Idioma: Português PT-PT / Inglês 
+- Idioma: Português PT-PT / Inglês
 
 ## 🛠️ Regras de Escopo e Padrões do Projeto
 * (Diretrizes de arquitetura, padrões de código, regras de negócio recorrentes)
@@ -19,12 +19,14 @@
 
 ## 📌 Histórico de Decisões e Contexto Atual
 * (O que foi decidido em sessões passadas e qual é o foco do trabalho atual)
-- Projeto ativo: **Biblioteca de Epubs** (Electron) — gestor de biblioteca de epubs organizada por séries. Pasta raiz com subpastas (séries) contendo volumes `.epub`; lista séries com capa do 1º volume; detalhe da série com volumes e estado lido/não lido/pendente persistente.
-- Decisões técnicas: Electron (AppImage para Linux — Node já instalado, Tauri exigiria Rust). Persistência em JSON (`userData/biblioteca.json`). Capas extraídas de dentro do EPUB via container.xml → content.opf. Lógica de scan isolada em `src/library.js` para testes com Node puro. `adm-zip` + `xml2js` para leitura.
-- Testes: hooks via env vars `TEST_SCREENSHOT`, `TEST_ROOT`, `TEST_USERDATA`; biblioteca de exemplo em `test/generate-test-library.js`.
-- Em ambiente de teste a app precisa de `--disable-gpu` (GPU indisponível; não é problema em máquinas normais).
+- Projeto ativo: **Biblioteca de Epubs** (Electron) — gestor de biblioteca de epubs por séries. Pasta raiz → subpastas (séries) → volumes `.epub`. Lista séries com capa do 1º volume; detalhe com volumes e estado lido/não lido/pendente persistente.
+- Decisões técnicas: Electron para AppImage (Node já instalado, Tauri exigiria Rust). Persistência JSON (`userData/biblioteca.json`). Capas extraídas do EPUB. Lógica de scan isolada em `src/library.js`. `adm-zip` + `@xmldom/xmldom`.
+- Status: AppImage funcional (`dist/BibliotecaEpub-1.0.0.AppImage`, 107MB). 0/2417 volumes sem capa.
+- Proteção contra acidentes: `npm test` valida módulos (bloqueia importar xml2js). Git init.
+- Testes: env vars `TEST_SCREENSHOT`/`TEST_ROOT`/`TEST_USERDATA`; `test/generate-test-library.js`.
+- Em ambiente de teste a app precisa de `--disable-gpu` (não é problema em máquinas normais).
 
 ## 🪵 Log de Atualizações Recentes
 * A memória foi inicializada.
-* 2026-08-12: Projeto Biblioteca de Epubs em curso. Fase 1 concluída (scan, capas, estado persistente, UI). AppImage gerado em `dist/BibliotecaEpub-1.0.0.AppImage`.
-* 2026-08-12: Correção total de capas (0/2417 sem capa): trocado xml2js por `@xmldom/xmldom` para melhor manipulação de namespaces; fallback total (`meta cover` → `properties="cover-image"` → item nomeado → cover xhtml → maior imagem → `pickCoverFromZip`). Scan: 247 séries/2417 volumes em ~12s. Próximo: regenerar AppImage.
+* 2026-08-12: Projeto Biblioteca de Epubs. Fase 1 concluída. Scan: 247 séries/2417 volumes em ~12s. Capas: 0/2417 sem capa.
+* 2026-08-12: xml2js → @xmldom/xmldom. AppImage regenerado sem erro de módulo. `npm test` + git init.
