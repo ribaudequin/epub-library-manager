@@ -1,3 +1,6 @@
 node_modules/
 dist/
 *.img
+MEMORY.md
+PLANO.md
+TODO.md

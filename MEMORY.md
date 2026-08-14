@@ -21,7 +21,8 @@
 * (O que foi decidido em sessões passadas e qual é o foco do trabalho atual)
 - Projeto ativo: **Biblioteca de Epubs** (Electron) — gestor de biblioteca de epubs por séries. Pasta raiz → subpastas (séries) → volumes `.epub`. Lista séries com capa do 1º volume; detalhe com volumes e estado lido/não lido/pendente persistente.
 - Decisões técnicas: Electron para AppImage (Node já instalado, Tauri exigiria Rust). Persistência JSON (`userData/biblioteca.json`). Capas extraídas do EPUB. Lógica de scan isolada em `src/library.js`. `adm-zip` + `@xmldom/xmldom`.
-- Status: AppImage funcional (`dist/BibliotecaEpub-1.0.0.AppImage`, 107MB). 0/2417 volumes sem capa.
+- Status: AppImage v1.1.0 (`dist/BibliotecaEpub-1.1.0.AppImage`, 107MB). 0/2417 volumes sem capa. UI carrega em 3.9s (lazy-load).
+- Proteção contra acidentes: `npm test`/`lint` + git hooks + backups em `/tmp/opencode/backups/`.
 - Proteção contra acidentes: `npm test` valida módulos (bloqueia importar xml2js). Git init.
 - Testes: env vars `TEST_SCREENSHOT`/`TEST_ROOT`/`TEST_USERDATA`; `test/generate-test-library.js`.
 - Em ambiente de teste a app precisa de `--disable-gpu` (não é problema em máquinas normais).
@@ -30,3 +31,4 @@
 * A memória foi inicializada.
 * 2026-08-12: Projeto Biblioteca de Epubs. Fase 1 concluída. Scan: 247 séries/2417 volumes em ~12s. Capas: 0/2417 sem capa.
 * 2026-08-12: xml2js → @xmldom/xmldom. AppImage regenerado sem erro de módulo. `npm test` + git init.
+* 2026-08-13: **v1.1.0** — lazy-load: scanLibraryFast (0.09s), UI 3.9s. Capas via IPC + cache.

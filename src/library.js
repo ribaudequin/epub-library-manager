@@ -298,3 +298,39 @@ module.exports = {
   scanLibrary,
   scanVolume,
 };
+
+
+// Synchronous EPUB cover extraction
+exports.getVolumeCoverSync = async function(volumePath) {
+  const coverPath = this.getVolumeCoverPath(volumePath);
+  if (await fs.pathExists(coverPath)) return coverPath;
+  const cover = await this.extractVolumeCover(volumePath);
+  if (cover) return cover;
+  return null;
+};
+
+exports.getVolumeCoverPath = function(volumePath) {
+  const dir = path.dirname(volumePath);
+  const base = path.basename(volumePath, '.epub');
+  return path.join(dir, base + '.cover.jpg');
+};
+
+exports.extractVolumeCover = async function(volumePath) {
+  const zip = await JSZip.loadAsync(await fs.readFile(volumePath));
+  const opfPath = Object.keys(zip.files).find(f => f.endsWith('.opf'));
+  if (!opfPath) return null;
+  const opf = await zip.files[opfPath].async('string');
+  const coverMatch = opf.match(/<meta[^>]+name="[^"]*cover[^"]*"[^>]+content="([^"]+)"/i);
+  if (coverMatch) {
+    const id = coverMatch[1];
+    const itemMatch = opf.match(new RegExp('<item[^>]+id="' + id + '"[^>]+href="([^"]+)"', 'i'));
+    if (itemMatch) {
+      const coverFile = itemMatch[1];
+      const imageData = await zip.files[coverFile].async('nodebuffer');
+      const coverPath = this.getVolumeCoverPath(volumePath);
+      await fs.writeFile(coverPath, imageData);
+      return coverPath;
+    }
+  }
+  return null;
+};
