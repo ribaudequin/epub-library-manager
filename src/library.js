@@ -4,6 +4,28 @@ const crypto = require('crypto');
 const AdmZip = require('adm-zip');
 const { DOMParser } = require('@xmldom/xmldom');
 
+const coverCache = new Map();
+const COVER_CACHE_MAX = 50;
+
+function cacheCoverGet(key) {
+  if (coverCache.has(key)) {
+    const value = coverCache.get(key);
+    coverCache.delete(key);
+    coverCache.set(key, value);
+    return value;
+  }
+  return undefined;
+}
+
+function cacheCoverSet(key, value) {
+  if (coverCache.has(key)) coverCache.delete(key);
+  coverCache.set(key, value);
+  if (coverCache.size > COVER_CACHE_MAX) {
+    const oldest = coverCache.keys().next().value;
+    coverCache.delete(oldest);
+  }
+}
+
 function safeId(name) {
   return crypto.createHash('sha1').update(name).digest('hex').slice(0, 12);
 }
@@ -33,21 +55,6 @@ function resolveInOpf(opfPath, href) {
 function parseXml(xml) {
   if (/^\uFEFF/.test(xml)) xml = xml.slice(1);
   return new DOMParser().parseFromString(xml, 'text/xml');
-}
-
-async function findOpfPath(zip) {
-  try {
-    const container = zip.readAsText('META-INF/container.xml');
-    const doc = parseXml(container);
-    const rf = doc.getElementsByTagName('rootfile');
-    if (rf.length > 0) {
-      return rf[0].getAttribute('full-path');
-    }
-  } catch {}
-  const opf = zip.getEntries().find(
-    (e) => !e.isDirectory && /\.opf$/i.test(e.entryName)
-  );
-  return opf ? opf.entryName : null;
 }
 
 function getMetadataText(doc, selector) {
@@ -218,29 +225,38 @@ async function scanVolume(filePath, coverCacheDir) {
   let coverSrc = null;
 
   try {
-    const zip = new AdmZip(filePath);
-    const opfPath = await findOpfPath(zip);
-    let coverHref = null;
-    if (opfPath) {
-      try {
-        const { title: t, coverHref: ch } = await parseOpf(zip, opfPath);
-        if (t) title = t;
-        coverHref = ch;
-      } catch {}
-    }
-    let data = null;
-    if (coverHref) {
-      data = extractCover(zip, opfPath || '', coverHref);
-    }
-    if (!data) {
-      const picked = pickCoverFromZip(zip);
-      if (picked) {
-        data = extractCoverFromName(zip, picked);
+    // Disk cache: reuse existing cover if newer than the epub AND valid image
+    try {
+      const coverStat = await fsp.stat(coverFile);
+      if (coverStat.mtimeMs >= stat.mtimeMs) {
+        const cached = await fsp.readFile(coverFile);
+        if (IMAGE_MIME_RE.test(getMimeType(cached))) {
+          coverSrc = coverFile;
+        }
       }
-    }
-    if (data) {
-      await fsp.writeFile(coverFile, data);
-      coverSrc = coverFile;
+    } catch {}
+
+    if (!coverSrc) {
+      const zip = new AdmZip(filePath);
+      const entries = zip.getEntries();
+      const zipObj = {
+        getEntries: () => entries,
+        getEntry: (name) => entries.find(e => e.entryName === name),
+        readAsText: (name) => zip.readAsText(name),
+      };
+      const opfEntry = entries.find(e => !e.isDirectory && /\.opf$/i.test(e.entryName));
+      const opfPath = opfEntry ? opfEntry.entryName : null;
+      if (opfPath) {
+        try {
+          const { title: t } = await parseOpf(zip, opfPath);
+          if (t) title = t;
+        } catch {}
+      }
+      const data = extractCoverData(zip, entries, zipObj, opfPath);
+      if (data) {
+        await fsp.writeFile(coverFile, data);
+        coverSrc = coverFile;
+      }
     }
   } catch {
     // ficheiro epub invalido; usa apenas o nome do ficheiro
@@ -256,25 +272,40 @@ async function scanVolume(filePath, coverCacheDir) {
   };
 }
 
-async function scanLibrary(rootPath, coverCacheDir) {
+async function scanLibrary(rootPath, coverCacheDir, onProgress) {
   const seriesDirs = (await fsp.readdir(rootPath, { withFileTypes: true }))
     .filter((d) => d.isDirectory())
     .map((d) => d.name)
     .sort(naturalSort);
 
-  const seriesList = [];
+  const allSeries = [];
+  let totalVolumes = 0;
   for (const dirName of seriesDirs) {
     const dirPath = path.join(rootPath, dirName);
     const epubFiles = (await fsp.readdir(dirPath, { withFileTypes: true }))
       .filter((f) => f.isFile() && f.name.toLowerCase().endsWith('.epub'))
       .map((f) => path.join(dirPath, f.name))
       .sort(naturalSort);
-
     if (epubFiles.length === 0) continue;
+    allSeries.push({ dirPath, dirName, epubFiles });
+    totalVolumes += epubFiles.length;
+  }
 
+  if (onProgress) onProgress({ done: 0, total: totalVolumes });
+
+  const seriesList = [];
+  let processed = 0;
+  for (const { dirPath, dirName, epubFiles } of allSeries) {
     const volumes = [];
     for (const filePath of epubFiles) {
       volumes.push(await scanVolume(filePath, coverCacheDir));
+      processed++;
+      if (onProgress && processed % 5 === 0) {
+        onProgress({ done: processed, total: totalVolumes });
+      }
+      if (volumes.length % 20 === 0) {
+        await new Promise((r) => setImmediate(r));
+      }
     }
     volumes.sort((a, b) => extractNumber(a.name) - extractNumber(b.name));
 
@@ -288,6 +319,8 @@ async function scanLibrary(rootPath, coverCacheDir) {
     });
   }
 
+  if (onProgress) onProgress({ done: totalVolumes, total: totalVolumes });
+
   return seriesList;
 }
 
@@ -297,40 +330,103 @@ module.exports = {
   extractNumber,
   scanLibrary,
   scanVolume,
+  getVolumeCoverSync,
+  getVolumeCoverPath,
+  extractVolumeCover,
 };
 
 
 // Synchronous EPUB cover extraction
-exports.getVolumeCoverSync = async function(volumePath) {
-  const coverPath = this.getVolumeCoverPath(volumePath);
-  if (await fs.pathExists(coverPath)) return coverPath;
-  const cover = await this.extractVolumeCover(volumePath);
+async function getVolumeCoverSync(volumePath) {
+  const coverPath = getVolumeCoverPath(volumePath);
+  try {
+    await fsp.access(coverPath);
+    return coverPath;
+  } catch {}
+  const cover = await extractVolumeCover(volumePath);
   if (cover) return cover;
   return null;
-};
+}
 
-exports.getVolumeCoverPath = function(volumePath) {
+function getVolumeCoverPath(volumePath) {
   const dir = path.dirname(volumePath);
   const base = path.basename(volumePath, '.epub');
   return path.join(dir, base + '.cover.jpg');
-};
+}
 
-exports.extractVolumeCover = async function(volumePath) {
-  const zip = await JSZip.loadAsync(await fs.readFile(volumePath));
-  const opfPath = Object.keys(zip.files).find(f => f.endsWith('.opf'));
-  if (!opfPath) return null;
-  const opf = await zip.files[opfPath].async('string');
-  const coverMatch = opf.match(/<meta[^>]+name="[^"]*cover[^"]*"[^>]+content="([^"]+)"/i);
-  if (coverMatch) {
-    const id = coverMatch[1];
-    const itemMatch = opf.match(new RegExp('<item[^>]+id="' + id + '"[^>]+href="([^"]+)"', 'i'));
-    if (itemMatch) {
-      const coverFile = itemMatch[1];
-      const imageData = await zip.files[coverFile].async('nodebuffer');
-      const coverPath = this.getVolumeCoverPath(volumePath);
-      await fs.writeFile(coverPath, imageData);
-      return coverPath;
+const IMAGE_MIME_RE = /^image\/(jpeg|png|gif|webp|svg\+xml|avif)/i;
+
+function extractCoverData(zip, entries, zipObj, opfPath) {
+  let coverData = null;
+  if (opfPath) {
+    const opfStr = zip.readAsText(opfPath);
+    const doc = parseXml(opfStr);
+    const items = getItems(doc);
+    const coverHref = findCoverHref(doc, items, zipObj, opfPath);
+    if (coverHref) {
+      coverData = extractCover(zip, opfPath, coverHref);
+      if (coverData && !IMAGE_MIME_RE.test(getMimeType(coverData))) {
+        coverData = null;
+      }
     }
   }
-  return null;
+  // Fallback 1: Try extracting <img> src from XHTML cover
+  if (!coverData) {
+    const xhtmlEntry = entries.find(e => !e.isDirectory && /\.xhtml?$/i.test(e.entryName) && /cover/i.test(e.entryName));
+    const xhtmlPath = xhtmlEntry ? xhtmlEntry.entryName : null;
+    if (xhtmlPath) {
+      const imgSrc = findImageSrcInXhtml(zipObj, opfPath, xhtmlPath);
+      if (imgSrc) {
+        coverData = extractCoverFromName(zipObj, imgSrc);
+      }
+    }
+  }
+  // Fallback 2: Pick largest image from zip
+  if (!coverData) {
+    const picked = pickCoverFromZip(zipObj);
+    if (picked) coverData = extractCoverFromName(zipObj, picked);
+  }
+  // Final validation
+  if (coverData && !IMAGE_MIME_RE.test(getMimeType(coverData))) {
+    return null;
+  }
+  return coverData;
+}
+
+async function extractVolumeCover(volumePath) {
+  const cacheKey = 'cover:' + volumePath;
+  const cached = cacheCoverGet(cacheKey);
+  if (cached) return cached;
+  const dataBuf = await fsp.readFile(volumePath);
+  const zip = new AdmZip(dataBuf);
+  const entries = zip.getEntries();
+  const zipObj = {
+    getEntries: () => entries,
+    getEntry: (name) => entries.find(e => e.entryName === name),
+    readAsText: (name) => zip.readAsText(name),
+  };
+  const opfEntry = entries.find(e => !e.isDirectory && /\.opf$/i.test(e.entryName));
+  const opfPath = opfEntry ? opfEntry.entryName : null;
+  const coverData = extractCoverData(zip, entries, zipObj, opfPath);
+  if (!coverData) {
+    cacheCoverSet(cacheKey, null);
+    return null;
+  }
+  const coverPath = getVolumeCoverPath(volumePath);
+  await fsp.writeFile(coverPath, coverData);
+  cacheCoverSet(cacheKey, coverPath);
+  return coverPath;
 };
+
+function getMimeType(buffer) {
+  if (!buffer || buffer.length < 4) return '';
+  const head = buffer.slice(0, 12);
+  const hex = head.toString('hex');
+  if (hex.startsWith('ffd8')) return 'image/jpeg';
+  if (hex.startsWith('89504e47')) return 'image/png';
+  if (hex.startsWith('47494638')) return 'image/gif';
+  if (hex.startsWith('89415745')) return 'image/webp';
+  if (hex.startsWith('3031')) return 'image/svg+xml';
+  if (hex.startsWith('000001')) return 'image/avif';
+  return '';
+}

@@ -80,7 +80,13 @@ ipcMain.handle('library:scan', async (_event, rootPath) => {
   if (!rootPath) return { series: [], rootPath: null };
   const state = await loadState();
   const coverCacheDir = await getCoverCacheDir();
-  const series = await scanLibrary(rootPath, coverCacheDir);
+  const win = BrowserWindow.fromWebContents(_event.sender);
+  const sendProgress = (p) => {
+    if (win && !win.isDestroyed()) {
+      win.webContents.send('library:progress', p);
+    }
+  };
+  const series = await scanLibrary(rootPath, coverCacheDir, sendProgress);
   return {
     series: buildLibraryView(series, state),
     rootPath,

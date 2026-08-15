@@ -88,6 +88,29 @@ main {
   line-height: 1.8;
 }
 
+#loading-state {
+  text-align: center;
+  margin-top: 80px;
+  color: var(--text-dim);
+  line-height: 1.8;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  margin: 16px auto;
+  border: 3px solid var(--bg-card);
+  border-top-color: var(--accent, #89b4fa);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 #series-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));

@@ -10,11 +10,29 @@ let detailSeriesId = null;
 
 const $ = (sel) => document.querySelector(sel);
 
+const coverObserver = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    if (!entry.isIntersecting) continue;
+    const img = entry.target;
+    const src = img.dataset.src;
+    if (src) {
+      img.src = src;
+      img.removeAttribute('data-src');
+    }
+    coverObserver.unobserve(img);
+  }
+}, { rootMargin: '200px' });
+
 function coverHtml(src) {
   if (src) {
-    return `<img class="series-cover" src="file://${formatCoverPath(src)}" alt="" />`;
+    return `<img class="series-cover lazy" data-src="file://${formatCoverPath(src)}" alt="" />`;
   }
   return `<div class="series-cover placeholder">📕</div>`;
+}
+
+function observeLazyImages(container) {
+  const imgs = container.querySelectorAll('img.lazy[data-src]');
+  imgs.forEach((img) => coverObserver.observe(img));
 }
 
 function escapeHtml(str) {
@@ -48,6 +66,7 @@ function renderSeriesGrid() {
     card.addEventListener('click', () => openSeries(s.id));
     grid.appendChild(card);
   }
+  observeLazyImages(grid);
 }
 
 function openSeries(id) {
@@ -77,7 +96,7 @@ function openSeries(id) {
     const row = document.createElement('div');
     row.className = 'volume-row';
     const vCover = v.coverSrc
-      ? `<img class="volume-cover" src="file://${formatCoverPath(v.coverSrc)}" alt="" />`
+      ? `<img class="volume-cover lazy" data-src="file://${formatCoverPath(v.coverSrc)}" alt="" />`
       : `<div class="volume-cover placeholder">📕</div>`;
     row.innerHTML = `
       ${vCover}
@@ -104,6 +123,7 @@ function openSeries(id) {
     });
     list.appendChild(row);
   }
+  observeLazyImages(list);
 
   $('#series-view').classList.add('hidden');
   $('#series-detail').classList.remove('hidden');
@@ -123,21 +143,35 @@ function showEmptyState() {
 }
 
 async function scanAndRender(root) {
-  const result = await window.api.scan(root);
-  currentSeries = result.series;
-  currentRoot = result.rootPath;
-  renderSeriesGrid();
+  $('#loading-state').classList.remove('hidden');
   $('#empty-state').classList.add('hidden');
-  $('#series-detail').classList.add('hidden');
-  $('#series-view').classList.remove('hidden');
-  $('#btn-scan').classList.remove('hidden');
-  if (currentSeries.length === 0) {
-    $('#series-view').classList.add('hidden');
-    $('#empty-state').classList.remove('hidden');
-    $('#empty-state').innerHTML =
-      '<p>A pasta selecionada não contém séries com ficheiros .epub.</p>';
+  $('#series-view').classList.add('hidden');
+  $('#btn-scan').classList.add('hidden');
+  try {
+    const result = await window.api.scan(root);
+    currentSeries = result.series;
+    currentRoot = result.rootPath;
+    renderSeriesGrid();
+    $('#empty-state').classList.add('hidden');
+    $('#series-detail').classList.add('hidden');
+    $('#series-view').classList.remove('hidden');
+    $('#btn-scan').classList.remove('hidden');
+    if (currentSeries.length === 0) {
+      $('#series-view').classList.add('hidden');
+      $('#empty-state').classList.remove('hidden');
+      $('#empty-state').innerHTML =
+        '<p>A pasta selecionada não contém séries com ficheiros .epub.</p>';
+    }
+  } finally {
+    $('#loading-state').classList.add('hidden');
   }
 }
+
+window.api.onProgress(({ done, total }) => {
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  $('#loading-text').textContent =
+    `A digitalizar biblioteca… ${pct}% (${done}/${total})`;
+});
 
 $('#btn-select').addEventListener('click', async () => {
   const root = await window.api.selectLibrary();
