@@ -48,6 +48,16 @@ function formatCoverPath(src) {
   return encodeURI(src);
 }
 
+function readProgressHtml(readCount, total) {
+  const pct = total ? Math.round((readCount / total) * 100) : 0;
+  const color = pct === 100 ? '#28a745' : pct > 0 ? '#ffc107' : '#dc3545';
+  return `
+    <div class="series-progress">
+      <div class="series-progress-bar" style="width:${pct}%;background:${color}"></div>
+      <span class="series-progress-label">${pct}%</span>
+    </div>`;
+}
+
 function renderSeriesGrid() {
   const grid = $('#series-grid');
   grid.innerHTML = '';
@@ -61,6 +71,7 @@ function renderSeriesGrid() {
         <h3>${escapeHtml(s.name)}</h3>
         <p>${s.volumeCount} volume${s.volumeCount !== 1 ? 's' : ''}</p>
         <p>${s.readCount} lido${s.readCount !== 1 ? 's' : ''}</p>
+        ${readProgressHtml(s.readCount, s.volumeCount)}
       </div>
     `;
     card.addEventListener('click', () => openSeries(s.id));

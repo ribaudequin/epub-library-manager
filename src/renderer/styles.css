@@ -182,6 +182,29 @@ main {
   color: var(--text-dim);
 }
 
+.series-progress {
+  margin-top: 4px;
+  height: 8px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.series-progress-bar {
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.series-progress-label {
+  position: absolute;
+  top: -16px;
+  right: 0;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
 #btn-back {
   margin-bottom: 16px;
   background: var(--bg-card-hover);
