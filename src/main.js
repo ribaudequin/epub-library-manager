@@ -102,6 +102,18 @@ ipcMain.handle('library:set-status', async (_event, { seriesId, volumeId, status
   return true;
 });
 
+ipcMain.handle('library:bulk-status', async (_event, { seriesId, updates }) => {
+  const state = await loadState();
+  if (!state.series[seriesId]) state.series[seriesId] = {};
+  for (const { id, status } of updates) {
+    if (VALID_STATUSES.includes(status)) {
+      state.series[seriesId][id] = status;
+    }
+  }
+  await saveState(state);
+  return true;
+});
+
 ipcMain.handle('library:get-root', async () => {
   const state = await loadState();
   return state.rootPath || null;

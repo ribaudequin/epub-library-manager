@@ -211,6 +211,22 @@ main {
   color: var(--text);
 }
 
+#toggle-all-status {
+  margin: 16px 0;
+  padding: 8px 16px;
+  background: var(--bg-card);
+  color: var(--accent, #89b4fa);
+  border: 1px solid rgba(137, 180, 250, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s ease;
+}
+
+#toggle-all-status:hover {
+  background: var(--bg-card-hover);
+}
+
 #detail-header {
   display: flex;
   gap: 24px;

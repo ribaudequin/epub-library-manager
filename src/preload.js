@@ -5,6 +5,8 @@ contextBridge.exposeInMainWorld('api', {
   scan: (rootPath) => ipcRenderer.invoke('library:scan', rootPath),
   setStatus: (seriesId, volumeId, status) =>
     ipcRenderer.invoke('library:set-status', { seriesId, volumeId, status }),
+  bulkSetStatus: (seriesId, updates) =>
+    ipcRenderer.invoke('library:bulk-status', { seriesId, updates }),
   getRoot: () => ipcRenderer.invoke('library:get-root'),
   onProgress: (callback) => {
     ipcRenderer.on('library:progress', (_event, progress) => callback(progress));

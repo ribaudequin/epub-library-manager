@@ -10,6 +10,12 @@ let detailSeriesId = null;
 
 const $ = (sel) => document.querySelector(sel);
 
+function isBulkDone() {
+  const s = currentSeries.find((x) => x.id === detailSeriesId);
+  if (!s) return false;
+  return s.volumes.every((v) => v.status === 'lido');
+}
+
 const coverObserver = new IntersectionObserver((entries) => {
   for (const entry of entries) {
     if (!entry.isIntersecting) continue;
@@ -134,10 +140,21 @@ function openSeries(id) {
     });
     list.appendChild(row);
   }
-  observeLazyImages(list);
+   observeLazyImages(list);
 
-  $('#series-view').classList.add('hidden');
-  $('#series-detail').classList.remove('hidden');
+   updateToggleAllBtn();
+
+   $('#series-view').classList.add('hidden');
+   $('#series-detail').classList.remove('hidden');
+}
+
+function updateToggleAllBtn() {
+  const s = currentSeries.find((x) => x.id === detailSeriesId);
+  if (!s) return;
+  const allRead = s.readCount >= s.volumeCount;
+   $('#toggle-all-status').textContent = allRead
+    ? 'Marcar tudo como não lido'
+    : 'Marcar tudo como lido';
 }
 
 function backToSeries() {
@@ -197,6 +214,21 @@ $('#btn-scan').addEventListener('click', async () => {
 });
 
 $('#btn-back').addEventListener('click', backToSeries);
+
+$('#toggle-all-status').addEventListener('click', async () => {
+  const s = currentSeries.find((x) => x.id === detailSeriesId);
+  if (!s) return;
+  const allRead = s.readCount >= s.volumeCount;
+  const targetStatus = allRead ? 'nao_lido' : 'lido';
+  const updates = s.volumes.map((v) => ({ id: v.id, status: targetStatus }));
+  await window.api.bulkSetStatus(detailSeriesId, updates);
+  for (const vol of s.volumes) {
+    vol.status = targetStatus;
+  }
+  s.readCount = targetStatus === 'lido' ? s.volumeCount : 0;
+  updateToggleAllBtn();
+  openSeries(detailSeriesId);
+});
 
 (async () => {
   const testRoot = new URLSearchParams(location.search).get('root');
