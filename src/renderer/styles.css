@@ -5,6 +5,7 @@
 }
 
 :root {
+  color-scheme: dark;
   --bg: #1e1e2e;
   --bg-card: #2a2a3c;
   --bg-card-hover: #33334a;
@@ -14,6 +15,10 @@
   --green: #9ece6a;
   --yellow: #e0af68;
   --red: #f7768e;
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
@@ -55,10 +60,20 @@ button {
   font-weight: 600;
   cursor: pointer;
   transition: filter 0.15s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button:hover {
   filter: brightness(1.1);
+}
+
+button:focus-visible,
+.series-card:focus-visible,
+.status-btn:focus-visible,
+.state-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 button.secondary {
@@ -139,13 +154,18 @@ main {
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.15s, background 0.15s;
+  transition: transform 0.15s, background 0.15s, border-color 0.15s;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .series-card:hover {
   transform: translateY(-3px);
   background: var(--bg-card-hover);
+}
+
+.series-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .series-cover {
@@ -276,7 +296,7 @@ main {
   border: 1px solid rgba(255,255,255,0.1);
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .state-btn.active[data-state="ongoing"] {
@@ -391,13 +411,18 @@ main {
 
 .volume-name {
   flex: 1;
+  min-width: 0;
   font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .volume-status {
   display: flex;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .status-btn {
@@ -408,7 +433,7 @@ main {
   color: var(--text-dim);
   border: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .status-btn:hover {
@@ -433,4 +458,21 @@ main {
 .status-btn.active[data-status="pendente"] {
   background: var(--yellow);
   border-color: var(--yellow);
+}
+
+.series-progress-label,
+#detail-progress-label,
+#loading-text {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

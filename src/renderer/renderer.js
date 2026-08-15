@@ -128,6 +128,8 @@ function renderSeriesGrid() {
     const card = document.createElement('div');
     card.className = 'series-card';
     card.dataset.id = s.id;
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
     const relDate = formatRelativeDate(s.lastModified);
     const badge = s.seriesState ? serieStateBadge(s.seriesState) : '';
     const authorText = s.author ? escapeHtml(s.author) : '';
@@ -144,6 +146,12 @@ function renderSeriesGrid() {
       </div>
     `;
     card.addEventListener('click', () => openSeries(s.id));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openSeries(s.id);
+      }
+    });
     grid.appendChild(card);
   }
   observeLazyImages(grid);

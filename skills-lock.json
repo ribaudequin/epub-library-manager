@@ -12,6 +12,12 @@
       "sourceType": "github",
       "skillPath": "skills/nodejs-best-practices/SKILL.md",
       "computedHash": "4dec012ae5e3df6a40425d563f42f5b884b522c14358c7181ed94d50b4244d92"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
     }
   }
 }
