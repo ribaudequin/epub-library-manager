@@ -18,6 +18,8 @@ const SERIE_STATE_COLOR = {
   hiatus: '#fd7e14',      // laranja
 };
 
+let useFileName = false;
+
 function formatRelativeDate(mtime) {
   if (!mtime) return null;
   const now = Date.now();
@@ -135,7 +137,7 @@ function renderSeriesGrid() {
     card.innerHTML = `
       ${coverHtml(s.cover)}
       <div class="series-info">
-        <h3>${escapeHtml(s.name)}</h3>
+        <h3>${escapeHtml(useFileName ? s.name : (s.title || s.name))}</h3>
         <p class="series-author">${authorText}</p>
         <p>${s.volumeCount} volume${s.volumeCount !== 1 ? 's' : ''} · ${s.readCount} lido${s.readCount !== 1 ? 's' : ''}</p>
         ${dateText}
@@ -184,7 +186,7 @@ function openSeries(id) {
       : `<div class="volume-cover placeholder">📕</div>`;
     row.innerHTML = `
       ${vCover}
-      <div class="volume-name">${escapeHtml(v.title)}</div>
+      <div class="volume-name">${escapeHtml(useFileName ? v.name : (v.title || v.name))}</div>
       <div class="volume-status">
         ${['lido', 'nao_lido', 'pendente']
           .map(
@@ -325,6 +327,28 @@ $('#toggle-all-status').addEventListener('click', async () => {
   s.readCount = targetStatus === 'lido' ? s.volumeCount : 0;
   updateToggleAllBtn();
   openSeries(detailSeriesId);
+});
+
+// Toggle: mostrar nome do ficheiro vs título do EPUB
+(() => {
+  const saved = localStorage.getItem('useFileName');
+  if (saved === 'true') {
+    useFileName = true;
+    const btn = $('#toggle-name-view');
+    if (btn) {
+      btn.textContent = 'Por ficheiro';
+      btn.classList.add('active');
+    }
+  }
+})();
+
+$('#toggle-name-view').addEventListener('click', () => {
+  useFileName = !useFileName;
+  localStorage.setItem('useFileName', useFileName);
+  const btn = $('#toggle-name-view');
+  btn.textContent = useFileName ? 'Por ficheiro' : 'Por título';
+  btn.classList.toggle('active', useFileName);
+  renderSeriesGrid();
 });
 
 (async () => {
