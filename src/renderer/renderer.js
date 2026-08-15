@@ -1,8 +1,60 @@
 const STATUS_LABEL = {
   lido: 'Lido',
-  nao_lido: 'Não lido',
+  nao_lido: 'Não Lido',
   pendente: 'Pendente',
 };
+
+const SERIE_STATE_LABEL = {
+  ongoing: 'Ongoing',
+  completed: 'Acabada',
+  cancelled: 'Cancelada',
+  hiatus: 'Hiatus',
+};
+
+const SERIE_STATE_COLOR = {
+  ongoing: '#28a745',     // verde
+  completed: '#0d6efd',   // azul
+  cancelled: '#dc3545',   // vermelho
+  hiatus: '#fd7e14',      // laranja
+};
+
+function formatRelativeDate(mtime) {
+  if (!mtime) return null;
+  const now = Date.now();
+  const diffMs = now - mtime;
+  const diffDays = Math.floor(diffMs / 86400000);
+  const diffMonths = Math.floor(diffDays / 30);
+  const diffYears = Math.floor(diffDays / 365);
+
+  const date = new Date(mtime);
+  const dateStr = date.toLocaleDateString('pt-PT', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+
+  let ago = '';
+  if (diffDays < 1) {
+    ago = 'hoje';
+  } else if (diffDays < 7) {
+    ago = `há ${diffDays} dia${diffDays !== 1 ? 's' : ''}`;
+  } else if (diffDays < 30) {
+    const weeks = Math.floor(diffDays / 7);
+    ago = `há ${weeks} semana${weeks !== 1 ? 's' : ''}`;
+  } else if (diffDays < 365) {
+    ago = `há ${diffMonths} mês${diffMonths !== 1 ? 'es' : ''}`;
+  } else {
+    ago = `há ${diffYears} ano${diffYears !== 1 ? 's' : ''}`;
+  }
+
+  return `${dateStr} (${ago})`;
+}
+
+function serieStateBadge(state) {
+  const label = SERIE_STATE_LABEL[state] || SERIE_STATE_LABEL.ongoing;
+  const color = SERIE_STATE_COLOR[state] || SERIE_STATE_COLOR.ongoing;
+  return `<span class="state-badge" style="background:${color}">${label}</span>`;
+}
 
 let currentSeries = [];
 let currentRoot = null;
@@ -71,13 +123,19 @@ function renderSeriesGrid() {
     const card = document.createElement('div');
     card.className = 'series-card';
     card.dataset.id = s.id;
+    const relDate = formatRelativeDate(s.lastModified);
+    const badge = s.seriesState ? serieStateBadge(s.seriesState) : '';
+    const authorText = s.author ? escapeHtml(s.author) : '';
+    const dateText = relDate ? `<small class="series-meta">${relDate}</small>` : '';
     card.innerHTML = `
       ${coverHtml(s.cover)}
       <div class="series-info">
         <h3>${escapeHtml(s.name)}</h3>
-        <p>${s.volumeCount} volume${s.volumeCount !== 1 ? 's' : ''}</p>
-        <p>${s.readCount} lido${s.readCount !== 1 ? 's' : ''}</p>
+        <p class="series-author">${authorText}</p>
+        <p>${s.volumeCount} volume${s.volumeCount !== 1 ? 's' : ''} · ${s.readCount} lido${s.readCount !== 1 ? 's' : ''}</p>
+        ${dateText}
         ${readProgressHtml(s.readCount, s.volumeCount)}
+        ${badge}
       </div>
     `;
     card.addEventListener('click', () => openSeries(s.id));
@@ -98,6 +156,8 @@ function openSeries(id) {
     detailCover.outerHTML = `<div id="detail-cover" class="placeholder">📕</div>`;
   }
   $('#detail-title').textContent = s.name;
+  $('#detail-author').textContent = s.author || '';
+  $('#detail-last-updated').textContent = formatRelativeDate(s.lastModified) || '';
   $('#detail-count').textContent =
     `${s.volumeCount} volume${s.volumeCount !== 1 ? 's' : ''}`;
   $('#detail-read-count').textContent =
@@ -106,6 +166,8 @@ function openSeries(id) {
   const pct = s.volumeCount ? Math.round((s.readCount / s.volumeCount) * 100) : 0;
   $('#progress-fill').style.width = pct + '%';
   $('#detail-progress-label').textContent = `${pct}%`;
+
+  renderSeriesStateSelector(s.seriesState || 'ongoing');
 
   const list = $('#volume-list');
   list.innerHTML = '';
@@ -140,12 +202,42 @@ function openSeries(id) {
     });
     list.appendChild(row);
   }
-   observeLazyImages(list);
+  observeLazyImages(list);
 
-   updateToggleAllBtn();
+  updateToggleAllBtn();
 
-   $('#series-view').classList.add('hidden');
-   $('#series-detail').classList.remove('hidden');
+  $('#series-view').classList.add('hidden');
+  $('#series-detail').classList.remove('hidden');
+}
+
+function renderSeriesStateSelector(currentState) {
+  const container = $('#series-state-selector');
+  const buttons = ['ongoing', 'completed', 'cancelled', 'hiatus'];
+  container.innerHTML = buttons
+    .map(
+      (st) =>
+        `<button class="state-btn${st === currentState ? ' active' : ''}" data-state="${st}">${
+          SERIE_STATE_LABEL[st]
+        }</button>`
+    )
+    .join('');
+  container.querySelectorAll('.state-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const newState = btn.dataset.state;
+      await window.api.setSeriesState(detailSeriesId, newState);
+      updateSeriesState(newState);
+    });
+  });
+}
+
+function updateSeriesState(newState) {
+  const s = currentSeries.find((x) => x.id === detailSeriesId);
+  if (!s) return;
+  s.seriesState = newState;
+  document.querySelectorAll('.state-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.state === newState);
+  });
+  renderSeriesGrid();
 }
 
 function updateToggleAllBtn() {

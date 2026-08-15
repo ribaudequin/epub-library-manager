@@ -12,6 +12,13 @@ if (process.env.TEST_USERDATA) {
 
 const STATUS_DEFAULT = 'nao_lido';
 const VALID_STATUSES = ['lido', 'nao_lido', 'pendente'];
+const VALID_SERIE_STATES = ['ongoing', 'completed', 'cancelled', 'hiatus'];
+const SERIE_STATE_LABEL = {
+  ongoing: 'Em andamento',
+  completed: 'Completa',
+  cancelled: 'Cancelada',
+  hiatus: 'Hiatus',
+};
 
 function getStatePath() {
   if (!stateFile) {
@@ -58,6 +65,9 @@ function buildLibraryView(series, state) {
       volumeCount: volumes.length,
       readCount,
       cover: s.cover,
+      author: s.author || null,
+      lastModified: s.lastModified || null,
+      seriesState: sState.seriesState || 'ongoing',
       volumes,
     };
   });
@@ -110,6 +120,15 @@ ipcMain.handle('library:bulk-status', async (_event, { seriesId, updates }) => {
       state.series[seriesId][id] = status;
     }
   }
+  await saveState(state);
+  return true;
+});
+
+ipcMain.handle('library:set-series-state', async (_event, { seriesId, seriesState }) => {
+  if (!VALID_SERIE_STATES.includes(seriesState)) throw new Error('Estado de série inválido');
+  const state = await loadState();
+  if (!state.series[seriesId]) state.series[seriesId] = {};
+  state.series[seriesId].seriesState = seriesState;
   await saveState(state);
   return true;
 });

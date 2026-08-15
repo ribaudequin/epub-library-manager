@@ -210,9 +210,10 @@ async function parseOpf(zip, opfPath) {
   const xml = zip.readAsText(opfPath);
   const doc = parseXml(xml);
   const title = getMetadataText(doc, 'dc:title') || getMetadataText(doc, 'title');
+  const author = getMetadataText(doc, 'dc:creator') || getMetadataText(doc, 'creator');
   const items = getItems(doc);
   const coverHref = findCoverHref(doc, items, zip, opfPath);
-  return { title, coverHref };
+  return { title, author, coverHref };
 }
 
 async function scanVolume(filePath, coverCacheDir) {
@@ -222,6 +223,7 @@ async function scanVolume(filePath, coverCacheDir) {
   const coverFile = path.join(coverCacheDir, id + '.img');
 
   let title = name;
+  let author = null;
   let coverSrc = null;
 
   try {
@@ -248,8 +250,9 @@ async function scanVolume(filePath, coverCacheDir) {
       const opfPath = opfEntry ? opfEntry.entryName : null;
       if (opfPath) {
         try {
-          const { title: t } = await parseOpf(zip, opfPath);
+          const { title: t, author: a } = await parseOpf(zip, opfPath);
           if (t) title = t;
+          if (a) author = a;
         } catch {}
       }
       const data = extractCoverData(zip, entries, zipObj, opfPath);
@@ -267,6 +270,7 @@ async function scanVolume(filePath, coverCacheDir) {
     filePath,
     name,
     title,
+    author,
     mtime: stat.mtimeMs,
     coverSrc,
   };
@@ -314,6 +318,8 @@ async function scanLibrary(rootPath, coverCacheDir, onProgress) {
       name: dirName,
       path: dirPath,
       volumeCount: volumes.length,
+      author: volumes[0]?.author || null,
+      lastModified: Math.max(...volumes.map((v) => v.mtime)),
       cover: volumes[0].coverSrc,
       volumes,
     });
