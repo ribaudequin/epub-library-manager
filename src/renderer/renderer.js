@@ -52,6 +52,11 @@ function formatRelativeDate(mtime) {
 
 function serieStateBadge(state) {
   const label = SERIE_STATE_LABEL[state] || SERIE_STATE_LABEL.ongoing;
+  return `<span class="series-state-badge" data-state="${state}">• ${label}</span>`;
+}
+
+function serieStateBadgeDetail(state) {
+  const label = SERIE_STATE_LABEL[state] || SERIE_STATE_LABEL.ongoing;
   const color = SERIE_STATE_COLOR[state] || SERIE_STATE_COLOR.ongoing;
   return `<span class="state-badge" style="background:${color}">${label}</span>`;
 }

@@ -306,6 +306,21 @@ main {
   white-space: nowrap;
 }
 
+.series-state-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.series-state-badge[data-state="ongoing"] { background: #28a745; }
+.series-state-badge[data-state="completed"] { background: #0d6efd; }
+.series-state-badge[data-state="cancelled"] { background: #dc3545; }
+.series-state-badge[data-state="hiatus"] { background: #fd7e14; }
+
 .series-author {
   font-size: 13px;
   color: var(--text-dim);
