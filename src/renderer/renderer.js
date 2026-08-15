@@ -81,10 +81,40 @@ const coverObserver = new IntersectionObserver((entries) => {
     if (src) {
       img.src = src;
       img.removeAttribute('data-src');
+      img.addEventListener('load', () => applyCoverTint(img));
     }
     coverObserver.unobserve(img);
   }
 }, { rootMargin: '200px' });
+
+function applyCoverTint(img) {
+  try {
+    const w = 8;
+    const h = 12;
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, w, h);
+    const data = ctx.getImageData(0, 0, w, h).data;
+    let r = 0, g = 0, b = 0, n = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      r += data[i];
+      g += data[i + 1];
+      b += data[i + 2];
+      n++;
+    }
+    r = Math.round(r / n);
+    g = Math.round(g / n);
+    b = Math.round(b / n);
+    const card = img.closest('.series-card');
+    if (card) {
+      card.style.setProperty('--card-tint', `${r}, ${g}, ${b}`);
+    }
+  } catch {
+    // fallback: sem tint (mantém o fundo base)
+  }
+}
 
 function coverHtml(src) {
   if (src) {

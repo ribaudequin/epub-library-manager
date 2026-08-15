@@ -150,7 +150,12 @@ main {
 }
 
 .series-card {
-  background: var(--bg-card);
+  --card-tint: 90, 90, 120;
+  background: linear-gradient(
+    160deg,
+    rgba(var(--card-tint), 0.55) 0%,
+    var(--bg-card) 55%
+  );
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
@@ -160,7 +165,11 @@ main {
 
 .series-card:hover {
   transform: translateY(-3px);
-  background: var(--bg-card-hover);
+  background: linear-gradient(
+    160deg,
+    rgba(var(--card-tint), 0.75) 0%,
+    var(--bg-card-hover) 60%
+  );
 }
 
 .series-card:focus-visible {
