@@ -153,23 +153,28 @@ main {
   --card-tint: 90, 90, 120;
   background: linear-gradient(
     160deg,
-    rgba(var(--card-tint), 0.55) 0%,
-    var(--bg-card) 55%
+    rgba(var(--card-tint), 0.95) 0%,
+    rgba(var(--card-tint), 0.7) 40%,
+    rgba(var(--card-tint), 0.45) 75%,
+    rgba(var(--card-tint), 0.35) 100%
   );
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.15s, background 0.15s, border-color 0.15s;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(var(--card-tint), 0.5);
 }
 
 .series-card:hover {
   transform: translateY(-3px);
   background: linear-gradient(
     160deg,
-    rgba(var(--card-tint), 0.75) 0%,
-    var(--bg-card-hover) 60%
+    rgba(var(--card-tint), 1) 0%,
+    rgba(var(--card-tint), 0.85) 45%,
+    rgba(var(--card-tint), 0.6) 80%,
+    rgba(var(--card-tint), 0.5) 100%
   );
+  border-color: rgba(var(--card-tint), 0.8);
 }
 
 .series-card:focus-visible {

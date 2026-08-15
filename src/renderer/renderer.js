@@ -111,6 +111,16 @@ async function applyCoverTint(img) {
       r = Math.round(r / n);
       g = Math.round(g / n);
       b = Math.round(b / n);
+
+      const boost = 1.35;
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      const avg = (r + g + b) / 3;
+      const t = (max - min) / 255;
+      r = Math.round(avg + (r - avg) * boost * (1 - t));
+      g = Math.round(avg + (g - avg) * boost * (1 - t));
+      b = Math.round(avg + (b - avg) * boost * (1 - t));
+
       const card = img.closest('.series-card');
       if (card) {
         card.style.setProperty('--card-tint', `${r}, ${g}, ${b}`);
