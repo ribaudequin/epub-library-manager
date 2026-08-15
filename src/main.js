@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fsp = require('fs/promises');
-const { scanLibrary } = require('./library');
+const { scanLibrary, getMimeType } = require('./library');
 
 let mainWindow = null;
 let stateFile = null;
@@ -136,6 +136,16 @@ ipcMain.handle('library:set-series-state', async (_event, { seriesId, seriesStat
 ipcMain.handle('library:get-root', async () => {
   const state = await loadState();
   return state.rootPath || null;
+});
+
+ipcMain.handle('cover:read', async (_event, coverPath) => {
+  try {
+    const buf = await fsp.readFile(coverPath);
+    const mime = getMimeType(buf) || 'image/jpeg';
+    return `data:${mime};base64,${buf.toString('base64')}`;
+  } catch {
+    return null;
+  }
 });
 
 function createWindow() {

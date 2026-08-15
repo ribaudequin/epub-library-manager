@@ -339,6 +339,7 @@ module.exports = {
   getVolumeCoverSync,
   getVolumeCoverPath,
   extractVolumeCover,
+  getMimeType,
 };
 
 
