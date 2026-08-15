@@ -169,8 +169,9 @@ async function scanAndRender(root) {
 
 window.api.onProgress(({ done, total }) => {
   const pct = total ? Math.round((done / total) * 100) : 0;
-  $('#loading-text').textContent =
-    `A digitalizar biblioteca… ${pct}% (${done}/${total})`;
+  $('#loading-text').textContent = `A digitalizar… ${pct}% (${done}/${total})`;
+  const bar = $('#loading-progress');
+  if (bar) bar.style.width = pct + '%';
 });
 
 $('#btn-select').addEventListener('click', async () => {

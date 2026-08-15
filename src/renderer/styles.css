@@ -111,6 +111,23 @@ main {
   }
 }
 
+.loading-bar-container {
+  width: 100%;
+  max-width: 400px;
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+  margin: 12px auto 0;
+  overflow: hidden;
+}
+
+.loading-progress {
+  height: 100%;
+  background: #4facfe;
+  width: 0%;
+  transition: width 0.2s ease;
+}
+
 #series-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
