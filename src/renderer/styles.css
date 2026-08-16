@@ -554,14 +554,6 @@ main {
   border: 1px solid rgba(253, 126, 20, 0.3);
 }
 
-.series-author {
-  display: none;
-}
-
-.series-meta {
-  display: none;
-}
-
 #detail-progress {
   margin-top: 12px;
   display: flex;
