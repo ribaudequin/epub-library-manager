@@ -319,7 +319,9 @@ async function scanLibrary(rootPath, coverCacheDir, onProgress) {
       path: dirPath,
       volumeCount: volumes.length,
       author: volumes[0]?.author || null,
-      lastModified: Math.max(...volumes.map((v) => v.mtime)),
+      lastModified: Math.max(...volumes
+        .map((v) => v.mtime)
+        .filter((t) => t <= Date.now())),
       cover: volumes[0].coverSrc,
       volumes,
     });
