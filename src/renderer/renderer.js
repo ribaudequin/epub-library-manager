@@ -51,10 +51,11 @@ function formatRelativeDate(mtime) {
   } else if (diffDays < 30) {
     const weeks = Math.floor(diffDays / 7);
     ago = `há ${weeks} semana${weeks !== 1 ? 's' : ''}`;
-  } else if (diffDays < 365) {
+  } else if (diffMonths < 12) {
     ago = `há ${diffMonths} mês${diffMonths !== 1 ? 'es' : ''}`;
   } else {
-    ago = `há ${diffYears} ano${diffYears !== 1 ? 's' : ''}`;
+    const years = Math.floor(diffMonths / 12);
+    ago = `há ${years} ano${years !== 1 ? 's' : ''}`;
   }
 
   return `${dateStr} (${ago})`;
