@@ -87,7 +87,7 @@ const coverObserver = new IntersectionObserver((entries) => {
   }
 }, { rootMargin: '200px' });
 
-async function applyCoverTint(img) {
+async function applyCoverTint(img, extraEl) {
   try {
     const dataUrl = await window.api.readCover(decodeURIComponent(img.src.replace(/^file:\/\//, '')));
     if (!dataUrl) return;
@@ -124,6 +124,9 @@ async function applyCoverTint(img) {
       const card = img.closest('.series-card');
       if (card) {
         card.style.setProperty('--card-tint', `${r}, ${g}, ${b}`);
+      }
+      if (extraEl) {
+        extraEl.style.setProperty('--serie-tint', `${r}, ${g}, ${b}`);
       }
     };
     tintImg.src = dataUrl;
@@ -209,11 +212,15 @@ function openSeries(id) {
   detailSeriesId = id;
 
   const detailCover = $('#detail-cover');
+  const detailSection = $('#series-detail');
   if (s.cover) {
-    detailCover.outerHTML = `<img id="detail-cover" src="file://${formatCoverPath(s.cover)}" alt="" />`;
+    detailCover.outerHTML = `<img id="detail-cover" class="lazy" data-src="file://${formatCoverPath(s.cover)}" alt="" src="file://${formatCoverPath(s.cover)}" />`;
+    const img = $('#detail-cover');
+    img.onload = () => applyCoverTint(img, detailSection);
   } else {
     detailCover.outerHTML = `<div id="detail-cover" class="placeholder">📕</div>`;
   }
+  detailSection.style.removeProperty('--serie-tint');
   $('#detail-title').textContent = s.name;
   $('#detail-author').textContent = s.author || '';
   $('#detail-last-updated').textContent = formatRelativeDate(s.lastModified) || '';
