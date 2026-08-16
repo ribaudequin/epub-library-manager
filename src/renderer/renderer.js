@@ -112,14 +112,15 @@ async function applyCoverTint(img, extraEl) {
       g = Math.round(g / n);
       b = Math.round(b / n);
 
-      const boost = 1.35;
+      const boost = 2;
       const max = Math.max(r, g, b);
       const min = Math.min(r, g, b);
       const avg = (r + g + b) / 3;
-      const t = (max - min) / 255;
-      r = Math.round(avg + (r - avg) * boost * (1 - t));
-      g = Math.round(avg + (g - avg) * boost * (1 - t));
-      b = Math.round(avg + (b - avg) * boost * (1 - t));
+      // Escala HSV para preservar tons em imagens acinzentadas
+      const satBoost = (max - min) / 255 < 0.15 ? 2 : 1.4;
+      r = Math.round(avg + (r - avg) * boost * satBoost * (1 - (max - min) / 255));
+      g = Math.round(avg + (g - avg) * boost * satBoost * (1 - (max - min) / 255));
+      b = Math.round(avg + (b - avg) * boost * satBoost * (1 - (max - min) / 255));
 
       const card = img.closest('.series-card');
       if (card) {

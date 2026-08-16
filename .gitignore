@@ -6,3 +6,9 @@ PLANO.md
 TODO.md
 .agents/
 promps/
+
+squashfs-root/
+*.png.bak
+tint*.png
+screen*.png
+real*.png
