@@ -15,8 +15,18 @@ const SERIE_STATE_COLOR = {
   ongoing: '#28a745',
   completed: '#0d6efd',
   cancelled: '#dc3545',
-  hiatus: '#fd7e14',
+  hiatus: '#fd7e10',
 };
+
+const SERIE_STATE_TOOLTIP = {
+  ongoing: 'Em andamento — nova atualização esperada',
+  completed: 'Completa — todos os volumes lançados',
+  cancelled: 'Cancelada — produção interrompida',
+  hiatus: 'Hiatus — pausa indefinida',
+};
+
+const DEBOUNCE_MS = 300;
+let searchDebounceId = null;
 
 function formatRelativeDate(mtime) {
   if (!mtime) return null;
@@ -52,7 +62,8 @@ function formatRelativeDate(mtime) {
 
 function serieStateBadge(state) {
   const label = SERIE_STATE_LABEL[state] || SERIE_STATE_LABEL.ongoing;
-  return `<span class="series-state-badge" data-state="${state}">• ${label}</span>`;
+  const tooltip = SERIE_STATE_TOOLTIP[state] || '';
+  return `<span class="series-state-badge" data-state="${state}" title="${tooltip}">• ${label}</span>`;
 }
 
 function serieStateBadgeDetail(state) {
@@ -62,8 +73,11 @@ function serieStateBadgeDetail(state) {
 }
 
 let currentSeries = [];
+let filteredSeries = [];
 let currentRoot = null;
 let detailSeriesId = null;
+let currentSort = localStorage.getItem('sortKey') || 'name-asc';
+let filterText = '';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -171,10 +185,41 @@ function readProgressHtml(readCount, total) {
     </div>`;
 }
 
+const SORT_FNS = {
+  'name-asc': (a, b) => a.name.localeCompare(b.name),
+  'name-desc': (a, b) => b.name.localeCompare(a.name),
+  'progress-desc': (a, b) => {
+    const pa = a.volumeCount ? (a.readCount / a.volumeCount) : 0;
+    const pb = b.volumeCount ? (b.readCount / b.volumeCount) : 0;
+    return pb - pa;
+  },
+  'mtime-desc': (a, b) => (b.lastModified || 0) - (a.lastModified || 0),
+};
+
+function applySort() {
+  const fn = SORT_FNS[currentSort];
+  if (fn) currentSeries.sort(fn);
+  $('#sort-select').value = currentSort;
+  localStorage.setItem('sortKey', currentSort);
+}
+
+function applyFilter() {
+  const q = filterText.toLowerCase().trim();
+  if (!q) {
+    filteredSeries = [...currentSeries];
+  } else {
+    filteredSeries = currentSeries.filter(
+      (s) =>
+        s.name.toLowerCase().includes(q) ||
+        (s.author && s.author.toLowerCase().includes(q))
+    );
+  }
+}
+
 function renderSeriesGrid() {
   const grid = $('#series-grid');
   grid.innerHTML = '';
-  for (const s of currentSeries) {
+  for (const s of filteredSeries) {
     const card = document.createElement('div');
     card.className = 'series-card';
     card.dataset.id = s.id;
@@ -338,6 +383,8 @@ async function scanAndRender(root) {
     const result = await window.api.scan(root);
     currentSeries = result.series;
     currentRoot = result.rootPath;
+    applySort();
+    applyFilter();
     renderSeriesGrid();
     $('#empty-state').classList.add('hidden');
     $('#series-detail').classList.add('hidden');
@@ -388,6 +435,64 @@ $('#toggle-all-status').addEventListener('click', async () => {
   updateToggleAllBtn();
   openSeries(detailSeriesId);
 });
+
+$('#sort-select').addEventListener('change', () => {
+  currentSort = $('#sort-select').value;
+  applySort();
+  applyFilter();
+  renderSeriesGrid();
+});
+
+function onSearchInput() {
+  const val = $('#search-input').value;
+  filterText = val;
+  const info = $('#search-info');
+  if (val.trim() === '') {
+    info.textContent = '';
+    $('#search-clear').setAttribute('aria-hidden', 'true');
+  } else {
+    $('#search-clear').setAttribute('aria-hidden', 'false');
+  }
+  clearTimeout(searchDebounceId);
+  searchDebounceId = setTimeout(() => {
+    applyFilter();
+    renderSeriesGrid();
+    if (val.trim()) {
+      info.textContent = `${filteredSeries.length} de ${currentSeries.length} séries`;
+    }
+  }, DEBOUNCE_MS);
+}
+
+function clearSearch() {
+  $('#search-input').value = '';
+  filterText = '';
+  applyFilter();
+  renderSeriesGrid();
+  $('#search-info').textContent = '';
+  $('#search-clear').setAttribute('aria-hidden', 'true');
+  $('#search-input').focus();
+}
+
+$('#search-input').addEventListener('input', onSearchInput);
+$('#search-clear').addEventListener('click', clearSearch);
+$('#search-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') clearSearch();
+});
+$('#search-clear').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    clearSearch();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    $('#search-input').focus();
+  }
+});
+
+$('#sort-select').value = currentSort;
 
 (async () => {
   const testRoot = new URLSearchParams(location.search).get('root');

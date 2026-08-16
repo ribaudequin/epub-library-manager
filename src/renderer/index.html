@@ -8,13 +8,26 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header>
-    <h1>Biblioteca de Epubs</h1>
-    <div class="actions">
-      <button id="btn-select">Seleccionar pasta</button>
-      <button id="btn-scan" class="hidden">Actualizar biblioteca</button>
-    </div>
-  </header>
+   <header>
+     <h1>Biblioteca de Epubs</h1>
+     <div class="actions">
+       <div class="search-box">
+         <label for="search-input" class="visually-hidden">Pesquisar séries</label>
+         <input type="search" id="search-input" class="input--search" placeholder="Ctrl+K  Pesquisar…" autocomplete="off" aria-label="Pesquisar (Ctrl+K)" oninput="onSearchInput()" />
+         <button type="button" id="search-clear" class="btn--clear" aria-label="Limpar pesquisa" aria-hidden="true">✕</button>
+       </div>
+       <label for="sort-select" class="visually-hidden">Ordenar por</label>
+       <select id="sort-select" class="select--sort">
+         <option value="name-asc">Nome A–Z</option>
+         <option value="name-desc">Nome Z–A</option>
+         <option value="progress-desc">Progresso %</option>
+         <option value="mtime-desc">Atualização</option>
+       </select>
+       <button id="btn-select">Seleccionar pasta</button>
+       <button id="btn-scan" class="hidden">Actualizar biblioteca</button>
+       <span id="search-info" class="search-info" aria-live="polite"></span>
+     </div>
+   </header>
 
   <main>
     <div id="empty-state" class="hidden">
