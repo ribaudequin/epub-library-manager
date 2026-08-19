@@ -1,0 +1,73 @@
+name: Protect Sensitive Files
+
+on:
+  pull_request:
+    paths:
+      - '**.md'
+  push:
+    paths:
+      - '**.md'
+
+jobs:
+  check-sensitive-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for sensitive MD files in commit
+        run: |
+          echo "🔍 Checking for sensitive MD files..."
+          
+          # Check files changed in this commit/PR
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- '*.md')
+          else
+            FILES=$(git diff --name-only HEAD~1 HEAD -- '*.md')
+          fi
+          
+          echo "Changed MD files: $FILES"
+          
+          # Check for sensitive files
+          SENSITIVE=$(echo "$FILES" | grep -E '(MEMORY|PLANO|TODO)\.md$' || true)
+          
+          if [ -n "$SENSITIVE" ]; then
+            echo ""
+            echo "╔══════════════════════════════════════════════════════════╗"
+            echo "║  🚫 BLOCKED — Sensitive MD files detected!              ║"
+            echo "╠══════════════════════════════════════════════════════════╣"
+            echo "║  Files: $SENSITIVE"
+            echo "║  MEMORY.md / PLANO.md / TODO.md are private.           ║"
+            echo "║  These files must remain local-only.                   ║"
+            echo "║                                                        ║"
+            echo "║  Remove from commit:                                   ║"
+            echo "║    git rm --cached MEMORY.md PLANO.md TODO.md          ║"
+            echo "║    git commit -m 'Remove sensitive files'              ║"
+            echo "╚══════════════════════════════════════════════════════════╝"
+            echo ""
+            exit 1
+          fi
+          
+          echo "✅ No sensitive MD files found in commit."
+
+      - name: Verify .gitignore includes sensitive files
+        run: |
+          echo "🔍 Verifying .gitignore configuration..."
+          
+          # Check if sensitive files are in .gitignore
+          if ! grep -q "^MEMORY\.md$" .gitignore; then
+            echo "❌ MEMORY.md not in .gitignore"
+            exit 1
+          fi
+          
+          if ! grep -q "^PLANO\.md$" .gitignore; then
+            echo "❌ PLANO.md not in .gitignore"
+            exit 1
+          fi
+          
+          if ! grep -q "^TODO\.md$" .gitignore; then
+            echo "❌ TODO.md not in .gitignore"
+            exit 1
+          fi
+          
+          echo "✅ All sensitive files properly configured in .gitignore."
