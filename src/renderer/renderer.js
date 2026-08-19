@@ -85,31 +85,32 @@ let filterText = '';
 const $ = (sel) => document.querySelector(sel);
 
 async function initI18n() {
-  const locale = await window.api.getLocale();
-  const lang = locale.startsWith('pt') ? 'pt' : 'en';
-  const response = await fetch(`./locales/${lang}.json`);
-  const translations = await response.json();
-  window.i18n.setLocale(lang);
-
-  // Translate static UI
-  $('h1').textContent = window.i18n.t('app_title');
-  $('#search-input').placeholder = window.i18n.t('search_placeholder');
-  $('#search-input').setAttribute('aria-label', window.i18n.t('search_aria'));
-  $('#search-clear').setAttribute('aria-label', window.i18n.t('search_clear_aria'));
-  $('#btn-select').textContent = window.i18n.t('btn_select_folder');
-  $('#btn-scan').textContent = window.i18n.t('btn_refresh');
-  
-  const sortSelect = $('#sort-select');
-  sortSelect.options[0].textContent = window.i18n.t('sort_name_asc');
-  sortSelect.options[1].textContent = window.i18n.t('sort_name_desc');
-  sortSelect.options[2].textContent = window.i18n.t('sort_progress');
-  sortSelect.options[3].textContent = window.i18n.t('sort_mtime');
-
-  $('#btn-back').textContent = window.i18n.t('btn_back');
-  
-  // Empty state
-  updateEmptyStateStrings();
+  try {
+    const { locale, isPt } = await window.api.getLocale();
+    window.i18n.setLocale(isPt ? 'pt' : 'en');
+  } catch {
+    window.i18n.setLocale('pt');
+  }
+  updateUI();
   updateI18nLabels();
+}
+
+function updateUI() {
+  const t = window.i18n.t.bind(window.i18n);
+  document.title = t('app_title');
+  $('#search-input').placeholder = t('search_placeholder');
+  $('#search-input').setAttribute('aria-label', t('search_aria'));
+  $('#search-clear').setAttribute('aria-label', t('search_clear_aria'));
+  if ($('label[for="search-input"]')) $('label[for="search-input"]').textContent = t('search_label');
+  if ($('label[for="sort-select"]')) $('label[for="sort-select"]').textContent = t('sort_label');
+  $('#btn-select').textContent = t('btn_select_folder');
+  $('#btn-scan').textContent = t('btn_refresh');
+  $('#btn-back').textContent = t('btn_back');
+  const sortSelect = $('#sort-select');
+  if (sortSelect.options[0]) sortSelect.options[0].textContent = t('sort_name_asc');
+  if (sortSelect.options[1]) sortSelect.options[1].textContent = t('sort_name_desc');
+  if (sortSelect.options[2]) sortSelect.options[2].textContent = t('sort_progress');
+  if (sortSelect.options[3]) sortSelect.options[3].textContent = t('sort_mtime');
 }
 
 function updateI18nLabels() {
@@ -128,13 +129,10 @@ function updateI18nLabels() {
 }
 
 function t(key, vars = {}) {
-  let val = i18n?.[key];
-  if (!val) return key;
-  
-  return val.replace(/{(\w+)}/g, (_, v) => {
-    if (v === 'plural') return vars.count !== 1 ? 's' : '';
-    return vars[v] ?? '';
-  });
+  if (window.i18n && typeof window.i18n.t === 'function') {
+    return window.i18n.t(key, vars);
+  }
+  return key;
 }
 
 function updateEmptyStateStrings() {
@@ -148,7 +146,6 @@ function updateEmptyStateStrings() {
     emptyState.innerHTML = `<p>${t('empty_state_no_epubs')}</p>`;
   }
 }
-
 
 function isBulkDone() {
   const s = currentSeries.find((x) => x.id === detailSeriesId);
@@ -673,26 +670,41 @@ async function initLocale() {
   updateUI();
 }
 
+function updateI18nLabels() {
+  const t = (key) => window.i18n.t(key);
+  STATUS_LABEL.lido = t('status_lido');
+  STATUS_LABEL.nao_lido = t('status_nao_lido');
+  STATUS_LABEL.pendente = t('status_pendente');
+  SERIE_STATE_LABEL.ongoing = t('serie_ongoing');
+  SERIE_STATE_LABEL.completed = t('serie_completed');
+  SERIE_STATE_LABEL.cancelled = t('serie_cancelled');
+  SERIE_STATE_LABEL.hiatus = t('serie_hiatus');
+  SERIE_STATE_TOOLTIP.ongoing = t('serie_state_ongoing');
+  SERIE_STATE_TOOLTIP.completed = t('serie_state_completed');
+  SERIE_STATE_TOOLTIP.cancelled = t('serie_state_cancelled');
+  SERIE_STATE_TOOLTIP.hiatus = t('serie_state_hiatus');
+}
+
 function updateUI() {
-  const t = window.i18n.t.bind(window.i18n);
+  const t = (key, vars = {}) => window.i18n.t(key, vars);
   document.title = t('app_title');
   $('#search-input').placeholder = t('search_placeholder');
   $('#search-input').setAttribute('aria-label', t('search_aria'));
   $('#search-clear').setAttribute('aria-label', t('search_clear_aria'));
-  $('label[for="search-input"]').textContent = t('search_label');
-  $('label[for="sort-select"]').textContent = t('sort_label');
+  if ($('label[for="search-input"]')) $('label[for="search-input"]').textContent = t('search_label');
+  if ($('label[for="sort-select"]')) $('label[for="sort-select"]').textContent = t('sort_label');
   $('#btn-select').textContent = t('btn_select_folder');
   $('#btn-scan').textContent = t('btn_refresh');
   $('#btn-back').textContent = t('btn_back');
   const sortSelect = $('#sort-select');
-  sortSelect.options[0].textContent = t('sort_name_asc');
-  sortSelect.options[1].textContent = t('sort_name_desc');
-  sortSelect.options[2].textContent = t('sort_progress');
-  sortSelect.options[3].textContent = t('sort_mtime');
+  if (sortSelect.options[0]) sortSelect.options[0].textContent = t('sort_name_asc');
+  if (sortSelect.options[1]) sortSelect.options[1].textContent = t('sort_name_desc');
+  if (sortSelect.options[2]) sortSelect.options[2].textContent = t('sort_progress');
+  if (sortSelect.options[3]) sortSelect.options[3].textContent = t('sort_mtime');
 }
 
 (async () => {
-  await initLocale();
+  await initI18n();
   const testRoot = new URLSearchParams(location.search).get('root');
   if (testRoot) {
     await scanAndRender(testRoot);

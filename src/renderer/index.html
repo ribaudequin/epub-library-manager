@@ -26,52 +26,53 @@
        <button id="btn-select">Seleccionar pasta</button>
        <button id="btn-scan" class="hidden">Actualizar biblioteca</button>
        <span id="search-info" class="search-info" aria-live="polite"></span>
-     </div>
-   </header>
+ </div>
+    </header>
 
-  <main>
+    <main>
     <div id="empty-state" class="hidden">
-      <p>Nenhuma biblioteca selecionada.</p>
-      <p>Clique em «Selecionar pasta» para escolher a pasta raiz que contém as séries.</p>
-    </div>
+          <p id="empty-title"></p>
+          <p id="empty-desc"></p>
+        </div>
 
     <div id="loading-state" class="hidden">
-      <p id="loading-text" aria-live="polite">A digitalizar biblioteca…</p>
-      <div class="spinner"></div>
-      <div class="loading-bar-container">
-        <div class="loading-progress" id="loading-progress"></div>
-      </div>
-    </div>
-
-    <section id="series-view" class="hidden">
-      <div id="series-grid"></div>
-    </section>
-
-    <section id="series-detail" class="hidden">
-      <button id="btn-back">← Voltar às séries</button>
-      <div id="detail-header">
-        <img id="detail-cover" class="placeholder" src="" alt="" />
-        <div id="detail-meta">
-          <h2 id="detail-title"></h2>
-          <p id="detail-author"></p>
-          <p id="detail-last-updated"></p>
-          <p id="detail-count"></p>
-          <p id="detail-read-count"></p>
-          <div id="series-state-selector"></div>
-          <div id="detail-progress">
-            <div class="progress-bar">
-              <div class="progress-fill" id="progress-fill"></div>
-            </div>
-            <span id="detail-progress-label"></span>
+          <p id="loading-text" aria-live="polite"></p>
+          <div class="spinner"></div>
+          <div class="loading-bar-container">
+            <div class="loading-progress" id="loading-progress"></div>
           </div>
         </div>
-      </div>
-      <div id="volume-list"></div>
+
+        <section id="series-view" class="hidden">
+          <div id="series-grid"></div>
+        </section>
+
+        <section id="series-detail" class="hidden">
+          <button id="btn-back">← Voltar às séries</button>
+          <div id="detail-header">
+            <img id="detail-cover" class="placeholder" src="" alt="" />
+            <div id="detail-meta">
+              <h2 id="detail-title"></h2>
+              <p id="detail-author"></p>
+              <p id="detail-last-updated"></p>
+              <p id="detail-count"></p>
+              <p id="detail-read-count"></p>
+              <div id="series-state-selector"></div>
+              <div id="detail-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <span id="detail-progress-label"></span>
+              </div>
+            </div>
+          </div>
+          <div id="volume-list"></div>
 
 <button id="toggle-all-status" class="btn-status">Marcar tudo como lido</button>
-    </section>
-  </main>
+        </section>
+      </main>
 
+  <script src="translations.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>
