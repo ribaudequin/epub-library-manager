@@ -29,6 +29,16 @@
 - Em ambiente de teste a app precisa de `--disable-gpu` (não é problema em máquinas normais).
 - Agentes globais: **100+ @agentes** em `~/.config/opencode/agents/` (UI Designer, UX Researcher, Security Architect, DevOps, Product Manager, etc.) — usar a notação `@Agente` para delegar tarefas especializadas.
 
+## 🚀 Release v1.5.0 Finalizado
+- **Data**: 2026-08-19
+- **Feature**: Cache de scan localStorage (75s→instant envs)
+- **QA**: 5/5 critérios de cache validados com sucesso
+- **Build**: `dist/BibliotecaEpub-1.5.0.AppImage` (107MB) ✓
+- **Backup**: `~/backups/biblioteca/BibliotecaEpub-1.5.0.AppImage` ✓
+- **Git**: Commit `v1.5.0 — cache scan localStorage (75s→instant envs)`, tag `v1.5.0` criada e push para `origin/master` + `--tags` ✓
+- **Verificação**: Tag v1.5.0 disponível via `git ls-remote --tags | grep v1.5.0` ✓
+- **Status**: Release v1.5.0 concluída e validada.
+
 ## 🪵 Log de Atualizações Recentes
 * A memória foi inicializada.
 * 2026-08-12: Projeto Biblioteca de Epubs. Fase 1 concluída. Scan: 247 séries/2417 volumes em ~12s. Capas: 0/2417 sem capa.
