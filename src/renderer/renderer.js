@@ -96,21 +96,28 @@ async function initI18n() {
 }
 
 function updateUI() {
-  const t = window.i18n.t.bind(window.i18n);
+  const t = (key, vars = {}) => window.i18n ? window.i18n.t(key, vars) : key;
   document.title = t('app_title');
-  $('#search-input').placeholder = t('search_placeholder');
-  $('#search-input').setAttribute('aria-label', t('search_aria'));
-  $('#search-clear').setAttribute('aria-label', t('search_clear_aria'));
+  const btnSelect = $('#btn-select');
+  const btnScan = $('#btn-scan');
+  const btnBack = $('#btn-back');
+  if (btnSelect) btnSelect.textContent = t('btn_select_folder');
+  if (btnScan) btnScan.textContent = t('btn_refresh');
+  if (btnBack) btnBack.textContent = t('btn_back');
+  const searchInput = $('#search-input');
+  const searchClear = $('#search-clear');
+  if (searchInput) searchInput.placeholder = t('search_placeholder');
+  if (searchInput) searchInput.setAttribute('aria-label', t('search_aria'));
+  if (searchClear) searchClear.setAttribute('aria-label', t('search_clear_aria'));
+  const sortSelect = $('#sort-select');
+  if (sortSelect) {
+    if (sortSelect.options[0]) sortSelect.options[0].textContent = t('sort_name_asc');
+    if (sortSelect.options[1]) sortSelect.options[1].textContent = t('sort_name_desc');
+    if (sortSelect.options[2]) sortSelect.options[2].textContent = t('sort_progress');
+    if (sortSelect.options[3]) sortSelect.options[3].textContent = t('sort_mtime');
+  }
   if ($('label[for="search-input"]')) $('label[for="search-input"]').textContent = t('search_label');
   if ($('label[for="sort-select"]')) $('label[for="sort-select"]').textContent = t('sort_label');
-  $('#btn-select').textContent = t('btn_select_folder');
-  $('#btn-scan').textContent = t('btn_refresh');
-  $('#btn-back').textContent = t('btn_back');
-  const sortSelect = $('#sort-select');
-  if (sortSelect.options[0]) sortSelect.options[0].textContent = t('sort_name_asc');
-  if (sortSelect.options[1]) sortSelect.options[1].textContent = t('sort_name_desc');
-  if (sortSelect.options[2]) sortSelect.options[2].textContent = t('sort_progress');
-  if (sortSelect.options[3]) sortSelect.options[3].textContent = t('sort_mtime');
 }
 
 function updateI18nLabels() {
