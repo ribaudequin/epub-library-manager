@@ -1,11 +1,13 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fsp = require('fs/promises');
+const fs = require('fs');
 const crypto = require('crypto');
 const { scanLibrary, getMimeType } = require('./library');
 
 let mainWindow = null;
 let stateFile = null;
+let fileWatcher = null;
 
 if (process.env.TEST_USERDATA) {
   app.setPath('userData', process.env.TEST_USERDATA);
@@ -50,10 +52,12 @@ async function getCoverCacheDir() {
 
 async function getRecursiveMtime(dirPath) {
   let max = 0;
+  const now = Date.now();
   for (const e of await fsp.readdir(dirPath, { withFileTypes: true })) {
     try {
       const s = await fsp.stat(path.join(dirPath, e.name));
-      if (s.mtimeMs > max) max = s.mtimeMs;
+      // Ignorar timestamps inválidos ou futuros (ex: Year 2107 de arquivos corrompidos)
+      if (s.mtimeMs > 0 && s.mtimeMs <= now && s.mtimeMs > max) max = s.mtimeMs;
       if (e.isDirectory()) {
         const sub = await getRecursiveMtime(path.join(dirPath, e.name));
         if (sub > max) max = sub;
@@ -173,6 +177,40 @@ ipcMain.handle('cover:read', async (_event, coverPath) => {
   } catch {
     return null;
   }
+});
+
+ipcMain.handle('library:watch', async (_event, rootPath) => {
+  if (fileWatcher) { fileWatcher.close(); fileWatcher = null; }
+  if (!rootPath) return false;
+  let debounceTimer = null;
+  try {
+    console.log('[WATCH] Starting watcher for:', rootPath);
+    fileWatcher = fs.watch(rootPath, { recursive: true }, (event, filename) => {
+      console.log('[WATCH] Event:', event, filename);
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(async () => {
+        const win = BrowserWindow.fromWebContents(_event.sender);
+        if (win && !win.isDestroyed()) {
+          try {
+            const rootMtime = await getRecursiveMtime(rootPath);
+            console.log('[WATCH] Sending library:changed, rootMtime:', rootMtime);
+            win.webContents.send('library:changed', { rootMtime });
+          } catch (err) { console.error('[WATCH] Error:', err); }
+        }
+      }, 2000);
+    });
+    fileWatcher.on('error', (err) => console.error('[WATCH] Watcher error:', err));
+    console.log('[WATCH] Watcher started successfully');
+    return true;
+  } catch (err) {
+    console.error('[WATCH] Failed to start watcher:', err);
+    return false;
+  }
+});
+
+ipcMain.handle('library:unwatch', () => {
+  if (fileWatcher) { fileWatcher.close(); fileWatcher = null; }
+  return true;
 });
 
 function createWindow() {

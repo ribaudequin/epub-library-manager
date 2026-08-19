@@ -12,6 +12,11 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('library:set-series-state', { seriesId, seriesState }),
   getRoot: () => ipcRenderer.invoke('library:get-root'),
   readCover: (coverPath) => ipcRenderer.invoke('cover:read', coverPath),
+  watchLibrary: (rootPath) => ipcRenderer.invoke('library:watch', rootPath),
+  unwatchLibrary: () => ipcRenderer.invoke('library:unwatch'),
+  onLibraryChanged: (callback) => {
+    ipcRenderer.on('library:changed', (_event, data) => callback(data));
+  },
   onProgress: (callback) => {
     ipcRenderer.on('library:progress', (_event, progress) => callback(progress));
   },

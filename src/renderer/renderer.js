@@ -79,6 +79,7 @@ let currentRoot = null;
 let detailSeriesId = null;
 let currentSort = localStorage.getItem('sortKey') || 'name-asc';
 let filterText = '';
+let isWatching = false;
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -407,6 +408,7 @@ async function scanAndRender(root) {
           $('#series-view').classList.remove('hidden');
           $('#btn-scan').classList.remove('hidden');
           showCacheStatus(true, currentSeries.length);
+          startWatching(root);
           return;
         }
       }
@@ -439,6 +441,8 @@ async function scanAndRender(root) {
       $('#empty-state').classList.remove('hidden');
       $('#empty-state').innerHTML =
         '<p>A pasta seleccionada não contém séries com ficheiros .epub.</p>';
+    } else {
+      startWatching(root);
     }
   } finally {
     $('#loading-state').classList.add('hidden');
@@ -452,6 +456,27 @@ window.api.onProgress(({ done, total }) => {
   if (bar) bar.style.width = pct + '%';
 });
 
+async function startWatching(root) {
+  if (isWatching) return;
+  console.log('[WATCH-RENDER] Starting watcher for:', root);
+  isWatching = await window.api.watchLibrary(root);
+  console.log('[WATCH-RENDER] Watcher started:', isWatching);
+}
+
+function stopWatching() {
+  if (!isWatching) return;
+  console.log('[WATCH-RENDER] Stopping watcher');
+  window.api.unwatchLibrary();
+  isWatching = false;
+}
+
+window.api.onLibraryChanged(async ({ rootMtime }) => {
+  console.log('[WATCH-RENDER] library:changed received, rootMtime:', rootMtime);
+  if (!currentRoot) return;
+  stopWatching();
+  await scanAndRender(currentRoot);
+});
+
 $('#btn-select').addEventListener('click', async () => {
   const root = await window.api.selectLibrary();
   if (root) {
@@ -460,7 +485,13 @@ $('#btn-select').addEventListener('click', async () => {
 });
 
 $('#btn-scan').addEventListener('click', async () => {
-  if (currentRoot) await scanAndRender(currentRoot);
+  if (!currentRoot) return;
+  // Forçar rescan: limpar cache para detetar mudanças
+  try {
+    const { cacheKey } = await window.api.getMtime(currentRoot);
+    if (cacheKey) localStorage.removeItem(cacheKey);
+  } catch {}
+  await scanAndRender(currentRoot);
 });
 
 $('#btn-back').addEventListener('click', backToSeries);
