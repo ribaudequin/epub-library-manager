@@ -15,8 +15,10 @@
     "adm-zip": "^0.5.16"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "electron": "^31.0.0",
-    "electron-builder": "^24.13.3"
+    "electron-builder": "^24.13.3",
+    "spectron": "^19.0.0"
   },
   "build": {
     "appId": "com.marcelo.bibliotecaepub",

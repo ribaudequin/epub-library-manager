@@ -375,7 +375,45 @@ function showEmptyState() {
   $('#btn-scan').classList.add('hidden');
 }
 
+function showCacheStatus(fromCache, count) {
+  let el = $('#cache-status');
+  if (!el) {
+    el = document.createElement('span');
+    el.id = 'cache-status';
+    el.style.cssText = 'font-size:12px;margin-left:12px;opacity:.85;transition:opacity .4s';
+    $('.actions').appendChild(el);
+  }
+  el.textContent = fromCache ? `${count} séries em cache` : 'Digitalizado';
+  el.style.color = fromCache ? 'var(--green)' : 'var(--accent)';
+  el.style.opacity = '1';
+  clearTimeout(el._ht);
+  el._ht = setTimeout(() => { el.style.opacity = '0'; }, 3500);
+}
+
 async function scanAndRender(root) {
+  // Try cache
+  try {
+    const { cacheKey, rootMtime } = await window.api.getMtime(root);
+    if (cacheKey && rootMtime) {
+      const raw = localStorage.getItem(cacheKey);
+      if (raw) {
+        const c = JSON.parse(raw);
+        if (c.version === 1 && c.rootPath === root && c.rootMtime === rootMtime) {
+          currentSeries = c.series;
+          currentRoot = root;
+          applySort(); applyFilter(); renderSeriesGrid();
+          $('#empty-state').classList.add('hidden');
+          $('#series-detail').classList.add('hidden');
+          $('#series-view').classList.remove('hidden');
+          $('#btn-scan').classList.remove('hidden');
+          showCacheStatus(true, currentSeries.length);
+          return;
+        }
+      }
+    }
+  } catch {}
+
+  // Full scan
   $('#loading-state').classList.remove('hidden');
   $('#empty-state').classList.add('hidden');
   $('#series-view').classList.add('hidden');
@@ -384,18 +422,23 @@ async function scanAndRender(root) {
     const result = await window.api.scan(root);
     currentSeries = result.series;
     currentRoot = result.rootPath;
-    applySort();
-    applyFilter();
-    renderSeriesGrid();
+    try {
+      const { cacheKey, rootMtime } = await window.api.getMtime(root);
+      if (cacheKey && rootMtime) localStorage.setItem(cacheKey, JSON.stringify({
+        version: 1, rootPath: root, rootMtime, lastScan: Date.now(), series: currentSeries,
+      }));
+    } catch {}
+    applySort(); applyFilter(); renderSeriesGrid();
     $('#empty-state').classList.add('hidden');
     $('#series-detail').classList.add('hidden');
     $('#series-view').classList.remove('hidden');
     $('#btn-scan').classList.remove('hidden');
+    showCacheStatus(false, currentSeries.length);
     if (currentSeries.length === 0) {
       $('#series-view').classList.add('hidden');
       $('#empty-state').classList.remove('hidden');
       $('#empty-state').innerHTML =
-        '<p>A pasta selecionada não contém séries com ficheiros .epub.</p>';
+        '<p>A pasta seleccionada não contém séries com ficheiros .epub.</p>';
     }
   } finally {
     $('#loading-state').classList.add('hidden');

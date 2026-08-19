@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('api', {
   selectLibrary: () => ipcRenderer.invoke('dialog:select-library'),
   scan: (rootPath) => ipcRenderer.invoke('library:scan', rootPath),
+  getMtime: (rootPath) => ipcRenderer.invoke('library:mtime', rootPath),
   setStatus: (seriesId, volumeId, status) =>
     ipcRenderer.invoke('library:set-status', { seriesId, volumeId, status }),
   bulkSetStatus: (seriesId, updates) =>

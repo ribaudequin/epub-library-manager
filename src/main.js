@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fsp = require('fs/promises');
+const crypto = require('crypto');
 const { scanLibrary, getMimeType } = require('./library');
 
 let mainWindow = null;
@@ -45,6 +46,21 @@ async function getCoverCacheDir() {
   const dir = path.join(app.getPath('userData'), 'covers');
   await fsp.mkdir(dir, { recursive: true });
   return dir;
+}
+
+async function getRecursiveMtime(dirPath) {
+  let max = 0;
+  for (const e of await fsp.readdir(dirPath, { withFileTypes: true })) {
+    try {
+      const s = await fsp.stat(path.join(dirPath, e.name));
+      if (s.mtimeMs > max) max = s.mtimeMs;
+      if (e.isDirectory()) {
+        const sub = await getRecursiveMtime(path.join(dirPath, e.name));
+        if (sub > max) max = sub;
+      }
+    } catch {}
+  }
+  return max;
 }
 
 function buildLibraryView(series, state) {
@@ -101,6 +117,17 @@ ipcMain.handle('library:scan', async (_event, rootPath) => {
     series: buildLibraryView(series, state),
     rootPath,
   };
+});
+
+ipcMain.handle('library:mtime', async (_event, rootPath) => {
+  if (!rootPath) return { rootMtime: 0, cacheKey: '' };
+  try {
+    const rootMtime = await getRecursiveMtime(rootPath);
+    const cacheKey = 'biblioteca-cache-' + crypto.createHash('sha1').update(rootPath).digest('hex');
+    return { rootMtime, cacheKey };
+  } catch {
+    return { rootMtime: 0, cacheKey: '' };
+  }
 });
 
 ipcMain.handle('library:set-status', async (_event, { seriesId, volumeId, status }) => {
