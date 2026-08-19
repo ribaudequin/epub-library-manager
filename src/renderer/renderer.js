@@ -1,15 +1,6 @@
-const STATUS_LABEL = {
-  lido: 'Lido',
-  nao_lido: 'Não Lido',
-  pendente: 'Pendente',
-};
+const STATUS_LABEL = {};
 
-const SERIE_STATE_LABEL = {
-  ongoing: 'Ongoing',
-  completed: 'Acabada',
-  cancelled: 'Cancelada',
-  hiatus: 'Hiatus',
-};
+const SERIE_STATE_LABEL = {};
 
 const SERIE_STATE_COLOR = {
   ongoing: '#28a745',
@@ -18,12 +9,22 @@ const SERIE_STATE_COLOR = {
   hiatus: '#fd7e10',
 };
 
-const SERIE_STATE_TOOLTIP = {
-  ongoing: 'Em andamento — nova atualização esperada',
-  completed: 'Completa — todos os volumes lançados',
-  cancelled: 'Cancelada — produção interrompida',
-  hiatus: 'Hiatus — pausa indefinida',
-};
+const SERIE_STATE_TOOLTIP = {};
+
+function updateI18nLabels() {
+  const { t } = window.i18n;
+  STATUS_LABEL.lido = t('status_lido');
+  STATUS_LABEL.nao_lido = t('status_nao_lido');
+  STATUS_LABEL.pendente = t('status_pendente');
+  SERIE_STATE_LABEL.ongoing = t('serie_ongoing');
+  SERIE_STATE_LABEL.completed = t('serie_completed');
+  SERIE_STATE_LABEL.cancelled = t('serie_cancelled');
+  SERIE_STATE_LABEL.hiatus = t('serie_hiatus');
+  SERIE_STATE_TOOLTIP.ongoing = t('serie_state_ongoing');
+  SERIE_STATE_TOOLTIP.completed = t('serie_state_completed');
+  SERIE_STATE_TOOLTIP.cancelled = t('serie_state_cancelled');
+  SERIE_STATE_TOOLTIP.hiatus = t('serie_state_hiatus');
+}
 
 const DEBOUNCE_MS = 300;
 let searchDebounceId = null;
@@ -76,12 +77,78 @@ function serieStateBadgeDetail(state) {
 let currentSeries = [];
 let filteredSeries = [];
 let currentRoot = null;
+let isWatching = false;
 let detailSeriesId = null;
 let currentSort = localStorage.getItem('sortKey') || 'name-asc';
 let filterText = '';
-let isWatching = false;
 
 const $ = (sel) => document.querySelector(sel);
+
+async function initI18n() {
+  const locale = await window.api.getLocale();
+  const lang = locale.startsWith('pt') ? 'pt' : 'en';
+  const response = await fetch(`./locales/${lang}.json`);
+  const translations = await response.json();
+  window.i18n.setLocale(lang);
+
+  // Translate static UI
+  $('h1').textContent = window.i18n.t('app_title');
+  $('#search-input').placeholder = window.i18n.t('search_placeholder');
+  $('#search-input').setAttribute('aria-label', window.i18n.t('search_aria'));
+  $('#search-clear').setAttribute('aria-label', window.i18n.t('search_clear_aria'));
+  $('#btn-select').textContent = window.i18n.t('btn_select_folder');
+  $('#btn-scan').textContent = window.i18n.t('btn_refresh');
+  
+  const sortSelect = $('#sort-select');
+  sortSelect.options[0].textContent = window.i18n.t('sort_name_asc');
+  sortSelect.options[1].textContent = window.i18n.t('sort_name_desc');
+  sortSelect.options[2].textContent = window.i18n.t('sort_progress');
+  sortSelect.options[3].textContent = window.i18n.t('sort_mtime');
+
+  $('#btn-back').textContent = window.i18n.t('btn_back');
+  
+  // Empty state
+  updateEmptyStateStrings();
+  updateI18nLabels();
+}
+
+function updateI18nLabels() {
+  const t = window.i18n.t.bind(window.i18n);
+  STATUS_LABEL.lido = t('status_lido');
+  STATUS_LABEL.nao_lido = t('status_nao_lido');
+  STATUS_LABEL.pendente = t('status_pendente');
+  SERIE_STATE_LABEL.ongoing = t('serie_ongoing');
+  SERIE_STATE_LABEL.completed = t('serie_completed');
+  SERIE_STATE_LABEL.cancelled = t('serie_cancelled');
+  SERIE_STATE_LABEL.hiatus = t('serie_hiatus');
+  SERIE_STATE_TOOLTIP.ongoing = t('serie_state_ongoing');
+  SERIE_STATE_TOOLTIP.completed = t('serie_state_completed');
+  SERIE_STATE_TOOLTIP.cancelled = t('serie_state_cancelled');
+  SERIE_STATE_TOOLTIP.hiatus = t('serie_state_hiatus');
+}
+
+function t(key, vars = {}) {
+  let val = i18n?.[key];
+  if (!val) return key;
+  
+  return val.replace(/{(\w+)}/g, (_, v) => {
+    if (v === 'plural') return vars.count !== 1 ? 's' : '';
+    return vars[v] ?? '';
+  });
+}
+
+function updateEmptyStateStrings() {
+  const emptyState = $('#empty-state');
+  if (!currentRoot) {
+    emptyState.innerHTML = `
+      <p>${t('empty_state_title')}</p>
+      <p>${t('empty_state_desc')}</p>
+    `;
+  } else if (currentSeries.length === 0) {
+    emptyState.innerHTML = `<p>${t('empty_state_no_epubs')}</p>`;
+  }
+}
+
 
 function isBulkDone() {
   const s = currentSeries.find((x) => x.id === detailSeriesId);
@@ -231,12 +298,27 @@ function renderSeriesGrid() {
     const badge = s.seriesState ? serieStateBadge(s.seriesState) : '';
     const authorText = s.author ? escapeHtml(s.author) : '';
     const dateText = relDate ? `<small class="series-meta">${relDate}</small>` : '';
+    
+  const volText = t('series_volume_count', { count: s.volumeCount });
+  const readText = t('series_read_count', { count: s.readCount });
+
+  card.innerHTML = `
+    ${coverHtml(s.cover)}
+    <div class="series-info">
+      <h3>${escapeHtml(s.name)}</h3>
+      <p class="series-author">${authorText}</p>
+      <p>${volText} · ${readText}</p>
+      ${dateText}
+      ${readProgressHtml(s.readCount, s.volumeCount)}
+      ${badge}
+    </div>
+  `;
     card.innerHTML = `
       ${coverHtml(s.cover)}
       <div class="series-info">
         <h3>${escapeHtml(s.name)}</h3>
         <p class="series-author">${authorText}</p>
-        <p>${s.volumeCount} volume${s.volumeCount !== 1 ? 's' : ''} · ${s.readCount} lido${s.readCount !== 1 ? 's' : ''}</p>
+        <p>${volText} · ${readText}</p>
         ${dateText}
         ${readProgressHtml(s.readCount, s.volumeCount)}
         ${badge}
@@ -272,14 +354,12 @@ function openSeries(id) {
   $('#detail-title').textContent = s.name;
   $('#detail-author').textContent = s.author || '';
   $('#detail-last-updated').textContent = formatRelativeDate(s.lastModified) || '';
-  $('#detail-count').textContent =
-    `${s.volumeCount} volume${s.volumeCount !== 1 ? 's' : ''}`;
-  $('#detail-read-count').textContent =
-    `${s.readCount} lido${s.readCount !== 1 ? 's' : ''}`;
+  $('#detail-count').textContent = t('detail_count', { count: s.volumeCount });
+  $('#detail-read-count').textContent = t('detail_read_count', { count: s.readCount });
 
   const pct = s.volumeCount ? Math.round((s.readCount / s.volumeCount) * 100) : 0;
   $('#progress-fill').style.width = pct + '%';
-  $('#detail-progress-label').textContent = `${pct}%`;
+  $('#detail-progress-label').textContent = t('detail_progress_label', { pct });
 
   renderSeriesStateSelector(s.seriesState || 'ongoing');
 
@@ -374,6 +454,18 @@ function showEmptyState() {
   $('#series-view').classList.add('hidden');
   $('#series-detail').classList.add('hidden');
   $('#btn-scan').classList.add('hidden');
+  $('#empty-title').textContent = t('empty_state_title');
+  $('#empty-desc').textContent = t('empty_state_desc');
+}
+
+function updateEmptyStateStrings() {
+  if (!currentRoot) {
+    $('#empty-title').textContent = t('empty_state_title');
+    $('#empty-desc').textContent = t('empty_state_desc');
+  } else if (currentSeries.length === 0) {
+    $('#empty-title').textContent = t('empty_state_no_epubs');
+    $('#empty-desc').textContent = '';
+  }
 }
 
 function showCacheStatus(fromCache, count) {
@@ -384,7 +476,7 @@ function showCacheStatus(fromCache, count) {
     el.style.cssText = 'font-size:12px;margin-left:12px;opacity:.85;transition:opacity .4s';
     $('.actions').appendChild(el);
   }
-  el.textContent = fromCache ? `${count} séries em cache` : 'Digitalizado';
+  el.textContent = fromCache ? t('cache_status_cached', { count }) : t('cache_status_scanned');
   el.style.color = fromCache ? 'var(--green)' : 'var(--accent)';
   el.style.opacity = '1';
   clearTimeout(el._ht);
@@ -451,30 +543,31 @@ async function scanAndRender(root) {
 
 window.api.onProgress(({ done, total }) => {
   const pct = total ? Math.round((done / total) * 100) : 0;
-  $('#loading-text').textContent = `A digitalizar… ${pct}% (${done}/${total})`;
+  const t = window.i18n ? window.i18n.t.bind(window.i18n) : (k) => k;
+  $('#loading-text').textContent = t('loading_progress', { pct, done, total });
   const bar = $('#loading-progress');
   if (bar) bar.style.width = pct + '%';
 });
 
 async function startWatching(root) {
   if (isWatching) return;
-  console.log('[WATCH-RENDER] Starting watcher for:', root);
-  isWatching = await window.api.watchLibrary(root);
-  console.log('[WATCH-RENDER] Watcher started:', isWatching);
+  try {
+    isWatching = await window.api.watchLibrary(root);
+  } catch {
+    isWatching = false;
+  }
 }
 
 function stopWatching() {
   if (!isWatching) return;
-  console.log('[WATCH-RENDER] Stopping watcher');
   window.api.unwatchLibrary();
   isWatching = false;
 }
 
-window.api.onLibraryChanged(async ({ rootMtime }) => {
-  console.log('[WATCH-RENDER] library:changed received, rootMtime:', rootMtime);
+window.api.onLibraryChanged((data) => {
   if (!currentRoot) return;
   stopWatching();
-  await scanAndRender(currentRoot);
+  scanAndRender(currentRoot);
 });
 
 $('#btn-select').addEventListener('click', async () => {
@@ -569,7 +662,37 @@ document.addEventListener('keydown', (e) => {
 
 $('#sort-select').value = currentSort;
 
+async function initLocale() {
+  try {
+    const { locale, isPt } = await window.api.getLocale();
+    window.i18n.setLocale(isPt ? 'pt' : 'en');
+  } catch {
+    window.i18n.setLocale('pt');
+  }
+  updateI18nLabels();
+  updateUI();
+}
+
+function updateUI() {
+  const t = window.i18n.t.bind(window.i18n);
+  document.title = t('app_title');
+  $('#search-input').placeholder = t('search_placeholder');
+  $('#search-input').setAttribute('aria-label', t('search_aria'));
+  $('#search-clear').setAttribute('aria-label', t('search_clear_aria'));
+  $('label[for="search-input"]').textContent = t('search_label');
+  $('label[for="sort-select"]').textContent = t('sort_label');
+  $('#btn-select').textContent = t('btn_select_folder');
+  $('#btn-scan').textContent = t('btn_refresh');
+  $('#btn-back').textContent = t('btn_back');
+  const sortSelect = $('#sort-select');
+  sortSelect.options[0].textContent = t('sort_name_asc');
+  sortSelect.options[1].textContent = t('sort_name_desc');
+  sortSelect.options[2].textContent = t('sort_progress');
+  sortSelect.options[3].textContent = t('sort_mtime');
+}
+
 (async () => {
+  await initLocale();
   const testRoot = new URLSearchParams(location.search).get('root');
   if (testRoot) {
     await scanAndRender(testRoot);

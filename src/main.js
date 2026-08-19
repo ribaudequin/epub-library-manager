@@ -184,26 +184,20 @@ ipcMain.handle('library:watch', async (_event, rootPath) => {
   if (!rootPath) return false;
   let debounceTimer = null;
   try {
-    console.log('[WATCH] Starting watcher for:', rootPath);
-    fileWatcher = fs.watch(rootPath, { recursive: true }, (event, filename) => {
-      console.log('[WATCH] Event:', event, filename);
+    fileWatcher = fs.watch(rootPath, { recursive: true }, () => {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(async () => {
         const win = BrowserWindow.fromWebContents(_event.sender);
         if (win && !win.isDestroyed()) {
           try {
             const rootMtime = await getRecursiveMtime(rootPath);
-            console.log('[WATCH] Sending library:changed, rootMtime:', rootMtime);
             win.webContents.send('library:changed', { rootMtime });
-          } catch (err) { console.error('[WATCH] Error:', err); }
+          } catch {}
         }
       }, 2000);
     });
-    fileWatcher.on('error', (err) => console.error('[WATCH] Watcher error:', err));
-    console.log('[WATCH] Watcher started successfully');
     return true;
-  } catch (err) {
-    console.error('[WATCH] Failed to start watcher:', err);
+  } catch {
     return false;
   }
 });
@@ -211,6 +205,11 @@ ipcMain.handle('library:watch', async (_event, rootPath) => {
 ipcMain.handle('library:unwatch', () => {
   if (fileWatcher) { fileWatcher.close(); fileWatcher = null; }
   return true;
+});
+
+ipcMain.handle('app:getLocale', () => {
+  const locale = app.getLocale();
+  return { locale, isPt: locale.startsWith('pt') };
 });
 
 function createWindow() {
