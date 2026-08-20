@@ -26,7 +26,7 @@
   --bg-card-hover: #f0f0f2;
   --text: #1e1e2e;
   --text-dim: #6b6b80;
-  --accent: #4a78d4;
+  --accent: #3a6bc5;
   --green: #3d9a42;
   --yellow: #c08a30;
   --red: #d43d50;
@@ -195,7 +195,12 @@ header h1 {
   background: var(--accent);
 }
 :root[data-theme="light"] #series-detail {
-  background: var(--bg);
+  background: linear-gradient(
+    160deg,
+    rgba(var(--serie-tint), 0.40) 0%,
+    rgba(var(--serie-tint), 0.20) 45%,
+    var(--bg) 85%
+  );
 }
 :root[data-theme="light"] .progress-bar-container {
   background: #e0e0e6;
@@ -203,19 +208,32 @@ header h1 {
 :root[data-theme="light"] .progress-bar-fill {
   background: var(--accent);
 }
-
-button {
-  background: var(--accent);
-  color: #14141f;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: filter 0.15s;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
+:root[data-theme="light"] button {
+  color: #ffffff;
+}
+:root[data-theme="light"] button.secondary {
+  color: var(--text);
+}
+:root[data-theme="light"] .status-btn.active[data-status="nao_lido"] {
+  color: #ffffff;
+}
+:root[data-theme="light"] .state-btn.active[data-state="completed"] {
+  color: #ffffff;
+}
+:root[data-theme="light"] .state-btn.active[data-state="cancelled"] {
+  color: #ffffff;
+}
+:root[data-theme="light"] #toggle-all-status {
+  border-color: rgba(58, 107, 197, 0.3);
+}
+:root[data-theme="light"] #btn-back {
+  border: 1px solid var(--border);
+}
+:root[data-theme="light"] .input--search {
+  border-color: rgba(0, 0, 0, 0.12);
+}
+:root[data-theme="light"] .select--sort {
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 button {
@@ -467,8 +485,8 @@ main {
   position: relative;
   background: linear-gradient(
     160deg,
-    rgba(var(--serie-tint), 0.15) 0%,
-    rgba(var(--serie-tint), 0.08) 45%,
+    rgba(var(--serie-tint), 0.35) 0%,
+    rgba(var(--serie-tint), 0.18) 45%,
     transparent 85%
   );
   border-radius: 10px;
