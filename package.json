@@ -6,6 +6,8 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --linux AppImage",
+    "dist:win": "electron-builder --win nsis",
+    "dist:all": "electron-builder --linux AppImage --win nsis",
     "test": "node test/validate-modules.js"
   },
   "author": "Marcelo Salvador",
@@ -17,12 +19,32 @@
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "electron": "^31.0.0",
-    "electron-builder": "^24.13.3",
-    "spectron": "^19.0.0"
+    "electron-builder": "^24.13.3"
   },
   "build": {
     "appId": "com.marcelo.bibliotecaepub",
     "productName": "BibliotecaEpub",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
     "linux": {
       "target": [
         "AppImage"
