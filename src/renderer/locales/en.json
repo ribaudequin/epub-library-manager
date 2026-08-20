@@ -47,5 +47,19 @@
   "unit_month": "month",
   "unit_months": "months",
   "unit_year": "year",
-  "unit_years": "years"
+  "unit_years": "years",
+  "theme_toggle_light": "Switch to light theme",
+  "theme_toggle_dark": "Switch to dark theme",
+  "stats_title": "Statistics",
+  "stats_total_series": "Series",
+  "stats_total_volumes": "Volumes",
+  "stats_completed_readings": "Read",
+  "stats_overall_progress": "Progress",
+  "chart_state_title": "Series by State",
+  "chart_largest_title": "Largest Series",
+  "chart_activity_title": "Activity (last 30 days)",
+  "state_ongoing": "Ongoing",
+  "state_completed": "Completed",
+  "state_cancelled": "Cancelled",
+  "state_hiatus": "Hiatus"
 }

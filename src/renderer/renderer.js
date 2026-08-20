@@ -65,6 +65,7 @@ function serieStateBadgeDetail(state) {
 }
 
 let currentSeries = [];
+window.currentSeries = currentSeries;
 let filteredSeries = [];
 let currentRoot = null;
 let isWatching = false;
@@ -123,6 +124,134 @@ function updateI18nLabels() {
   SERIE_STATE_TOOLTIP.completed = t('serie_state_completed');
   SERIE_STATE_TOOLTIP.cancelled = t('serie_state_cancelled');
   SERIE_STATE_TOOLTIP.hiatus = t('serie_state_hiatus');
+}
+
+// === Theme Management ===
+function getPreferredTheme() {
+  return localStorage.getItem('theme') || 'dark';
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  const btn = document.getElementById('btn-theme-toggle');
+  if (btn) {
+    btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    const label = window.i18n ? (theme === 'dark' ? window.i18n.t('theme_toggle_light') : window.i18n.t('theme_toggle_dark')) : (theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+  }
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+
+// === Statistics Dashboard ===
+function computeStats(series) {
+  const totalSeries = series.length;
+  const totalVolumes = series.reduce((s, x) => s + (x.volumeCount || 0), 0);
+  const completedReadings = series.reduce((s, x) => s + (x.readCount || 0), 0);
+  const overallProgress = totalVolumes ? Math.round((completedReadings / totalVolumes) * 100) : 0;
+
+  const byState = { ongoing: 0, completed: 0, cancelled: 0, hiatus: 0 };
+  series.forEach(s => { byState[s.seriesState || 'ongoing']++; });
+
+  const largest = [...series].sort((a, b) => (b.volumeCount || 0) - (a.volumeCount || 0)).slice(0, 5);
+
+  const now = Date.now();
+  const DAY = 86400000;
+  const activity = new Array(30).fill(0);
+  series.forEach(s => {
+    if (s.lastModified) {
+      const daysAgo = Math.floor((now - s.lastModified) / DAY);
+      if (daysAgo >= 0 && daysAgo < 30) activity[29 - daysAgo]++;
+    }
+  });
+
+  return { totalSeries, totalVolumes, completedReadings, overallProgress, byState, largest, activity };
+}
+
+function renderStats() {
+  if (!window.currentSeries || !window.currentSeries.length) return;
+
+  const stats = computeStats(window.currentSeries);
+  const t = window.i18n ? window.i18n.t.bind(window.i18n) : (k) => k;
+
+  const titleEl = document.getElementById('stats-title');
+  if (titleEl) titleEl.textContent = t('stats_title');
+
+  const summaryEl = document.getElementById('stats-summary');
+  if (summaryEl) {
+    summaryEl.innerHTML = [
+      { value: stats.totalSeries, label: t('stats_total_series') },
+      { value: stats.totalVolumes, label: t('stats_total_volumes') },
+      { value: stats.completedReadings, label: t('stats_completed_readings') },
+      { value: stats.overallProgress + '%', label: t('stats_overall_progress') },
+    ].map(c => `<div class="stat-card"><div class="stat-value">${c.value}</div><div class="stat-label">${c.label}</div></div>`).join('');
+  }
+
+  const chartsEl = document.getElementById('stats-charts');
+  if (chartsEl) {
+    chartsEl.innerHTML = renderStateChart(stats.byState, t) + renderLargestChart(stats.largest, t) + renderActivityChart(stats.activity, t);
+  }
+}
+
+function renderStateChart(byState, t) {
+  const max = Math.max(...Object.values(byState), 1);
+  const labels = { ongoing: t('state_ongoing'), completed: t('state_completed'), cancelled: t('state_cancelled'), hiatus: t('state_hiatus') };
+  const colors = { ongoing: 'var(--green)', completed: 'var(--accent)', cancelled: 'var(--red)', hiatus: 'var(--yellow)' };
+
+  return `<div class="chart-section">
+    <h3>${t('chart_state_title')}</h3>
+    ${Object.entries(byState).map(([key, val]) => `
+      <div class="bar-row">
+        <span class="bar-label">${labels[key]}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${(val/max)*100}%;background:${colors[key]}"></div></div>
+        <span class="bar-value">${val}</span>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+function renderLargestChart(largest, t) {
+  const max = largest.length ? largest[0].volumeCount : 1;
+  return `<div class="chart-section">
+    <h3>${t('chart_largest_title')}</h3>
+    ${largest.map(s => `
+      <div class="bar-row">
+        <span class="bar-label">${s.name || 'Unknown'}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${((s.volumeCount||0)/max)*100}%;background:var(--accent)"></div></div>
+        <span class="bar-value">${s.volumeCount || 0}v</span>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+function renderActivityChart(activity, t) {
+  const max = Math.max(...activity, 1);
+  return `<div class="chart-section">
+    <h3>${t('chart_activity_title')}</h3>
+    <svg viewBox="0 0 300 80" class="activity-svg" role="img" aria-label="${t('chart_activity_title')}">
+      <title>${t('chart_activity_title')}</title>
+      ${activity.map((val, i) => {
+        const h = (val / max) * 70;
+        return `<rect x="${i * 10}" y="${75 - h}" width="8" height="${Math.max(h, 1)}" rx="2" fill="var(--accent)" opacity="0.8"/>`;
+      }).join('')}
+    </svg>
+  </div>`;
+}
+
+function openStats() {
+  renderStats();
+  const modal = document.getElementById('stats-modal');
+  modal.classList.remove('hidden');
+  modal.focus();
+}
+
+function closeStats() {
+  document.getElementById('stats-modal').classList.add('hidden');
 }
 
 function t(key, vars = {}) {
@@ -492,6 +621,7 @@ async function scanAndRender(root) {
         const c = JSON.parse(raw);
         if (c.version === 1 && c.rootPath === root && c.rootMtime === rootMtime) {
           currentSeries = c.series;
+          window.currentSeries = currentSeries;
           currentRoot = root;
           applySort(); applyFilter(); renderSeriesGrid();
           $('#empty-state').classList.add('hidden');
@@ -514,6 +644,7 @@ async function scanAndRender(root) {
   try {
     const result = await window.api.scan(root);
     currentSeries = result.series;
+    window.currentSeries = currentSeries;
     currentRoot = result.rootPath;
     try {
       const { cacheKey, rootMtime } = await window.api.getMtime(root);
@@ -655,6 +786,13 @@ $('#search-clear').addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('stats-modal');
+    if (modal && !modal.classList.contains('hidden')) {
+      closeStats();
+      e.stopPropagation();
+    }
+  }
   if (e.ctrlKey && e.key.toLowerCase() === 'k') {
     e.preventDefault();
     $('#search-input').focus();
@@ -666,6 +804,20 @@ $('#sort-select').value = currentSort;
 (async () => {
   const testRoot = new URLSearchParams(location.search).get('root');
   await initI18n();
+
+  const themeBtn = document.getElementById('btn-theme-toggle');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    applyTheme(getPreferredTheme());
+  }
+
+  const statsBtn = document.getElementById('btn-stats');
+  const statsCloseBtn = document.getElementById('btn-stats-close');
+  const statsBackdrop = document.querySelector('.stats-backdrop');
+  if (statsBtn) statsBtn.addEventListener('click', openStats);
+  if (statsCloseBtn) statsCloseBtn.addEventListener('click', closeStats);
+  if (statsBackdrop) statsBackdrop.addEventListener('click', closeStats);
+
   const root = testRoot || await window.api.getRoot();
   if (root) {
     await scanAndRender(root);

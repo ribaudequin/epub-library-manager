@@ -48,7 +48,21 @@ const TRANSLATIONS = {
     unit_month: "mês",
     unit_months: "meses",
     unit_year: "ano",
-    unit_years: "anos"
+    unit_years: "anos",
+    theme_toggle_light: 'Mudar para tema claro',
+    theme_toggle_dark: 'Mudar para tema escuro',
+    stats_title: 'Estatísticas',
+    stats_total_series: 'Séries',
+    stats_total_volumes: 'Volumes',
+    stats_completed_readings: 'Lidos',
+    stats_overall_progress: 'Progresso',
+    chart_state_title: 'Séries por Estado',
+    chart_largest_title: 'Maiores Séries',
+    chart_activity_title: 'Atividade (últimos 30 dias)',
+    state_ongoing: 'Em andamento',
+    state_completed: 'Completa',
+    state_cancelled: 'Cancelada',
+    state_hiatus: 'Hiatus'
   },
   en: {
     app_title: "EPUB Library",
@@ -99,7 +113,21 @@ const TRANSLATIONS = {
     unit_month: "month",
     unit_months: "months",
     unit_year: "year",
-    unit_years: "years"
+    unit_years: "years",
+    theme_toggle_light: 'Switch to light theme',
+    theme_toggle_dark: 'Switch to dark theme',
+    stats_title: 'Statistics',
+    stats_total_series: 'Series',
+    stats_total_volumes: 'Volumes',
+    stats_completed_readings: 'Read',
+    stats_overall_progress: 'Progress',
+    chart_state_title: 'Series by State',
+    chart_largest_title: 'Largest Series',
+    chart_activity_title: 'Activity (last 30 days)',
+    state_ongoing: 'Ongoing',
+    state_completed: 'Completed',
+    state_cancelled: 'Cancelled',
+    state_hiatus: 'Hiatus'
   }
 };
 
