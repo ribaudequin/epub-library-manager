@@ -223,7 +223,8 @@ function escapeHtml(str) {
 
 function formatCoverPath(src) {
   if (!src) return null;
-  return encodeURI(src);
+  const normalized = src.replace(/\\/g, '/').replace(/^(file:\/\/?)/, '');
+  return encodeURI(normalized);
 }
 
 function readProgressHtml(readCount, total) {
