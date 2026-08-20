@@ -2,7 +2,7 @@
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v1.6.0** · [Download AppImage](https://github.com/ribaudequin/epub-library-manager/releases) · `npm run dist`
+**v1.8.0** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.8.0) · Linux (AppImage) · Windows (Installer + Portable)
 
 ---
 
@@ -14,8 +14,9 @@ A desktop application for managing your EPUB library, organized by series — wi
 - **📖 Volume Detail View** — Per-series view with all volumes, states (lido / não lido / pendente), and bulk status actions
 - **🔍 CTRL+K Search** — Fuzzy-match search across titles and authors with real-time result count
 - **⬆️ Smart Sorting** — Sort by A→Z, Z→A, reading progress, or last-updated date (persisted in localStorage)
-- **🌓 Dark & Light Themes** — WCAG-accessible themes with colored-tint backgrounds derived from cover art
-- **♿ Accessibility First** — Focus-visible outlines, `prefers-reduced-motion`, ARIA live regions, keyboard navigation, and WCAG-compliant tooltips
+- **🌓 Dark & Light Themes** — Toggle between themes with persistent localStorage. WCAG-accessible with colored-tint backgrounds derived from cover art
+- **📊 Statistics Dashboard** — Modal with library overview: total series/volumes, read count, progress %, state breakdown chart, largest series, and 30-day activity timeline (pure CSS/SVG)
+- **♿ Accessibility First** — Focus-visible outlines, `prefers-reduced-motion`, ARIA live regions, keyboard navigation, WCAG-compliant tooltips and contrast ratios
 - **💾 Persistent State** — Reading progress and series state saved in `userData` JSON
 - **🔄 Automatic Backup** — Cover images cached and backed up automatically
 
@@ -35,8 +36,8 @@ A desktop application for managing your EPUB library, organized by series — wi
 
 ### Prerequisites
 
-- **Operating System**: Linux (AppImage)
-- **Node.js**: 18+
+- **Operating System**: Linux (AppImage) or Windows (NSIS installer / portable)
+- **Node.js**: 18+ (for building from source)
 - **npm**: 9+
 
 ### Install & Run
@@ -53,12 +54,12 @@ npm start
 #### Windows
 
 **Option A: Installer (recommended)**
-Download `BibliotecaEpub Setup 1.6.0.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases), double-click to install.
+Download `BibliotecaEpub Setup 1.8.0.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.8.0), double-click to install.
 
 > **Windows SmartScreen note**: Since this app is unsigned, Windows may show a warning. Click **"More info"** → **"Run anyway"** to proceed. This is normal for unsigned open-source apps.
 
 **Option B: Portable (no installation, no SmartScreen warning)**
-Download `BibliotecaEpub 1.6.0.exe`, double-click to run directly. No installation required.
+Download `BibliotecaEpub 1.8.0.exe`, double-click to run directly. No installation required.
 
 ### Build AppImage
 
@@ -66,14 +67,29 @@ Download `BibliotecaEpub 1.6.0.exe`, double-click to run directly. No installati
 npm run dist
 ```
 
-The built AppImage appears in `dist/BibliotecaEpub-1.6.0.AppImage`.
+The built AppImage appears in `dist/BibliotecaEpub-1.8.0.AppImage`.
 
-### Features Highlights v1.6.0
+### Build for Windows
+
+```bash
+npm run dist:win              # NSIS installer
+npm run dist:win:portable     # Portable .exe (no SmartScreen)
+```
+
+### Build All Platforms
+
+```bash
+npm run dist:all              # AppImage + NSIS + portable
+```
+
+### Features Highlights v1.8.0
 
 - **🌍 Multi-language (PT/EN)** — Automatic system language detection via `app.getLocale()`. Translation engine inline in `translations.js` (no `fetch()` failures on `file://`)
 - **🔄 Auto-refresh** — File watcher (`fs.watch` + 2s debounce) automatically rescans when you add/remove/edit EPUBs
 - **📅 Localized Dates** — Relative dates adapt to locale (e.g., "21 months ago" / "há 21 meses")
-- **🔄 Refresh Button** — Clear cache and force a full rescan manually
+- **🌓 Light Theme** — Toggle with persistent localStorage. Anti-flash script in `<head>`. Ghost-style toolbar buttons
+- **📊 Statistics Dashboard** — 4 summary cards + state breakdown (CSS bars) + largest series + 30-day activity (SVG). All computed client-side
+- **♿ WCAG AA** — All buttons pass 4.5:1 contrast. Modal with focus management and Escape to close
 
 ---
 
@@ -86,7 +102,7 @@ The built AppImage appears in `dist/BibliotecaEpub-1.6.0.AppImage`.
 | **UI** | HTML5, CSS Grid/Flex, CSS Custom Properties (themes) |
 | **EPUB Parsing** | `adm-zip` (ZIP extraction), `@xmldom/xmldom` (XML metadata) |
 | **Testing** | Vitest, Playwright |
-| **Packaging** | electron-builder (AppImage) |
+| **Packaging** | electron-builder (AppImage, NSIS, Portable) |
 
 ---
 
@@ -156,13 +172,15 @@ Contributions are welcome! Please follow these guidelines:
 ### Development Workflow
 
 ```bash
-npm install      # Install dependencies
-npm start        # Launch app in development mode
-npm test         # Run test suite (validate-modules.js + Vitest)
-npm run dist     # Build AppImage for Linux
+npm install          # Install dependencies
+npm start            # Launch app in development mode
+npm test             # Run test suite (validate-modules.js + Vitest)
+npm run dist         # Build AppImage for Linux
+npm run dist:win     # Build NSIS installer for Windows
+npm run dist:all     # Build all platforms
 ```
 
-> **Note**: The AppImage is built with `electron-builder` targeting Linux. Cross-platform support is not currently planned.
+> **Note**: Windows builds are cross-compiled from Linux using Wine. No code changes needed for cross-platform support.
 
 ---
 
