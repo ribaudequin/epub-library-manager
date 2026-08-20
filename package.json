@@ -7,7 +7,9 @@
     "start": "electron .",
     "dist": "electron-builder --linux AppImage",
     "dist:win": "electron-builder --win nsis",
-    "dist:all": "electron-builder --linux AppImage --win nsis",
+    "dist:win:portable": "electron-builder --win portable",
+    "dist:win:all": "electron-builder --win",
+    "dist:all": "electron-builder --linux AppImage --win",
     "test": "node test/validate-modules.js"
   },
   "author": "Marcelo Salvador",
@@ -31,6 +33,10 @@
       "target": [
         {
           "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
           "arch": ["x64"]
         }
       ],

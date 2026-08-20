@@ -41,12 +41,24 @@ A desktop application for managing your EPUB library, organized by series — wi
 
 ### Install & Run
 
+#### Linux (AppImage)
+
 ```bash
 git clone https://github.com/ribaudequin/epub-library-manager.git
 cd epub-library-manager
 npm install
 npm start
 ```
+
+#### Windows
+
+**Option A: Installer (recommended)**
+Download `BibliotecaEpub Setup 1.6.0.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases), double-click to install.
+
+> **Windows SmartScreen note**: Since this app is unsigned, Windows may show a warning. Click **"More info"** → **"Run anyway"** to proceed. This is normal for unsigned open-source apps.
+
+**Option B: Portable (no installation, no SmartScreen warning)**
+Download `BibliotecaEpub 1.6.0.exe`, double-click to run directly. No installation required.
 
 ### Build AppImage
 
