@@ -12,7 +12,7 @@
   "btn_toggle_all_unread": "Marcar tudo como não lido",
   "detail_count": "{count} volume(s)",
   "detail_read_count": "{count} lido(s)",
-  "detail_progress_label": "{pct}%",
+  "detail_progress_label": "{pct}% concluído",
   "series_volume_count": "{count} volume(s)",
   "series_read_count": "{count} lido(s)",
   "search_info": "{filtered} de {total} séries",
@@ -37,5 +37,15 @@
   "serie_ongoing": "Ongoing",
   "serie_completed": "Acabada",
   "serie_cancelled": "Cancelada",
-  "serie_hiatus": "Hiatus"
+  "serie_hiatus": "Hiatus",
+  "date_today": "hoje",
+  "date_ago": "há {count} {unit}",
+  "unit_day": "dia",
+  "unit_days": "dias",
+  "unit_week": "semana",
+  "unit_weeks": "semanas",
+  "unit_month": "mês",
+  "unit_months": "meses",
+  "unit_year": "ano",
+  "unit_years": "anos"
 }

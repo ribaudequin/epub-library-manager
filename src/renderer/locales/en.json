@@ -12,7 +12,7 @@
   "btn_toggle_all_unread": "Mark all as unread",
   "detail_count": "{count} volume(s)",
   "detail_read_count": "{count} read",
-  "detail_progress_label": "{pct}%",
+  "detail_progress_label": "{pct}% completed",
   "series_volume_count": "{count} volume(s)",
   "series_read_count": "{count} read",
   "search_info": "{filtered} of {total} series",
@@ -37,5 +37,15 @@
   "serie_ongoing": "Ongoing",
   "serie_completed": "Completed",
   "serie_cancelled": "Cancelled",
-  "serie_hiatus": "Hiatus"
+  "serie_hiatus": "Hiatus",
+  "date_today": "today",
+  "date_ago": "{count} {unit} ago",
+  "unit_day": "day",
+  "unit_days": "days",
+  "unit_week": "week",
+  "unit_weeks": "weeks",
+  "unit_month": "month",
+  "unit_months": "months",
+  "unit_year": "year",
+  "unit_years": "years"
 }
