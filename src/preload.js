@@ -1,13 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld('i18n', {
-  setLocale: () => {},
-  t: (key, vars) => {
-    // This is a placeholder - actual i18n is handled in renderer/translations.js and loaded dynamically
-    return key;
-  }
-});
-
 contextBridge.exposeInMainWorld('api', {
   selectLibrary: () => ipcRenderer.invoke('dialog:select-library'),
   scan: (rootPath) => ipcRenderer.invoke('library:scan', rootPath),

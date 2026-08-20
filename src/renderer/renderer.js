@@ -11,21 +11,6 @@ const SERIE_STATE_COLOR = {
 
 const SERIE_STATE_TOOLTIP = {};
 
-function updateI18nLabels() {
-  const { t } = window.i18n;
-  STATUS_LABEL.lido = t('status_lido');
-  STATUS_LABEL.nao_lido = t('status_nao_lido');
-  STATUS_LABEL.pendente = t('status_pendente');
-  SERIE_STATE_LABEL.ongoing = t('serie_ongoing');
-  SERIE_STATE_LABEL.completed = t('serie_completed');
-  SERIE_STATE_LABEL.cancelled = t('serie_cancelled');
-  SERIE_STATE_LABEL.hiatus = t('serie_hiatus');
-  SERIE_STATE_TOOLTIP.ongoing = t('serie_state_ongoing');
-  SERIE_STATE_TOOLTIP.completed = t('serie_state_completed');
-  SERIE_STATE_TOOLTIP.cancelled = t('serie_state_cancelled');
-  SERIE_STATE_TOOLTIP.hiatus = t('serie_state_hiatus');
-}
-
 const DEBOUNCE_MS = 300;
 let searchDebounceId = null;
 
@@ -140,18 +125,6 @@ function t(key, vars = {}) {
     return window.i18n.t(key, vars);
   }
   return key;
-}
-
-function updateEmptyStateStrings() {
-  const emptyState = $('#empty-state');
-  if (!currentRoot) {
-    emptyState.innerHTML = `
-      <p>${t('empty_state_title')}</p>
-      <p>${t('empty_state_desc')}</p>
-    `;
-  } else if (currentSeries.length === 0) {
-    emptyState.innerHTML = `<p>${t('empty_state_no_epubs')}</p>`;
-  }
 }
 
 function isBulkDone() {
@@ -443,8 +416,8 @@ function updateToggleAllBtn() {
   if (!s) return;
   const allRead = s.readCount >= s.volumeCount;
    $('#toggle-all-status').textContent = allRead
-    ? 'Marcar tudo como não lido'
-    : 'Marcar tudo como lido';
+    ? t('btn_toggle_all_unread')
+    : t('btn_toggle_all_read');
 }
 
 function backToSeries() {
@@ -531,12 +504,12 @@ async function scanAndRender(root) {
     $('#series-detail').classList.add('hidden');
     $('#series-view').classList.remove('hidden');
     $('#btn-scan').classList.remove('hidden');
-    showCacheStatus(false, currentSeries.length);
+     showCacheStatus(false, currentSeries.length);
     if (currentSeries.length === 0) {
       $('#series-view').classList.add('hidden');
       $('#empty-state').classList.remove('hidden');
-      $('#empty-state').innerHTML =
-        '<p>A pasta seleccionada não contém séries com ficheiros .epub.</p>';
+      $('#empty-title').textContent = t('empty_state_no_epubs');
+      $('#empty-desc').textContent = '';
     } else {
       startWatching(root);
     }
@@ -630,7 +603,7 @@ function onSearchInput() {
     applyFilter();
     renderSeriesGrid();
     if (val.trim()) {
-      info.textContent = `${filteredSeries.length} de ${currentSeries.length} séries`;
+      info.textContent = t('search_info', { filtered: filteredSeries.length, total: currentSeries.length });
     }
   }, DEBOUNCE_MS);
 }
@@ -666,58 +639,10 @@ document.addEventListener('keydown', (e) => {
 
 $('#sort-select').value = currentSort;
 
-async function initLocale() {
-  try {
-    const { locale, isPt } = await window.api.getLocale();
-    window.i18n.setLocale(isPt ? 'pt' : 'en');
-  } catch {
-    window.i18n.setLocale('pt');
-  }
-  updateI18nLabels();
-  updateUI();
-}
-
-function updateI18nLabels() {
-  const t = (key) => window.i18n.t(key);
-  STATUS_LABEL.lido = t('status_lido');
-  STATUS_LABEL.nao_lido = t('status_nao_lido');
-  STATUS_LABEL.pendente = t('status_pendente');
-  SERIE_STATE_LABEL.ongoing = t('serie_ongoing');
-  SERIE_STATE_LABEL.completed = t('serie_completed');
-  SERIE_STATE_LABEL.cancelled = t('serie_cancelled');
-  SERIE_STATE_LABEL.hiatus = t('serie_hiatus');
-  SERIE_STATE_TOOLTIP.ongoing = t('serie_state_ongoing');
-  SERIE_STATE_TOOLTIP.completed = t('serie_state_completed');
-  SERIE_STATE_TOOLTIP.cancelled = t('serie_state_cancelled');
-  SERIE_STATE_TOOLTIP.hiatus = t('serie_state_hiatus');
-}
-
-function updateUI() {
-  const t = (key, vars = {}) => window.i18n.t(key, vars);
-  document.title = t('app_title');
-  $('#search-input').placeholder = t('search_placeholder');
-  $('#search-input').setAttribute('aria-label', t('search_aria'));
-  $('#search-clear').setAttribute('aria-label', t('search_clear_aria'));
-  if ($('label[for="search-input"]')) $('label[for="search-input"]').textContent = t('search_label');
-  if ($('label[for="sort-select"]')) $('label[for="sort-select"]').textContent = t('sort_label');
-  $('#btn-select').textContent = t('btn_select_folder');
-  $('#btn-scan').textContent = t('btn_refresh');
-  $('#btn-back').textContent = t('btn_back');
-  const sortSelect = $('#sort-select');
-  if (sortSelect.options[0]) sortSelect.options[0].textContent = t('sort_name_asc');
-  if (sortSelect.options[1]) sortSelect.options[1].textContent = t('sort_name_desc');
-  if (sortSelect.options[2]) sortSelect.options[2].textContent = t('sort_progress');
-  if (sortSelect.options[3]) sortSelect.options[3].textContent = t('sort_mtime');
-}
-
 (async () => {
-  await initI18n();
   const testRoot = new URLSearchParams(location.search).get('root');
-  if (testRoot) {
-    await scanAndRender(testRoot);
-    return;
-  }
-  const root = await window.api.getRoot();
+  await initI18n();
+  const root = testRoot || await window.api.getRoot();
   if (root) {
     await scanAndRender(root);
   } else {
