@@ -2,7 +2,7 @@
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v1.6.0** · [Download AppImage](https://github.com/ribaudequin/epub-library-manager/releases) · `npm run dist`
+**v1.5.0** · [Download AppImage](https://github.com/ribaudequin/epub-library-manager/releases) · `npm run dist`
 
 ---
 
@@ -54,14 +54,7 @@ npm start
 npm run dist
 ```
 
-The built AppImage appears in `dist/BibliotecaEpub-1.6.0.AppImage`.
-
-### Features Highlights v1.6.0
-
-- **🌍 Multi-language (PT/EN)** — Automatic system language detection via `app.getLocale()`. Translation engine inline in `translations.js` (no `fetch()` failures on `file://`)
-- **🔄 Auto-refresh** — File watcher (`fs.watch` + 2s debounce) automatically rescans when you add/remove/edit EPUBs
-- **📅 Localized Dates** — Relative dates adapt to locale (e.g., "21 months ago" / "há 21 meses")
-- **🔄 Refresh Button** — Clear cache and force a full rescan manually
+The built AppImage appears in `dist/BibliotecaEpub-1.5.0.AppImage`.
 
 ---
 
