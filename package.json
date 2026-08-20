@@ -1,6 +1,6 @@
 {
   "name": "biblioteca-epub",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Gestor de biblioteca de epubs organizada por séries",
   "main": "src/main.js",
   "scripts": {
