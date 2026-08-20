@@ -373,6 +373,7 @@ function openSeries(id) {
         const vol = series.volumes.find((x) => x.id === v.id);
         vol.status = btn.dataset.status;
         series.readCount = series.volumes.filter((x) => x.status === 'lido').length;
+        await cacheCurrentSeries();
         openSeries(id);
         renderSeriesGrid();
       });
@@ -464,6 +465,21 @@ function showCacheStatus(fromCache, count) {
   el.style.opacity = '1';
   clearTimeout(el._ht);
   el._ht = setTimeout(() => { el.style.opacity = '0'; }, 3500);
+}
+
+async function cacheCurrentSeries() {
+  if (!currentRoot) return;
+  try {
+    const { cacheKey } = await window.api.getMtime(currentRoot);
+    if (!cacheKey) return;
+    // Use Date.now() as rootMtime to invalidate cache on next load — forces
+    // fresh scan that picks up updated read states from userData.json
+    const mtime = Date.now();
+    localStorage.setItem(cacheKey, JSON.stringify({
+      version: 1, rootPath: currentRoot, rootMtime: mtime,
+      lastScan: mtime, series: currentSeries,
+    }));
+  } catch {}
 }
 
 async function scanAndRender(root) {
@@ -583,8 +599,10 @@ $('#toggle-all-status').addEventListener('click', async () => {
     vol.status = targetStatus;
   }
   s.readCount = targetStatus === 'lido' ? s.volumeCount : 0;
+  await cacheCurrentSeries();
   updateToggleAllBtn();
   openSeries(detailSeriesId);
+  renderSeriesGrid();
 });
 
 $('#sort-select').addEventListener('change', () => {
