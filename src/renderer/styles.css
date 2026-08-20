@@ -176,6 +176,8 @@ header h1 {
 }
 :root[data-theme="light"] .status-btn {
   border: 1px solid var(--border);
+  background: var(--bg-card-hover);
+  color: var(--text-dim);
 }
 :root[data-theme="light"] .state-btn {
   border: 1px solid var(--border);
@@ -214,6 +216,9 @@ header h1 {
 :root[data-theme="light"] button.secondary {
   color: var(--text);
 }
+:root[data-theme="light"] .status-btn.active {
+  color: #14141f;
+}
 :root[data-theme="light"] .status-btn.active[data-status="nao_lido"] {
   color: #ffffff;
 }
@@ -234,6 +239,37 @@ header h1 {
 }
 :root[data-theme="light"] .select--sort {
   border-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Light theme state badges in grid cards — use CSS custom properties that
+   already switch per-theme, with darker text for WCAG AA contrast on white */
+:root[data-theme="light"] .series-state-badge[data-state="ongoing"] {
+  background: rgba(61, 154, 66, 0.15);
+  color: #2a7a30;
+  border: 1px solid rgba(61, 154, 66, 0.35);
+}
+:root[data-theme="light"] .series-state-badge[data-state="completed"] {
+  background: rgba(58, 107, 197, 0.15);
+  color: #2b5398;
+  border: 1px solid rgba(58, 107, 197, 0.35);
+}
+:root[data-theme="light"] .series-state-badge[data-state="cancelled"] {
+  background: rgba(212, 61, 80, 0.15);
+  color: #b02030;
+  border: 1px solid rgba(212, 61, 80, 0.35);
+}
+:root[data-theme="light"] .series-state-badge[data-state="hiatus"] {
+  background: rgba(192, 138, 48, 0.15);
+  color: #8a5a10;
+  border: 1px solid rgba(192, 138, 48, 0.35);
+}
+
+/* Light theme state-btn active — complete the missing overrides for ongoing & hiatus */
+:root[data-theme="light"] .state-btn.active[data-state="ongoing"] {
+  color: #ffffff;
+}
+:root[data-theme="light"] .state-btn.active[data-state="hiatus"] {
+  color: #ffffff;
 }
 
 button {
