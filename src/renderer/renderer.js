@@ -22,26 +22,31 @@ function formatRelativeDate(mtime) {
   const diffMonths = Math.floor(diffDays / 30);
   const diffYears = Math.floor(diffDays / 365);
 
+  const currentLang = window.i18n ? window.i18n.getLocale() : 'pt';
+  const localeTag = currentLang === 'pt' ? 'pt-PT' : 'en-GB';
+
   const date = new Date(mtime);
-  const dateStr = date.toLocaleDateString('pt-PT', {
+  const dateStr = date.toLocaleDateString(localeTag, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
   });
 
+  const t = (key, vars) => window.i18n ? window.i18n.t(key, vars) : key;
+
   let ago = '';
   if (diffDays < 1) {
-    ago = 'hoje';
+    ago = t('date_today');
   } else if (diffDays < 7) {
-    ago = `há ${diffDays} dia${diffDays !== 1 ? 's' : ''}`;
+    ago = t('date_ago', { count: diffDays, unit: t(diffDays !== 1 ? 'unit_days' : 'unit_day') });
   } else if (diffDays < 30) {
     const weeks = Math.floor(diffDays / 7);
-    ago = `há ${weeks} semana${weeks !== 1 ? 's' : ''}`;
+    ago = t('date_ago', { count: weeks, unit: t(weeks !== 1 ? 'unit_weeks' : 'unit_week') });
   } else if (diffMonths <= 23) {
-    ago = `há ${diffMonths} ${diffMonths === 1 ? 'mês' : 'meses'}`;
+    ago = t('date_ago', { count: diffMonths, unit: t(diffMonths === 1 ? 'unit_month' : 'unit_months') });
   } else {
     const years = Math.floor(diffMonths / 12);
-    ago = `há ${years} ano${years !== 1 ? 's' : ''}`;
+    ago = t('date_ago', { count: years, unit: t(years !== 1 ? 'unit_years' : 'unit_year') });
   }
 
   return `${dateStr} (${ago})`;

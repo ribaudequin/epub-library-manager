@@ -38,7 +38,17 @@ const TRANSLATIONS = {
     serie_ongoing: "Ongoing",
     serie_completed: "Acabada",
     serie_cancelled: "Cancelada",
-    serie_hiatus: "Hiatus"
+    serie_hiatus: "Hiatus",
+    date_today: "hoje",
+    date_ago: "há {count} {unit}",
+    unit_day: "dia",
+    unit_days: "dias",
+    unit_week: "semana",
+    unit_weeks: "semanas",
+    unit_month: "mês",
+    unit_months: "meses",
+    unit_year: "ano",
+    unit_years: "anos"
   },
   en: {
     app_title: "EPUB Library",
@@ -79,7 +89,17 @@ const TRANSLATIONS = {
     serie_ongoing: "Ongoing",
     serie_completed: "Completed",
     serie_cancelled: "Cancelled",
-    serie_hiatus: "Hiatus"
+    serie_hiatus: "Hiatus",
+    date_today: "today",
+    date_ago: "{count} {unit} ago",
+    unit_day: "day",
+    unit_days: "days",
+    unit_week: "week",
+    unit_weeks: "weeks",
+    unit_month: "month",
+    unit_months: "months",
+    unit_year: "year",
+    unit_years: "years"
   }
 };
 
@@ -91,6 +111,10 @@ function setLocale(locale) {
   }
 }
 
+function getLocale() {
+  return currentLocale;
+}
+
 function t(key, params = {}) {
   let str = TRANSLATIONS[currentLocale][key] || TRANSLATIONS.pt[key] || key;
   for (const [k, v] of Object.entries(params)) {
@@ -99,4 +123,4 @@ function t(key, params = {}) {
   return str;
 }
 
-window.i18n = { setLocale, t };
+window.i18n = { setLocale, getLocale, t };
