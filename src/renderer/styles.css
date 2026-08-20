@@ -793,7 +793,10 @@ main {
 }
 
 /* Theme toggle button */
-#btn-theme-toggle {
+#btn-theme-toggle,
+#btn-stats,
+#btn-select,
+#btn-scan {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text);
@@ -804,7 +807,10 @@ main {
   transition: background 0.15s, border-color 0.15s;
   line-height: 1;
 }
-#btn-theme-toggle:hover {
+#btn-theme-toggle:hover,
+#btn-stats:hover,
+#btn-select:hover,
+#btn-scan:hover {
   background: var(--bg-card-hover);
   border-color: var(--accent);
 }
