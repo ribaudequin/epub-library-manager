@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, shell } = require('electron');
 const path = require('path');
 const fsp = require('fs/promises');
 const fs = require('fs');
@@ -213,6 +213,10 @@ ipcMain.handle('library:unwatch', () => {
 ipcMain.handle('app:getLocale', () => {
   const locale = app.getLocale();
   return { locale, isPt: locale.startsWith('pt') };
+});
+
+ipcMain.handle('shell:openExternal', async (_event, url) => {
+  await shell.openExternal(url);
 });
 
 function createWindow() {

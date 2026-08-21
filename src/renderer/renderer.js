@@ -839,6 +839,17 @@ $('#sort-select').value = currentSort;
   if (aboutCloseBtn) aboutCloseBtn.addEventListener('click', closeAbout);
   if (aboutBackdrop) aboutBackdrop.addEventListener('click', closeAbout);
 
+  const kofiLink = document.getElementById('about-kofi-link');
+  const githubLink = document.getElementById('about-github-link');
+  if (kofiLink) kofiLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.api.openExternal('https://ko-fi.com/A0383T5');
+  });
+  if (githubLink) githubLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.api.openExternal('https://github.com/ribaudequin/epub-library-manager');
+  });
+
   const root = testRoot || await window.api.getRoot();
   if (root) {
     await scanAndRender(root);

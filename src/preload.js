@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('api', {
   watchLibrary: (rootPath) => ipcRenderer.invoke('library:watch', rootPath),
   unwatchLibrary: () => ipcRenderer.invoke('library:unwatch'),
   getLocale: () => ipcRenderer.invoke('app:getLocale'),
+  openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
   onLibraryChanged: (callback) => {
     ipcRenderer.on('library:changed', (_event, data) => callback(data));
   },
