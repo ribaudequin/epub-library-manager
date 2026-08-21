@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.ribaudequin.epub-library-manager</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Biblioteca de Epubs</name>
+  <summary>EPUB library manager organized by series</summary>
+  <description>
+    <p>
+      Biblioteca de Epubs is a desktop application for managing and organizing
+      your EPUB ebook collection by series, with automatic metadata extraction,
+      cover art, reading progress tracking, and intelligent search.
+    </p>
+    <p>
+      Features include recursive EPUB scanning with localStorage cache,
+      metadata extraction (title, author, series state), series grid with
+      dominant-tint coloring and reading progress bars, volume detail view
+      with read/unread/pending status tracking, fuzzy search (Ctrl+K),
+      smart sorting, dark and light themes, statistics dashboard, and
+      persistent state management.
+    </p>
+  </description>
+  <url type="homepage">https://github.com/ribaudequin/epub-library-manager</url>
+  <url type="bugtracker">https://github.com/ribaudequin/epub-library-manager/issues</url>
+  <url type="contribute">https://github.com/ribaudequin/epub-library-manager/pulls</url>
+  <launchable type="desktop-id">io.github.ribaudequin.epub-library-manager.desktop</launchable>
+  <categories>
+    <category>Office</category>
+    <category>Utility</category>
+    <category>Reader</category>
+  </categories>
+  <keywords>
+    <keyword>epub</keyword>
+    <keyword>ebook</keyword>
+    <keyword>library</keyword>
+    <keyword>books</keyword>
+    <keyword>reader</keyword>
+    <keyword>manga</keyword>
+    <keyword>novel</keyword>
+    <keyword>metadata</keyword>
+    <keyword>portable</keyword>
+  </keywords>
+  <icon type="remote">https://raw.githubusercontent.com/ribaudequin/epub-library-manager/master/build/icon-128.png</icon>
+  <content_rating type="oars-1.1" />
+  <screenshots>
+    <screenshot type="normal" id="series-grid">
+      <caption>Series grid with cover art, reading progress, and tinted cards</caption>
+      <image>https://github.com/ribaudequin/epub-library-manager/releases/download/v1.8.0/screenshot-grid.png</image>
+    </screenshot>
+    <screenshot type="normal" id="volume-detail">
+      <caption>Volume detail view with status tracking and bulk actions</caption>
+      <image>https://github.com/ribaudequin/epub-library-manager/releases/download/v1.8.0/screenshot-detail.png</image>
+    </screenshot>
+    <screenshot type="normal" id="statistics">
+      <caption>Statistics dashboard with charts and library overview</caption>
+      <image>https://github.com/ribaudequin/epub-library-manager/releases/download/v1.8.0/screenshot-stats.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="1.8.0" date="2026-08-20">
+      <description>
+        <p>
+          <ul>
+            <li><strong>Light Theme</strong> — Toggle between dark and light themes with persistent localStorage. Anti-flash script prevents flicker on load.</li>
+            <li><strong>Statistics Dashboard</strong> — Modal with 4 summary cards (series, volumes, read, progress), state breakdown chart, largest series ranking, and 30-day activity timeline (pure CSS/SVG).</li>
+            <li><strong>WCAG Fixes</strong> — Button contrast improved (accent darkened, white text on primary buttons), state badges darkened for white card backgrounds, detail view tint gradient boosted.</li>
+            <li><strong>Ghost Toolbar Buttons</strong> — Stats, folder select, and refresh buttons now use transparent/ghost style matching the theme toggle for visual consistency.</li>
+            <li><strong>Windows Builds</strong> — NSIS installer + portable .exe available, validated on Windows 11.</li>
+            <li><strong>i18n</strong> — 41 total keys (PT/EN), automatic system language detection.</li>
+          </ul>
+        </p>
+      </description>
+    </release>
+  </releases>
+</component>

@@ -1,5 +1,4 @@
 id: io.github.ribaudequin.epub-library-manager
-generic-name: org.freedesktop.Platform
 runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
@@ -7,21 +6,22 @@ base: org.electronjs.Electron2.BaseApp
 base-version: stable
 command: biblioteca-epub
 separate-locales: false
+
 finish-args:
-  # IPC (Electron process communication)
+  # IPC for Electron process communication
   - --share=ipc
-  # Wayland display support
+  # Display servers
   - --socket=wayland
-  # X11 fallback for older environments
   - --socket=fallback-x11
-  # GPU acceleration
+  # GPU hardware acceleration
   - --device=dri
-  # Network (required for Electron sandbox)
+  # Network (required for Electron's sandbox mechanisms)
   - --share=network
-  # File access - xdg-documents as sensible default for ebook library
+  # File access: documents folder (read-only) for ebook libraries
   - --filesystem=xdg-documents:ro
-  # Electron trash integration
+  # Environment
   - --env=ELECTRON_TRASH=gio
+
 modules:
   - name: biblioteca-epub
     buildsystem: simple
