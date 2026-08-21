@@ -1,6 +1,6 @@
 {
   "name": "biblioteca-epub",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "EPUB library manager organized by series",
   "main": "src/main.js",
   "scripts": {
