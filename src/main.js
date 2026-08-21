@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
 const path = require('path');
 const fsp = require('fs/promises');
 const fs = require('fs');
@@ -12,6 +12,9 @@ let fileWatcher = null;
 if (process.env.TEST_USERDATA) {
   app.setPath('userData', process.env.TEST_USERDATA);
 }
+
+// Remove default Electron menu bar (File/Edit/View/Window/Help)
+Menu.setApplicationMenu(null);
 
 const STATUS_DEFAULT = 'nao_lido';
 const VALID_STATUSES = ['lido', 'nao_lido', 'pendente'];
