@@ -2,7 +2,7 @@
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v1.8.0** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.8.0) · Linux (AppImage) · Windows (Installer + Portable)
+**v1.8.1** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.8.1) · Linux (AppImage) · Windows (Installer + Portable) · Flatpak (build files)
 
 ---
 
@@ -44,6 +44,30 @@ A desktop application for managing your EPUB library, organized by series — wi
 
 #### Linux (AppImage)
 
+#### Linux (Flatpak)
+
+**Build files for Flatpak submission**:
+Download `BibliotecaEpub-1.8.1-flatpak.tar.gz` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.8.1).
+
+```bash
+# Extract the build archive
+tar -xzf BibliotecaEpub-1.8.1-flatpak.tar.gz
+cd flathub/
+
+# Build and install via Flatpak
+flatpak-builder --user --install --force-clean build-dir io.github.ribaudequin.epub-library-manager.yml
+
+# Run the app
+flatpak run io.github.ribaudequin.epub-library-manager
+```
+
+Once the app is approved on Flathub, you can install directly:
+```bash
+flatpak install flathub io.github.ribaudequin.epub-library-manager
+```
+
+#### Linux (AppImage)
+
 ```bash
 git clone https://github.com/ribaudequin/epub-library-manager.git
 cd epub-library-manager
@@ -80,6 +104,7 @@ npm run dist:win:portable     # Portable .exe (no SmartScreen)
 
 ```bash
 npm run dist:all              # AppImage + NSIS + portable
+npm run dist:flatpak          # Flatpak dir build
 ```
 
 ### Features Highlights v1.8.0
@@ -103,6 +128,7 @@ npm run dist:all              # AppImage + NSIS + portable
 | **EPUB Parsing** | `adm-zip` (ZIP extraction), `@xmldom/xmldom` (XML metadata) |
 | **Testing** | Vitest, Playwright |
 | **Packaging** | electron-builder (AppImage, NSIS, Portable) |
+| **Flatpak** | Flatpak manifest + build files (Flathub submission ready) |
 
 ---
 
