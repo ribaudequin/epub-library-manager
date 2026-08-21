@@ -795,6 +795,7 @@ main {
 /* Theme toggle button */
 #btn-theme-toggle,
 #btn-stats,
+#btn-about,
 #btn-select,
 #btn-scan {
   background: transparent;
@@ -809,6 +810,7 @@ main {
 }
 #btn-theme-toggle:hover,
 #btn-stats:hover,
+#btn-about:hover,
 #btn-select:hover,
 #btn-scan:hover {
   background: var(--bg-card-hover);
@@ -953,5 +955,140 @@ main {
 }
 /* Light theme stats overrides */
 :root[data-theme="light"] .stats-panel {
+  box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+}
+
+/* About modal */
+#about-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#about-modal.hidden {
+  display: none;
+}
+.about-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+.about-panel {
+  position: relative;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  padding: 24px;
+  box-shadow: 0 24px 64px var(--shadow);
+}
+.about-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.about-header h2 {
+  margin: 0;
+  color: var(--text);
+}
+#btn-about-close {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 18px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+#btn-about-close:hover {
+  background: var(--bg-card-hover);
+}
+.about-body {
+  text-align: center;
+}
+.about-logo {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+.about-app-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.about-version {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+.about-desc {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+.about-credits {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.about-credits h4 {
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.about-credits p {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.about-credits strong {
+  color: var(--accent);
+}
+.about-links {
+  margin-top: 10px;
+}
+.about-kofi,
+.about-github {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: filter 0.15s, transform 0.15s;
+  margin: 4px;
+}
+.about-kofi {
+  background: #ff5e5b;
+  color: #fff;
+}
+.about-kofi:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+.about-github {
+  background: var(--bg-card-hover);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.about-github:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent);
+}
+.about-footer {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 12px;
+}
+/* Light theme about modal override */
+:root[data-theme="light"] .about-panel {
   box-shadow: 0 24px 64px rgba(0,0,0,0.15);
 }

@@ -254,6 +254,16 @@ function closeStats() {
   document.getElementById('stats-modal').classList.add('hidden');
 }
 
+function openAbout() {
+  const modal = document.getElementById('about-modal');
+  modal.classList.remove('hidden');
+  modal.focus();
+}
+
+function closeAbout() {
+  document.getElementById('about-modal').classList.add('hidden');
+}
+
 function t(key, vars = {}) {
   if (window.i18n && typeof window.i18n.t === 'function') {
     return window.i18n.t(key, vars);
@@ -787,9 +797,13 @@ $('#search-clear').addEventListener('keydown', (e) => {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    const modal = document.getElementById('stats-modal');
-    if (modal && !modal.classList.contains('hidden')) {
+    const statsModal = document.getElementById('stats-modal');
+    const aboutModal = document.getElementById('about-modal');
+    if (statsModal && !statsModal.classList.contains('hidden')) {
       closeStats();
+      e.stopPropagation();
+    } else if (aboutModal && !aboutModal.classList.contains('hidden')) {
+      closeAbout();
       e.stopPropagation();
     }
   }
@@ -817,6 +831,13 @@ $('#sort-select').value = currentSort;
   if (statsBtn) statsBtn.addEventListener('click', openStats);
   if (statsCloseBtn) statsCloseBtn.addEventListener('click', closeStats);
   if (statsBackdrop) statsBackdrop.addEventListener('click', closeStats);
+
+  const aboutBtn = document.getElementById('btn-about');
+  const aboutCloseBtn = document.getElementById('btn-about-close');
+  const aboutBackdrop = document.querySelector('.about-backdrop');
+  if (aboutBtn) aboutBtn.addEventListener('click', openAbout);
+  if (aboutCloseBtn) aboutCloseBtn.addEventListener('click', closeAbout);
+  if (aboutBackdrop) aboutBackdrop.addEventListener('click', closeAbout);
 
   const root = testRoot || await window.api.getRoot();
   if (root) {
