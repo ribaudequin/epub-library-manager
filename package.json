@@ -6,6 +6,9 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --linux AppImage",
+    "dist:deb": "electron-builder --linux deb",
+    "dist:rpm": "electron-builder --linux rpm",
+    "dist:flatpak": "electron-builder --linux dir",
     "dist:win": "electron-builder --win nsis",
     "dist:win:portable": "electron-builder --win portable",
     "dist:win:all": "electron-builder --win",
@@ -24,7 +27,7 @@
     "electron-builder": "^24.13.3"
   },
   "build": {
-    "appId": "com.marcelo.bibliotecaepub",
+    "appId": "io.github.ribaudequin.epub-library-manager",
     "productName": "BibliotecaEpub",
     "directories": {
       "output": "dist"
@@ -53,7 +56,8 @@
     },
     "linux": {
       "target": [
-        "AppImage"
+        "AppImage",
+        "dir"
       ],
       "category": "Office",
       "icon": "build/icon.png"
