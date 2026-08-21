@@ -1,0 +1,79 @@
+name: Build and package Flatpak
+
+on:
+  push:
+    branches:
+      - flathub
+    tags:
+      - 'v*-flathub'
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Flatpak
+        run: |
+          sudo apt install -y flatpak flatpak-builder locales-all
+          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+      - name: Generate sources
+        run: |
+          pip3 install flatpak-builder-tools
+          flatpak-node-generator --output generated-sources.json npm package-lock.json || true
+
+      - name: Build directory
+        run: npm run dist:flatpak
+
+      - name: Copy files to app dir
+        run: |
+          mkdir -p /app/lib/bibliotecaepub
+          cp -r dist/linux-unpacked/* /app/lib/bibliotecaepub/
+          install -Dm755 run.sh /app/bin/biblioteca-epub
+          
+      - name: Build Flatpak repo
+        run: |
+          mkdir -p /app/share/applications
+          mkdir -p /app/share/icons/hicolor/128x128/apps
+          mkdir -p /app/share/metainfo
+          cp io.github.ribaudequin.epub-library-manager.desktop /app/share/applications/
+          cp build/icon-128.png /app/share/icons/hicolor/128x128/apps/io.github.ribaudequin.epub-library-manager.png
+          cp io.github.ribaudequin.epub-library-manager.metainfo.xml /app/share/metainfo/
+
+      - name: Create bundle
+        run: |
+          flatpak build-export /tmp/repo /app
+          flatpak build-bundle --app /tmp/repo BibliotecaEpub-${{ github.ref_name || '1.8.0' }}.flatpak io.github.ribaudequin.epub-library-manager
+
+      - name: Upload bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: flatpak-bundle
+          path: BibliotecaEpub-*.flatpak
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: BibliotecaEpub ${{ github.ref_name }}
+          body: |
+            ## Flatpak Bundle
+            Install via terminal:
+            ```bash
+            flatpak install --user BibliotecaEpub-${{ github.ref_name }}.flatpak
+            ```
+          files: BibliotecaEpub-*.flatpak
