@@ -2,7 +2,7 @@
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v1.8.3** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.8.3) · Linux (AppImage) · Windows (Installer + Portable) · Flatpak (build files)
+**v1.9.1** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.9.1) · Linux (AppImage) · Windows (Installer + Portable) · Flatpak (build files)
 
 ---
 
