@@ -624,7 +624,7 @@ async function cacheCurrentSeries() {
 
 async function scanAndRender(root) {
   // Populate cached covers for loading collage
-  await populateCachedCovers();
+  await populateCachedCovers(root);
   
   // Try cache
   try {
@@ -651,6 +651,7 @@ async function scanAndRender(root) {
   } catch {}
 
   // Full scan
+  window._collageShown = false;
   $('#loading-state').classList.remove('hidden');
   $('#empty-state').classList.add('hidden');
   $('#series-view').classList.add('hidden');
@@ -692,19 +693,18 @@ window.api.onProgress(({ done, total }) => {
   const bar = $('#loading-progress');
   if (bar) bar.style.width = pct + '%';
   
-  if (done === 1 && total > 0) {
+  if (!window._collageShown && cachedCovers.length > 0) {
+    window._collageShown = true;
     const grid = $('#loading-grid');
     if (!grid) return;
-    const fragments = cachedCovers.slice(0, 20);
-    if (fragments.length === 0) return;
     let idx = 0;
     const interval = setInterval(() => {
-      if (idx >= fragments.length) {
+      if (idx >= cachedCovers.length) {
         clearInterval(interval);
         return;
       }
       const img = document.createElement('img');
-      img.src = fragments[idx];
+      img.src = cachedCovers[idx];
       img.classList.add('fade-in-up');
       grid.appendChild(img);
       idx++;
@@ -712,10 +712,10 @@ window.api.onProgress(({ done, total }) => {
   }
 });
 
-async function populateCachedCovers() {
-  if (!currentRoot) return;
+async function populateCachedCovers(root) {
+  if (!root) return;
   try {
-    const { cacheKey } = await window.api.getMtime(currentRoot);
+    const { cacheKey } = await window.api.getMtime(root);
     if (!cacheKey) return;
     const raw = localStorage.getItem(cacheKey);
     if (!raw) return;
@@ -723,9 +723,9 @@ async function populateCachedCovers() {
     if (!cacheData.series) return;
     const allCovers = [];
     cacheData.series.forEach(serie => {
-      if (serie.cover) allCovers.push(serie.cover);
+      if (serie.cover) allCovers.push('file://' + formatCoverPath(serie.cover));
       serie.volumes.forEach(volume => {
-        if (volume.coverSrc) allCovers.push(volume.coverSrc);
+        if (volume.coverSrc) allCovers.push('file://' + formatCoverPath(volume.coverSrc));
       });
     });
     cachedCovers = allCovers.filter(Boolean);
@@ -861,6 +861,8 @@ $('#sort-select').value = currentSort;
 (async () => {
   const testRoot = new URLSearchParams(location.search).get('root');
   await initI18n();
+  // Não chamar populateCachedCovers aqui - precisa de root
+
 
   const themeBtn = document.getElementById('btn-theme-toggle');
   if (themeBtn) {
