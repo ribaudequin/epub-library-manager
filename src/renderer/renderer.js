@@ -67,6 +67,16 @@ function serieStateBadgeDetail(state) {
 let currentSeries = [];
 window.currentSeries = currentSeries;
 let cachedCovers = [];  // Cached cover URLs for loading screen collage
+let cachedCoversShuffled = []; // Shuffled for random display order
+
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 let filteredSeries = [];
 let currentRoot = null;
 let isWatching = false;
@@ -693,24 +703,24 @@ window.api.onProgress(({ done, total, coverSrc }) => {
   const bar = $('#loading-progress');
   if (bar) bar.style.width = pct + '%';
   
-  if (!window._collageShown && cachedCovers.length > 0) {
+  if (!window._collageShown && cachedCoversShuffled.length > 0) {
     window._collageShown = true;
     const grid = $('#loading-grid');
     if (!grid) return;
     let idx = 0;
     const interval = setInterval(() => {
-      if (idx >= Math.min(cachedCovers.length, 9)) {
+      if (idx >= Math.min(cachedCoversShuffled.length, 20)) {
         clearInterval(interval);
         // Start marquee animation for overflow
         startMarquee();
         return;
       }
       const img = document.createElement('img');
-      img.src = cachedCovers[idx];
+      img.src = cachedCoversShuffled[idx];
       img.classList.add('fade-in-up');
       grid.appendChild(img);
       idx++;
-    }, 150);
+    }, 100);
   }
   
   // Add covers progressively as they're discovered during scan
@@ -781,6 +791,7 @@ async function populateCachedCovers(root) {
       });
     });
     cachedCovers = allCovers.filter(Boolean);
+    cachedCoversShuffled = shuffleArray(cachedCovers);
   } catch {}
 }
 
