@@ -334,18 +334,18 @@ main {
 
 .loading-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-  max-width: 320px;
-  width: 320px;
-  margin: 24px auto 0;
-  padding: 0 16px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+  max-width: 400px;
+  width: 400px;
+  margin: 20px auto 0;
+  padding: 0 12px;
   overflow-x: auto;
   overflow-y: hidden;
-  max-height: 260px;
+  max-height: 240px;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE 10+ */
-  perspective: 1000px;
+  perspective: 1200px;
 }
 
 .loading-grid::-webkit-scrollbar {
@@ -355,27 +355,38 @@ main {
 .loading-grid img {
   width: 100%;
   aspect-ratio: 2 / 3;
-  border-radius: 6px;
+  border-radius: 8px;
   object-fit: cover;
   opacity: 0;
-  transform: translateY(30px) rotateX(20deg);
+  transform: translateY(40px) rotateX(25deg) rotateY(5deg);
   animation-fill-mode: forwards;
-  animation-duration: 0.6s;
-  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  transition: transform 0.2s ease;
+  animation-duration: 0.7s;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  filter: grayscale(20%) contrast(1.1);
 }
 
 .loading-grid img:hover {
-  transform: scale(1.08) rotateX(0) !important;
+  transform: scale(1.12) rotateX(0) rotateY(0) !important;
+  filter: grayscale(0%) contrast(1);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
 }
 
 .loading-grid img:nth-child(even) {
-  animation-delay: 0.1s;
+  animation-delay: 0.12s;
 }
 
 .loading-grid img:nth-child(odd) {
-  animation-delay: 0.05s;
+  animation-delay: 0.06s;
+}
+
+.loading-grid img:nth-child(3n) {
+  animation-delay: 0.18s;
+}
+
+.loading-grid img:nth-child(3n+1) {
+  animation-delay: 0.09s;
 }
 
 @keyframes fadeInUp {

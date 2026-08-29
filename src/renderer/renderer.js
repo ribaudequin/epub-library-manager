@@ -709,7 +709,7 @@ window.api.onProgress(({ done, total, coverSrc }) => {
     if (!grid) return;
     let idx = 0;
     const interval = setInterval(() => {
-      if (idx >= Math.min(cachedCoversShuffled.length, 20)) {
+      if (idx >= Math.min(cachedCoversShuffled.length, 25)) {
         clearInterval(interval);
         // Start marquee animation for overflow
         startMarquee();
@@ -718,9 +718,12 @@ window.api.onProgress(({ done, total, coverSrc }) => {
       const img = document.createElement('img');
       img.src = cachedCoversShuffled[idx];
       img.classList.add('fade-in-up');
+      // Randomize animation delay and transform slightly
+      img.style.animationDelay = (Math.random() * 0.4) + 's';
+      img.style.transform = `translateY(${Math.random() * 20 - 10}px) rotateX(${Math.random() * 15 + 5}deg) rotateY(${Math.random() * 10 - 5}deg)`;
       grid.appendChild(img);
       idx++;
-    }, 100);
+    }, 80);
   }
   
   // Add covers progressively as they're discovered during scan
