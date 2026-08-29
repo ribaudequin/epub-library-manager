@@ -1,6 +1,6 @@
-# Biblioteca de Epubs - Flathub Packaging
+# EPUB Shelf - Flathub Packaging
 
-Flatpak packaging for [Biblioteca de Epubs](https://github.com/ribaudequin/epub-library-manager) — an EPUB library manager organized by series with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
+Flatpak packaging for [EPUB Shelf](https://github.com/ribaudequin/epub-library-manager) — an EPUB library manager organized by series with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
 ## Installation
 

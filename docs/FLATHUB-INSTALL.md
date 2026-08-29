@@ -1,4 +1,4 @@
-# Biblioteca de Epubs - Flatpak Installation
+# EPUB Shelf - Flatpak Installation
 
 ## Quick Start
 

@@ -1,6 +1,6 @@
 const TRANSLATIONS = {
   pt: {
-    app_title: "Biblioteca de Epubs",
+    app_title: "EPUB Shelf",
     search_placeholder: "Ctrl+K  Pesquisar…",
     sort_name_asc: "Nome A–Z",
     sort_name_desc: "Nome Z–A",

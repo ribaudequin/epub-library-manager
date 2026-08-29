@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Biblioteca de Epubs
+Name=EPUB Shelf
 Comment=EPUB library manager organized by series
 Exec=biblioteca-epub %U
 Icon=io.github.ribaudequin.epub-library-manager
