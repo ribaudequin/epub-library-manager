@@ -1,7 +1,7 @@
 {
   "name": "epub-shelf",
   "productName": "EPUB Shelf",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "EPUB library manager organized by series",
   "main": "src/main.js",
   "scripts": {
