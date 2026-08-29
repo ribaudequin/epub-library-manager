@@ -61,5 +61,12 @@
   "state_ongoing": "Em andamento",
   "state_completed": "Completa",
   "state_cancelled": "Cancelada",
-  "state_hiatus": "Hiatus"
+  "state_hiatus": "Hiatus",
+  "about_title": "Sobre / About",
+  "about_desc": "EPUB library manager organized by series.",
+  "about_credits_title": "Créditos / Credits",
+  "about_developed_by": "Desenvolvido por",
+  "about_support_kofi": "Apoiar no Ko-fi",
+  "about_github_link": "GitHub",
+  "about_footer": "Feito com ❤️ para leitores de e-books"
 }

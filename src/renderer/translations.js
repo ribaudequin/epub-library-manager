@@ -62,7 +62,17 @@ const TRANSLATIONS = {
     state_ongoing: 'Em andamento',
     state_completed: 'Completa',
     state_cancelled: 'Cancelada',
-    state_hiatus: 'Hiatus'
+    state_hiatus: 'Hiatus',
+    about_title: 'About / Sobre',
+    about_desc: 'EPUB library manager organized by series.',
+    about_credits_title: 'Credits',
+    about_developed_by: 'Developed by',
+    about_support_kofi: 'Support on Ko-fi',
+    about_github_link: 'GitHub',
+    about_footer: 'Made with ❤️ for ebook readers',
+    crypto_support_title: 'Crypto Support',
+    crypto_eth: 'ETH',
+    crypto_sol: 'SOL'
   },
   en: {
     app_title: "EPUB Library",
@@ -124,10 +134,16 @@ const TRANSLATIONS = {
     chart_state_title: 'Series by State',
     chart_largest_title: 'Largest Series',
     chart_activity_title: 'Activity (last 30 days)',
-    state_ongoing: 'Ongoing',
-    state_completed: 'Completed',
-    state_cancelled: 'Cancelled',
-    state_hiatus: 'Hiatus'
+    about_title: 'About / Sobre',
+    about_desc: 'EPUB library manager organized by series.',
+    about_credits_title: 'Credits',
+    about_developed_by: 'Developed by',
+    about_support_kofi: 'Support on Ko-fi',
+    about_github_link: 'GitHub',
+    about_footer: 'Made with ❤️ for ebook readers',
+    crypto_support_title: 'Crypto Support',
+    crypto_eth: 'ETH',
+    crypto_sol: 'SOL'
   }
 };
 

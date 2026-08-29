@@ -1088,6 +1088,31 @@ main {
   color: var(--text-dim);
   margin-top: 12px;
 }
+.about-crypto {
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  text-align: left;
+}
+.about-crypto h5 {
+  margin: 0 0 12px 0;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+}
+.about-crypto .crypto-addr {
+  margin: 8px 0;
+  font-size: 13px;
+  color: var(--text-dim);
+  word-break: break-all;
+}
+.about-crypto .crypto-addr span {
+  color: var(--accent);
+  font-family: monospace;
+}
+
 /* Light theme about modal override */
 :root[data-theme="light"] .about-panel {
   box-shadow: 0 24px 64px rgba(0,0,0,0.15);
