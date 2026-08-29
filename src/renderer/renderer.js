@@ -66,6 +66,7 @@ function serieStateBadgeDetail(state) {
 
 let currentSeries = [];
 window.currentSeries = currentSeries;
+let cachedCovers = [];  // Cached cover URLs for loading screen collage
 let filteredSeries = [];
 let currentRoot = null;
 let isWatching = false;
@@ -622,6 +623,9 @@ async function cacheCurrentSeries() {
 }
 
 async function scanAndRender(root) {
+  // Populate cached covers for loading collage
+  await populateCachedCovers();
+  
   // Try cache
   try {
     const { cacheKey, rootMtime } = await window.api.getMtime(root);
@@ -687,7 +691,46 @@ window.api.onProgress(({ done, total }) => {
   $('#loading-text').textContent = t('loading_progress', { pct, done, total });
   const bar = $('#loading-progress');
   if (bar) bar.style.width = pct + '%';
+  
+  if (done === 1 && total > 0) {
+    const grid = $('#loading-grid');
+    if (!grid) return;
+    const fragments = cachedCovers.slice(0, 20);
+    if (fragments.length === 0) return;
+    let idx = 0;
+    const interval = setInterval(() => {
+      if (idx >= fragments.length) {
+        clearInterval(interval);
+        return;
+      }
+      const img = document.createElement('img');
+      img.src = fragments[idx];
+      img.classList.add('fade-in-up');
+      grid.appendChild(img);
+      idx++;
+    }, 150);
+  }
 });
+
+async function populateCachedCovers() {
+  if (!currentRoot) return;
+  try {
+    const { cacheKey } = await window.api.getMtime(currentRoot);
+    if (!cacheKey) return;
+    const raw = localStorage.getItem(cacheKey);
+    if (!raw) return;
+    const cacheData = JSON.parse(raw);
+    if (!cacheData.series) return;
+    const allCovers = [];
+    cacheData.series.forEach(serie => {
+      if (serie.cover) allCovers.push(serie.cover);
+      serie.volumes.forEach(volume => {
+        if (volume.coverSrc) allCovers.push(volume.coverSrc);
+      });
+    });
+    cachedCovers = allCovers.filter(Boolean);
+  } catch {}
+}
 
 async function startWatching(root) {
   if (isWatching) return;

@@ -332,6 +332,47 @@ main {
   line-height: 1.8;
 }
 
+.loading-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 8px;
+  max-width: 600px;
+  margin: 24px auto 0;
+  padding: 0 16px;
+  perspective: 1000px;
+}
+
+.loading-grid img {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 4px;
+  object-fit: cover;
+  opacity: 0;
+  transform: translateY(20px) rotateX(15deg);
+  animation-fill-mode: forwards;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-out;
+}
+
+.loading-grid img:nth-child(even) {
+  animation-delay: 0.1s;
+}
+
+.loading-grid img:nth-child(odd) {
+  animation-delay: 0.05s;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+}
+
+.fade-in-up {
+  animation-name: fadeInUp;
+}
+
 .spinner {
   width: 36px;
   height: 36px;
