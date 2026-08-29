@@ -302,9 +302,12 @@ async function scanLibrary(rootPath, coverCacheDir, onProgress) {
   for (const { dirPath, dirName, epubFiles } of allSeries) {
     const volumes = [];
     for (const filePath of epubFiles) {
-      volumes.push(await scanVolume(filePath, coverCacheDir));
+      const volume = await scanVolume(filePath, coverCacheDir);
+      volumes.push(volume);
       processed++;
-      if (onProgress && processed % 5 === 0) {
+      if (volume.coverSrc) {
+        if (onProgress) onProgress({ done: processed, total: totalVolumes, coverSrc: volume.coverSrc });
+      } else if (onProgress && processed % 5 === 0) {
         onProgress({ done: processed, total: totalVolumes });
       }
       if (volumes.length % 20 === 0) {

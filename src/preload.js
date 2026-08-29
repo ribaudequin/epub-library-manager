@@ -20,6 +20,9 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.on('library:changed', (_event, data) => callback(data));
   },
   onProgress: (callback) => {
-    ipcRenderer.on('library:progress', (_event, progress) => callback(progress));
+    ipcRenderer.on('library:progress', (_event, data) => callback(data));
+  },
+  onCoverLoaded: (callback) => {
+    ipcRenderer.on('library:cover-loaded', (_event, coverPath) => callback(coverPath));
   },
 });
