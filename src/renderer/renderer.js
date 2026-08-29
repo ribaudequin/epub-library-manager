@@ -686,7 +686,7 @@ async function scanAndRender(root) {
   }
 }
 
-window.api.onProgress(({ done, total }) => {
+window.api.onProgress(({ done, total, coverSrc }) => {
   const pct = total ? Math.round((done / total) * 100) : 0;
   const t = window.i18n ? window.i18n.t.bind(window.i18n) : (k) => k;
   $('#loading-text').textContent = t('loading_progress', { pct, done, total });
@@ -709,6 +709,16 @@ window.api.onProgress(({ done, total }) => {
       grid.appendChild(img);
       idx++;
     }, 150);
+  }
+  
+  // Add covers progressively as they're discovered during scan
+  if (typeof coverSrc === 'string' && coverSrc) {
+    const grid = $('#loading-grid');
+    if (!grid) return;
+    const img = document.createElement('img');
+    img.src = 'file://' + formatCoverPath(coverSrc);
+    img.classList.add('fade-in-up');
+    grid.appendChild(img);
   }
 });
 
