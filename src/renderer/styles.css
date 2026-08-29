@@ -334,12 +334,20 @@ main {
 
 .loading-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  max-width: 600px;
+  max-width: 200px;
   margin: 24px auto 0;
   padding: 0 16px;
-  perspective: 1000px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-height: 220px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.loading-grid::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 .loading-grid img {
@@ -360,6 +368,17 @@ main {
 
 .loading-grid img:nth-child(odd) {
   animation-delay: 0.05s;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+}
+
+.fade-in-up {
+  animation-name: fadeInUp;
 }
 
 @keyframes fadeInUp {

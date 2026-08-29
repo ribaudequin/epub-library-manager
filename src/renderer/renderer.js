@@ -699,8 +699,10 @@ window.api.onProgress(({ done, total, coverSrc }) => {
     if (!grid) return;
     let idx = 0;
     const interval = setInterval(() => {
-      if (idx >= cachedCovers.length) {
+      if (idx >= Math.min(cachedCovers.length, 9)) {
         clearInterval(interval);
+        // Start marquee animation for overflow
+        startMarquee();
         return;
       }
       const img = document.createElement('img');
@@ -715,12 +717,52 @@ window.api.onProgress(({ done, total, coverSrc }) => {
   if (typeof coverSrc === 'string' && coverSrc) {
     const grid = $('#loading-grid');
     if (!grid) return;
+    
+    // If grid has max items (9), replace oldest; otherwise add new
+    if (grid.children.length >= 9) {
+      // Remove first child (oldest) and add new one
+      const first = grid.firstChild;
+      if (first) {
+        first.style.opacity = '0';
+        setTimeout(() => {
+          if (first.parentNode === grid) {
+            grid.removeChild(first);
+          }
+        }, 300);
+      }
+    }
+    
     const img = document.createElement('img');
     img.src = 'file://' + formatCoverPath(coverSrc);
     img.classList.add('fade-in-up');
     grid.appendChild(img);
   }
 });
+
+function startMarquee() {
+  const grid = $('#loading-grid');
+  if (!grid) return;
+  
+  // Only start marquee if there are 9+ covers
+  if (grid.children.length < 9) return;
+  
+  let scrollPos = 0;
+  const maxScroll = grid.scrollWidth - grid.clientWidth;
+  
+  if (maxScroll <= 0) return;
+  
+  const marqueeInterval = setInterval(() => {
+    scrollPos += 1;
+    grid.scrollLeft = scrollPos;
+    
+    if (scrollPos >= maxScroll) {
+      scrollPos = 0;
+      grid.scrollLeft = 0;
+    }
+  }, 50);
+  
+  window._marqueeInterval = marqueeInterval;
+}
 
 async function populateCachedCovers(root) {
   if (!root) return;
