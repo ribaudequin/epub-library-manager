@@ -228,7 +228,7 @@ Project home: [https://github.com/ribaudequin/epub-library-manager](https://gith
 
 If you find this project useful, consider supporting its development:
 
-[![Ko-fi](https://ko-fi.com/img/logo.svg)](https://ko-fi.com/ribaudequin)
+[![Ko-fi](https://script.ko-fi.com/v1/badge.png)](https://ko-fi.com/A0383T5)
 
 **Cryptocurrency (any EVM-compatible chain):**
 - **ETH:** `0x8a9D7dABf92B3F82f2c3aE5C4bF6A9d2E1aB3cCd`
