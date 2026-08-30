@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=EPUB Shelf
+Comment=EPUB library manager organized by series
+Exec=biblioteca-epub %U
+Icon=io.github.ribaudequin.epub-library-manager
+Categories=Office;Utility;
+Type=Application
+MimeType=application/epub+zip
+StartupNotify=true

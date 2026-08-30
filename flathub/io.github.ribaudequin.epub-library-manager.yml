@@ -1,0 +1,53 @@
+id: io.github.ribaudequin.epub-library-manager
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+base: org.electronjs.Electron2.BaseApp
+base-version: stable
+command: biblioteca-epub
+separate-locales: false
+
+finish-args:
+  # IPC for Electron process communication
+  - --share=ipc
+  # Display servers
+  - --socket=wayland
+  - --socket=fallback-x11
+  # GPU hardware acceleration
+  - --device=dri
+  # Network (required for Electron's sandbox mechanisms)
+  - --share=network
+  # File access: documents folder (read-only) for ebook libraries
+  - --filesystem=xdg-documents:ro
+  # Environment
+  - --env=ELECTRON_TRASH=gio
+
+modules:
+  - name: biblioteca-epub
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/node22/bin
+      env:
+        XDG_CACHE_HOME: /run/build/biblioteca-epub/flatpak-node/cache
+        npm_config_cache: /run/build/biblioteca-epub/flatpak-node/npm-cache
+        npm_config_nodedir: /usr/lib/sdk/node22
+    build-commands:
+      # Install dependencies from pre-downloaded cache
+      - npm install --offline
+      # Build with electron-builder targeting directory output
+      - npm run dist:flatpak
+      # Copy app files to Flatpak location
+      - cp -r dist/linux-unpacked /app/lib/biblioteca-epub
+      # Install wrapper script
+      - install -Dm755 run.sh /app/bin/biblioteca-epub
+    sources:
+      - type: dir
+        path: .
+      - type: file
+        path: generated-sources.json
+      - type: file
+        path: run.sh
+      - type: file
+        path: io.github.ribaudequin.epub-library-manager.desktop
+      - type: file
+        path: io.github.ribaudequin.epub-library-manager.metainfo.xml
