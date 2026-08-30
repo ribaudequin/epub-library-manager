@@ -28,7 +28,7 @@ A desktop application for managing your EPUB library, organized by series — wi
 
 | Series Grid | Volume Detail |
 |---|---|
-| `docs/assets/grid-view.png` | `docs/assets/detail-view.png` |
+| ![Series Grid](docs/assets/grid-view.png) | ![Volume Detail](docs/assets/detail-view.png) |
 
 ---
 
@@ -221,3 +221,17 @@ npm run dist:all     # Build all platforms
 **Marcelo Salvador** — [@ribaudequin](https://github.com/ribaudequin)
 
 Project home: [https://github.com/ribaudequin/epub-library-manager](https://github.com/ribaudequin/epub-library-manager)
+
+---
+
+## Donate
+
+If you find this project useful, consider supporting its development:
+
+[![Ko-fi](https://ko-fi.com/img/logo.svg)](https://ko-fi.com/ribaudequin)
+
+**Cryptocurrency (any EVM-compatible chain):**
+- **ETH:** `0x8a9D7dABf92B3F82f2c3aE5C4bF6A9d2E1aB3cCd`
+- **SOL:** `7nQ1M4kF2eP9jB8vR3cT6yU5xW0zA2bC9dE8fG7hJ6k`
+
+These addresses are also available in the app's **About** modal (click the ❤️ icon in the header).
