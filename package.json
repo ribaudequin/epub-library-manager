@@ -29,7 +29,7 @@
   },
   "build": {
     "appId": "io.github.ribaudequin.epub-library-manager",
-    "productName": "BibliotecaEpub",
+    "productName": "EPUBShelf",
     "directories": {
       "output": "dist"
     },
