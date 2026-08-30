@@ -28,7 +28,7 @@ A desktop application for managing your EPUB library, organized by series — wi
 
 | Series Grid | Volume Detail |
 |---|---|
-| ![Series Grid](docs/assets/grid-view.png) | ![Volume Detail](docs/assets/detail-view.png) |
+| ![Series Grid](docs/assets/grid-view_low.jpg) | ![Volume Detail](docs/assets/detail-view_low.jpg) |
 
 ---
 
