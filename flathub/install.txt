@@ -1,0 +1,26 @@
+Flatpak Build Files for EPUB Shelf
+============================================
+
+Files included:
+- io.github.ribaudequin.epub-library-manager.yml (Flatpak manifest)
+- io.github.ribaudequin.epub-library-manager.desktop
+- io.github.ribaudequin.epub-library-manager.metainfo.xml
+- run.sh (launcher wrapper)
+- generated-sources.json (NPM dependencies)
+
+Manual Build Instructions:
+1. Install flatpak and flatpak-builder
+2. Add Flathub remote:
+   flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+3. Install dependencies:
+   flatpak install -y org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08
+   flatpak install -y org.freedesktop.Sdk.Extension.node24
+4. Install flatpak-builder-tools:
+   pip install flatpak-builder-tools
+5. Generate sources (if needed):
+   flatpak-node-generator --output generated-sources.json npm package-lock.json
+6. Build and install:
+   flatpak-builder --user --install --force-clean build-dir io.github.ribaudequin.epub-library-manager.yml
+7. Run:
+   flatpak run io.github.ribaudequin.epub-library-manager
+
