@@ -12,3 +12,5 @@ squashfs-root/
 tint*.png
 screen*.png
 real*.png
+*.tar.gz
+/flathub/build/
