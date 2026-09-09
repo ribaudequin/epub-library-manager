@@ -39,6 +39,8 @@ jobs:
         run: npm test || true
 
   build:
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     needs: quality
     if: startsWith(github.ref, 'refs/tags/v')
     strategy:
@@ -61,14 +63,6 @@ jobs:
       - name: Install dependencies (Windows — skip native rebuild, use prebuilds)
         if: runner.os == 'Windows'
         run: npm ci --ignore-scripts
-
-      - name: Fix Squirrel 7z binary (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $vendor = "node_modules/electron-winstaller/vendor"
-          if (Test-Path "$vendor/7z-x64.exe") { Copy-Item "$vendor/7z-x64.exe" "$vendor/7z.exe" -Force }
-          if (Test-Path "$vendor/7z-x64.dll") { Copy-Item "$vendor/7z-x64.dll" "$vendor/7z.dll" -Force }
 
       - name: Install dependencies (Linux/macOS)
         if: runner.os != 'Windows'
