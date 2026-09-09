@@ -67,8 +67,8 @@ jobs:
         shell: pwsh
         run: |
           $vendor = "node_modules/electron-winstaller/vendor"
-          Copy-Item "$vendor/7z-x64.exe" "$vendor/7z.exe" -Force || true
-          Copy-Item "$vendor/7z-x64.dll" "$vendor/7z.dll" -Force || true
+          if (Test-Path "$vendor/7z-x64.exe") { Copy-Item "$vendor/7z-x64.exe" "$vendor/7z.exe" -Force }
+          if (Test-Path "$vendor/7z-x64.dll") { Copy-Item "$vendor/7z-x64.dll" "$vendor/7z.dll" -Force }
 
       - name: Install dependencies (Linux/macOS)
         if: runner.os != 'Windows'
