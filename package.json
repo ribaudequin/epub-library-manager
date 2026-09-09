@@ -1,7 +1,7 @@
 {
   "name": "epub-shelf",
   "productName": "EPUB Shelf",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "description": "EPUB library manager organized by series",
   "main": "src/main.js",
   "scripts": {
@@ -62,10 +62,16 @@
     "linux": {
       "target": [
         "AppImage",
-        "dir"
+        "dir",
+        "deb"
       ],
       "category": "Office",
       "icon": "build/icon.png"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ]
     },
     "files": [
       "src/**/*",

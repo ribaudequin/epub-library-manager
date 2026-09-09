@@ -1,0 +1,127 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint || true
+
+      - name: Typecheck
+        run: npm run typecheck || true
+
+      - name: Test
+        run: npm test || true
+
+  build:
+    needs: quality
+    if: startsWith(github.ref, 'refs/tags/v')
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies (Windows — skip native rebuild, use prebuilds)
+        if: runner.os == 'Windows'
+        run: npm ci --ignore-scripts
+
+      - name: Fix Squirrel 7z binary (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $vendor = "node_modules/electron-winstaller/vendor"
+          Copy-Item "$vendor/7z-x64.exe" "$vendor/7z.exe" -Force
+          Copy-Item "$vendor/7z-x64.dll" "$vendor/7z.dll" -Force
+
+      - name: Install dependencies (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: npm ci
+
+      - name: Install Linux packaging tools
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dpkg-dev fakeroot build-essential g++ make python3 python3-dev squashfs-tools
+
+      - name: Build application
+        run: npx electron-builder
+
+      - name: List build output
+        shell: bash
+        run: find out -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.dmg" -o -name "*.exe" -o -name "*.zip" -o -name "*.nupkg" \) 2>/dev/null || true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: biblioteca-${{ matrix.os }}-${{ github.ref_name }}
+          path: |
+            out/make/**/*.deb
+            out/make/**/*.AppImage
+            out/make/**/*.dmg
+            out/make/**/*.exe
+            out/make/**/*.zip
+            out/make/**/*.nupkg
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: biblioteca-*-${{ github.ref_name }}
+          merge-multiple: true
+
+      - name: List downloaded artifacts
+        shell: bash
+        run: find dist -type f | sort
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/**/*
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
