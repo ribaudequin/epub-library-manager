@@ -1,21 +1,14 @@
 {
-  "$schema": "https://schema.tauri.app/config/1",
-  "build": {
-    "beforeBuildCommand": "npm ci || exit 0",
-    "devPath": "src",
-    "distDir": "../dist"
-  },
+  "$schema": "https://schema.tauri.app/config/2",
   "productName": "EPUB Shelf",
   "version": "1.9.8",
   "identifier": "io.github.ribaudequin.epub-library-manager",
   "app": {
     "windows": [
       {
-        "title": "EPUB Shelf",
+        "label": "EPUB Shelf",
         "width": 1200,
-        "height": 800,
-        "resizable": true,
-        "fullscreen": false
+        "height": 800
       }
     ],
     "security": {
@@ -28,16 +21,7 @@
     "linux": {
       "deb": {
         "depends": []
-      },
-      "icon": ["icons/icon.png"]
-    },
-    "macOS": {
-      "exceptionDomain": ""
-    },
-    "windows": {
-      "certificateThumbprint": null,
-      "digestAlgorithm": "sha256",
-      "timestampUrl": null
+      }
     }
   }
 }
