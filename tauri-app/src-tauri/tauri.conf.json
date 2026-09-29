@@ -23,7 +23,7 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "category": "Office",
+    "category": "Productivity",
     "copyright": "MIT",
     "icon": [
       "icons/32x32.png",
