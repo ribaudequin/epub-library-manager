@@ -1,8 +1,12 @@
 [package]
 name = "tauri-app"
-version = "1.0.0"
+version = "1.9.10"
 description = "EPUB Shelf — Tauri protótipo"
 edition = "2021"
+
+[[bin]]
+name = "tauri-app"
+path = "src/main.rs"
 
 [build-dependencies]
 tauri-build = { version = "1", features = [] }
