@@ -229,6 +229,8 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      sandbox: false,
+      offscreen: false,
     },
   });
   mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'), {
@@ -238,6 +240,7 @@ function createWindow() {
   });
 }
 
+app.disableHardwareAcceleration();
 app.whenReady().then(() => {
   createWindow();
   if (process.env.TEST_SCREENSHOT) {
