@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1e1e2e" />
+    <title>EPUB Library Manager</title>
+  <script>
+    (function() {
+      var theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+   <header>
+      <h1>EPUB Shelf</h1>
+     <div class="actions">
+       <div class="search-box">
+         <label for="search-input" class="visually-hidden">Pesquisar séries</label>
+         <input type="search" id="search-input" class="input--search" placeholder="Ctrl+K  Pesquisar…" autocomplete="off" aria-label="Pesquisar (Ctrl+K)" oninput="onSearchInput()" />
+         <button type="button" id="search-clear" class="btn--clear" aria-label="Limpar pesquisa" aria-hidden="true">✕</button>
+       </div>
+       <label for="sort-select" class="visually-hidden">Ordenar por</label>
+       <select id="sort-select" class="select--sort">
+         <option value="name-asc">Nome A–Z</option>
+         <option value="name-desc">Nome Z–A</option>
+         <option value="progress-desc">Progresso %</option>
+         <option value="mtime-desc">Atualização</option>
+       </select>
+        <button id="btn-theme-toggle" aria-label="Switch to light theme" title="Switch to light theme">☀️</button>
+        <button id="btn-stats" aria-label="Statistics" title="Statistics">📊</button>
+        <button id="btn-about" aria-label="About" title="About">❤️</button>
+        <button id="btn-select">Seleccionar pasta</button>
+       <button id="btn-scan" class="hidden">Actualizar biblioteca</button>
+       <span id="search-info" class="search-info" aria-live="polite"></span>
+ </div>
+    </header>
+
+    <main>
+    <div id="empty-state" class="hidden">
+          <p id="empty-title"></p>
+          <p id="empty-desc"></p>
+        </div>
+
+    <div id="loading-state" class="hidden">
+      <div class="loading-grid" id="loading-grid"></div>
+      <div class="loading-progress-container">
+        <p id="loading-text" aria-live="polite"></p>
+        <div class="loading-bar-container">
+          <div class="loading-progress" id="loading-progress"></div>
+        </div>
+      </div>
+    </div>
+
+        <section id="series-view" class="hidden">
+          <div id="series-grid"></div>
+        </section>
+
+        <section id="series-detail" class="hidden">
+          <button id="btn-back">← Voltar às séries</button>
+          <div id="detail-header">
+            <img id="detail-cover" class="placeholder" src="" alt="" />
+            <div id="detail-meta">
+              <h2 id="detail-title"></h2>
+              <p id="detail-author"></p>
+              <p id="detail-last-updated"></p>
+              <p id="detail-count"></p>
+              <p id="detail-read-count"></p>
+              <div id="series-state-selector"></div>
+              <div id="detail-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <span id="detail-progress-label"></span>
+              </div>
+            </div>
+          </div>
+          <div id="volume-list"></div>
+
+<button id="toggle-all-status" class="btn-status">Marcar tudo como lido</button>
+        </section>
+      </main>
+
+  <script src="preload.js"></script>
+  <script src="translations.js"></script>
+  <script src="renderer.js"></script>
+
+  <div id="stats-modal" class="hidden" role="dialog" aria-label="Statistics" tabindex="-1">
+    <div class="stats-backdrop"></div>
+    <div class="stats-panel">
+      <div class="stats-header">
+        <h2 id="stats-title"></h2>
+        <button id="btn-stats-close" aria-label="Close">✕</button>
+      </div>
+      <div class="stats-body">
+        <div class="stats-summary" id="stats-summary"></div>
+        <div class="stats-charts" id="stats-charts"></div>
+      </div>
+    </div>
+  </div>
+  <div id="about-modal" class="hidden" role="dialog" aria-label="About" tabindex="-1">
+    <div class="about-backdrop"></div>
+    <div class="about-panel">
+      <div class="about-header">
+        <h2 id="about-title">Sobre / About</h2>
+        <button id="btn-about-close" aria-label="Close">✕</button>
+      </div>
+      <div class="about-body">
+        <div class="about-logo">📚</div>
+        <h3 class="about-app-name">EPUB Shelf</h3>
+        <p class="about-version">v1.9.1</p>
+        <p class="about-desc">EPUB library manager organized by series.</p>
+
+        <div class="about-credits">
+          <h4>Credits</h4>
+          <p>Developed by <strong>Marcelo Salvador</strong></p>
+          <p class="about-links">
+            <a href="#" id="about-kofi-link" class="about-kofi">
+              ☕ Support on Ko-fi
+            </a>
+          </p>
+          <p class="about-links">
+            <a href="#" id="about-github-link" class="about-github">
+              GitHub
+            </a>
+          </p>
+          <div class="about-crypto">
+            <h5>Crypto Support</h5>
+            <p class="crypto-addr">ETH: <span>0x466f0c3ee495a3dc851fafa5c4720ab2fdcd4af4</span></p>
+            <p class="crypto-addr">SOL: <span>Hnw5z47sk1hS6FsnCLfgX8pZhDryQVnZpzWJjSSRV5Nf</span></p>
+          </div>
+        </div>
+
+        <p class="about-footer">Made with ❤️ for ebook readers</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
