@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

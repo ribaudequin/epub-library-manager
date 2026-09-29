@@ -9,6 +9,7 @@ on:
   pull_request:
     branches:
       - master
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -39,10 +40,8 @@ jobs:
         run: npm test || true
 
   build:
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     needs: quality
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
@@ -70,40 +69,53 @@ jobs:
 
       - name: Setup Rust (Tauri)
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-unknown-linux-gnu
 
-      - name: Install Linux packaging tools + Tauri deps
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tauri-app/src-tauri
+
+      - name: Install Linux Tauri dependencies (Ubuntu 24.04)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y dpkg-dev fakeroot build-essential g++ make python3 python3-dev squashfs-tools libglib2.0-dev libgtk-3-dev libwebkit2gtk-4.0-dev pkg-config
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            librsvg2-dev \
+            libayatana-appindicator3-dev \
+            libxdo-dev \
+            libssl-dev \
+            patchelf \
+            build-essential \
+            curl wget file
 
       - name: Build application (Tauri)
         run: |
           cd tauri-app
           npm ci
-          npx tauri build
+          npm run build
 
       - name: List build output
         shell: bash
-        run: find dist -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.dmg" -o -name "*.exe" -o -name "*.zip" -o -name "*.nupkg" \) 2>/dev/null || true
+        run: find tauri-app/src-tauri/target/release/bundle -type f 2>/dev/null || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: biblioteca-${{ matrix.os }}-${{ github.ref_name }}
           path: |
-            dist/**/*.deb
-            dist/**/*.AppImage
-            dist/**/*.dmg
-            dist/**/*.exe
-            dist/**/*.zip
-            dist/**/*.nupkg
+            tauri-app/src-tauri/target/release/bundle/**/*.deb
+            tauri-app/src-tauri/target/release/bundle/**/*.rpm
+            tauri-app/src-tauri/target/release/bundle/**/*.AppImage
+            tauri-app/src-tauri/target/release/bundle/**/*.msi
+            tauri-app/src-tauri/target/release/bundle/**/*.exe
+            tauri-app/src-tauri/target/release/bundle/**/*.dmg
           if-no-files-found: error
 
   release:
     needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

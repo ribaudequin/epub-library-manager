@@ -1,6 +1,8 @@
 node_modules/
 dist/
 *.img
+target/
+tauri-app/src-tauri/gen/
 MEMORY.md
 PLANO.md
 TODO.md
