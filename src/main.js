@@ -215,6 +215,8 @@ ipcMain.handle('app:getLocale', () => {
   return { locale, isPt: locale.startsWith('pt') };
 });
 
+ipcMain.handle('app:getVersion', () => app.getVersion());
+
 ipcMain.handle('shell:openExternal', async (_event, url) => {
   await shell.openExternal(url);
 });

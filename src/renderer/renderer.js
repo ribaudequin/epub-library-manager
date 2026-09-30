@@ -927,6 +927,12 @@ $('#sort-select').value = currentSort;
 (async () => {
   const testRoot = new URLSearchParams(location.search).get('root');
   await initI18n();
+  // Preenche a versão dinamicamente (About)
+  try {
+    const v = await window.api?.getVersion?.();
+    const vEl = document.querySelector('.about-version');
+    if (v && vEl) vEl.textContent = `v${v}`;
+  } catch {}
   // Não chamar populateCachedCovers aqui - precisa de root
 
 
