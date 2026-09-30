@@ -1,6 +1,7 @@
 name: Protect Sensitive Files
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - '**.md'
