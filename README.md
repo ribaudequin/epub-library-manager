@@ -231,7 +231,7 @@ If you find this project useful, consider supporting its development:
 ![Ko-fi](https://storage.ko-fi.com/cdn/logomarkLogo.png) [ko-fi.com/A0383T5](https://ko-fi.com/A0383T5)
 
 **Cryptocurrency (any EVM-compatible chain):**
-- **ETH:** `0x8a9D7dABf92B3F82f2c3aE5C4bF6A9d2E1aB3cCd`
-- **SOL:** `7nQ1M4kF2eP9jB8vR3cT6yU5xW0zA2bC9dE8fG7hJ6k`
+- **ETH:** `0x466f0c3ee495a3dc851fafa5c4720ab2fdcd4af4`
+- **SOL:** `Hnw5z47sk1hS6FsnCLfgX8pZhDryQVnZpzWJjSSRV5Nf`
 
 These addresses are also available in the app's **About** modal (click the ❤️ icon in the header).
