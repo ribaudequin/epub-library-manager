@@ -1196,7 +1196,7 @@ main {
 }
 .about-crypto .crypto-addr span {
   color: var(--accent);
-  font-family: monospace;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', ui-monospace, monospace;
 }
 
 /* Light theme about modal override */
