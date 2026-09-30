@@ -4,7 +4,8 @@
   "version": "1.9.18",
   "identifier": "io.github.ribaudequin.epub-library-manager",
   "build": {
-    "frontendDist": "../src"
+    "frontendDist": "dist",
+    "beforeBuildCommand": "mkdir -p dist && cp -r ../src/* dist/"
   },
   "app": {
     "withGlobalTauri": true,
