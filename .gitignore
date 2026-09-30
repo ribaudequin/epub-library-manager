@@ -14,3 +14,8 @@ screen*.png
 real*.png
 *.tar.gz
 /flathub/build/
+target/
+tauri-app/src-tauri/gen/
+*.md
+!README*.md
+!docs/**/*.md
