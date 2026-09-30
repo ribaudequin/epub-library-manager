@@ -90,6 +90,19 @@ jobs:
             build-essential \
             curl wget file
 
+      # WebKitGTK 2.52.6 (Ubuntu 24.04) renders a blank window on some
+      # Intel/Zorin setups. Pin 2.44.0 so the AppImage bundles a working
+      # WebKitGTK. See docs/TAURI-WEBKITGTK-2.52-BLANK-WINDOW.md
+      - name: Pin WebKitGTK 2.44 (AppImage blank-window fix)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y --allow-downgrades \
+            libwebkit2gtk-4.1-0=2.44.0-2 \
+            libjavascriptcoregtk-4.1-0=2.44.0-2 \
+            libwebkit2gtk-4.1-dev=2.44.0-2 \
+            gir1.2-webkit2-4.1=2.44.0-2 \
+            gir1.2-javascriptcoregtk-4.1=2.44.0-2
+
       - name: Build application (Tauri)
         run: |
           cd tauri-app
