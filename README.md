@@ -1,8 +1,21 @@
-# EPUB Shelf
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ribaudequin/ribaudequin/main/assets/bandua-dark.svg">
+    <img src="https://raw.githubusercontent.com/ribaudequin/ribaudequin/main/assets/bandua-light.svg" alt="Bandua Studio" width="64">
+  </picture>
+</p>
+
+<h1 align="center">epub shelf</h1>
+
+<p align="center">Organise your EPUB library by series.</p>
+
+<p align="center"><sub>A <b>Bandua Studio</b> project · by Marcelo Salvador</sub></p>
+
+---
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v1.9.4** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.9.4) · Linux (AppImage) · Windows (Installer + Portable)
+**v1.9.11** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.9.11) · Linux (AppImage) · Windows (Installer + Portable)
 
 ---
 
