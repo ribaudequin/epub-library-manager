@@ -14,7 +14,9 @@
     "dist:win:portable": "electron-builder --win portable",
     "dist:win:all": "electron-builder --win",
     "dist:all": "electron-builder --linux AppImage --win",
-    "test": "node test/validate-modules.js"
+    "test": "node test/validate-modules.js",
+    "lint": "node test/lint.js",
+    "memory:snapshot": "bash scripts/snapshot-memory.sh"
   },
   "author": "Marcelo Salvador <marcelo@example.com>",
   "license": "MIT",

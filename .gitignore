@@ -7,6 +7,10 @@ TODO.md
 .agents/
 promps/
 
+# Dated snapshots of the local-only memory files (scripts/snapshot-memory.sh).
+# These are copies of gitignored working notes and must not be committed.
+.memory-snapshots/
+
 squashfs-root/
 *.png.bak
 tint*.png
