@@ -8,10 +8,14 @@
   color-scheme: dark;
   /* Bandua Studio: Deep is the dark surface, Mist is the text on top of it. */
   --bg: #0F2A2E;
-  --bg-card: #14343A;
-  --bg-card-hover: #1C4249;
+  /* A card only reads as a card once it separates from the field behind it.
+     At #14343A it sat at 1.14:1 on Deep — closer to the background than the
+     card it replaced — and the 1px border ended up drawing the whole shape.
+     1.55:1 restores the layering without lightening the palette. */
+  --bg-card: #204A51;
+  --bg-card-hover: #245259;
   --text: #F2F5EE;
-  --text-dim: #9FB0AA;
+  --text-dim: #A8B8B2;
   /* Not the declared Teal. Teal measures 2.08:1 on Deep and BRAND.md forbids the
      pair, so the dark accent is the same hue 188 family lifted until it clears
      AA at 7.16:1. Teal itself stays the light-theme accent. */
@@ -162,11 +166,22 @@ header h1 {
   padding: 6px 32px 6px 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
-  background: var(--bg-card) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="7"><path fill="%239FB0AA" d="M0 0l6 7 6-7z"/></svg>') no-repeat right 8px center;
+  /* A single data-URI cannot serve both themes: the original hardcoded the dark
+     grey and left the chevron at 2.06:1 on the light Mist background. It is
+     restated per theme below. currentColor was tried and is worse -- Chromium
+     paints the SVG path in the element's text colour, which is --text (near
+     black), not --text-dim. */
+  background: var(--bg-card) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="7"><path fill="%23A8B8B2" d="M0 0l6 7 6-7z"/></svg>') no-repeat right 8px center;
   color: var(--text);
   font-size: 13px;
   cursor: pointer;
   background-size: 12px;
+}
+
+:root[data-theme="light"] .select--sort {
+  /* --text-dim on white: 6.26:1, where the dark-theme grey managed 2.06:1 on
+     Mist. The URI cannot interpolate, so the whole declaration is restated. */
+  background: var(--bg-card) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="7"><path fill="%234A6568" d="M0 0l6 7 6-7z"/></svg>') no-repeat right 8px center;
 }
 
 .select--sort:focus-visible {
