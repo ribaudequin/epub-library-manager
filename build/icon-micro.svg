@@ -1,0 +1,39 @@
+<svg width="1024" height="1024" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="EPUB Shelf">
+<title>EPUB Shelf — series shelf (16px optical size)</title>
+
+<!--
+  Optical size variant for 16-24px. Windows taskbar and some Linux panels render
+  the icon at 16px, where the master's keylines and progress bars fall below one
+  pixel and turn the mark into noise.
+
+  What is dropped, and why:
+  - Cards. At 16px the card/panel pair is two layers inside a 4px cell; the card
+    only adds a competing edge.
+  - Mist keylines. Sub-pixel; they wash into the panel colour.
+  - Progress bars. Sub-pixel; unreadable and they muddy the cell.
+
+  What survives, and why:
+  - The field and the arc, so the silhouette is identical to the master.
+  - Four solid covers in four colours. Colour is a low-frequency signal, so it is
+    one of the few things that survives a 16px downscale — this is what makes the
+    small size read as "a shelf of books" rather than a grey smudge.
+
+  Cover colours against the Mist arc: Deep 13.7:1 · Teal 6.6:1 · #2F6E74 5.3:1 ·
+  Moss 4.4:1. Mist is deliberately not used here: on the Mist arc it would vanish.
+-->
+
+<!-- Field -->
+<rect x="40" y="40" width="720" height="720" rx="170" fill="#0F2A2E"/>
+
+<!-- Pixel Arc window -->
+<path fill="#F2F5EE" transform="translate(400 400) scale(0.84) translate(-400 -400)"
+      d="M240 80H560V120H640V160H680V200H720V640H680V680H640V720H160V680H120V640H80V200H120V160H160V120H240Z"/>
+
+<!-- Four solid covers, filling the arc. Positions match the master's quadrants. -->
+<g>
+  <rect x="188" y="188" width="196" height="196" rx="26" fill="#1F5F66"/>
+  <rect x="416" y="188" width="196" height="196" rx="26" fill="#5B7B3A"/>
+  <rect x="188" y="416" width="196" height="196" rx="26" fill="#2F6E74"/>
+  <rect x="416" y="416" width="196" height="196" rx="26" fill="#0F2A2E"/>
+</g>
+</svg>

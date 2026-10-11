@@ -1,0 +1,69 @@
+<svg width="1024" height="1024" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="EPUB Shelf">
+<title>EPUB Shelf — series shelf</title>
+
+<!--
+  EPUB Shelf app icon — master artwork.
+
+  Design intent
+  - Dark-dominant field (Deep) so the mark holds against ANY desktop background:
+    13.7:1 on Mist, 15.1:1 on white. Light-dominant variants could not do this.
+  - The Bandua Pixel Arc is the container, drawn in Mist at 13.7:1 on Deep, and
+    inset far enough that the Mist mass never reaches the icon edge. It cannot
+    bleed into a light desktop, which is what killed the earlier light variants.
+  - Four series covers inside the arc, echoing the shelf in the app. The colour
+    lives in the art panel, not the card, so the card still separates cleanly
+    from the Mist arc.
+  - Each panel carries a Mist keyline drawn INSIDE its bounds. Without it the
+    panel sits at 2.1-3.1:1 against the card and the card loses its edge.
+
+  Palette — BRAND.md §5
+    Mist  #F2F5EE   background / light
+    Teal  #1F5F66   primary
+    Moss  #5B7B3A   accent only (icons and marks, never body text)
+    Deep  #0F2A2E   dark surface
+    #2F6E74         derived tint of Teal, per "prefer a derived tint over a
+                    foreign neutral". Used for the third cover.
+
+  Contrast against the Mist arc: Deep 13.7:1 · Teal 6.6:1 · #2F6E74 5.3:1 · Moss 4.4:1
+  Mist keyline vs Deep card: 13.7:1
+
+  Optical sizes: use icon-micro.svg at 16px. See compare-icons.sh.
+-->
+
+<!-- Field -->
+<rect x="40" y="40" width="720" height="720" rx="170" fill="#0F2A2E"/>
+
+<!-- Pixel Arc window -->
+<path fill="#F2F5EE" transform="translate(400 400) scale(0.84) translate(-400 -400)"
+      d="M240 80H560V120H640V160H680V200H720V640H680V680H640V720H160V680H120V640H80V200H120V160H160V120H240Z"/>
+
+<!-- Cards -->
+<g fill="#0F2A2E">
+  <rect x="200" y="200" width="184" height="184" rx="20"/>
+  <rect x="416" y="200" width="184" height="184" rx="20"/>
+  <rect x="200" y="416" width="184" height="184" rx="20"/>
+  <rect x="416" y="416" width="184" height="184" rx="20"/>
+</g>
+
+<!-- Art panels: Mist keyline inset 3 from the panel bounds, colour inside it. -->
+<g fill="#F2F5EE">
+  <rect x="224" y="224" width="136" height="96" rx="14"/>
+  <rect x="440" y="224" width="136" height="96" rx="14"/>
+  <rect x="224" y="440" width="136" height="96" rx="14"/>
+  <rect x="440" y="440" width="136" height="96" rx="14"/>
+</g>
+<g>
+  <rect x="227" y="227" width="130" height="90" rx="11" fill="#1F5F66"/>
+  <rect x="443" y="227" width="130" height="90" rx="11" fill="#5B7B3A"/>
+  <rect x="227" y="443" width="130" height="90" rx="11" fill="#2F6E74"/>
+  <rect x="443" y="443" width="130" height="90" rx="11" fill="#F2F5EE"/>
+</g>
+
+<!-- Read progress. Only the read state varies — panel size never does. -->
+<g fill="#F2F5EE">
+  <rect x="224" y="340" width="136" height="18" rx="9"/>
+  <rect x="440" y="340" width="92" height="18" rx="9"/>
+  <rect x="224" y="556" width="48" height="18" rx="9"/>
+  <rect x="440" y="556" width="112" height="18" rx="9"/>
+</g>
+</svg>
