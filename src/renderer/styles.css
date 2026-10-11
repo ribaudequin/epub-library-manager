@@ -20,6 +20,12 @@
   --green: #9ece6a;
   --yellow: #e0af68;
   --red: #f7768e;
+  /* "Completed" is the one state that is neither green, red nor amber, so it
+     takes blue. It deliberately does NOT read --accent: the accent is Teal,
+     which sits in the same green-cyan quarter of the wheel as --green, and a
+     completed badge then reads as an ongoing one at badge size. Blue was what
+     separated them before the Bandua palette landed. */
+  --completed: #7aa2f7;
   --border: rgba(242,245,238,0.10);
   --shadow: rgba(0,0,0,0.35);
   /* Label colour for text sitting ON a saturated fill (a state button, the
@@ -52,6 +58,9 @@
   --green: #3d9a42;
   --yellow: #c08a30;
   --red: #d43d50;
+  /* Blue here too, darkened for AA on the 15% tint. Same reasoning as the
+     dark theme's token: Teal would collide with the ongoing green. */
+  --completed: #2b5398;
   --border: rgba(15,42,46,0.12);
   --shadow: rgba(15,42,46,0.10);
   --tint-fallback: 31, 95, 102;
@@ -261,9 +270,6 @@ header h1 {
 :root[data-theme="light"] .state-btn.active[data-state="cancelled"] {
   color: #ffffff;
 }
-:root[data-theme="light"] #toggle-all-status {
-  border-color: rgba(31, 95, 102, 0.3);
-}
 :root[data-theme="light"] #btn-back {
   border: 1px solid var(--border);
 }
@@ -282,11 +288,11 @@ header h1 {
   border: 1px solid rgba(61, 154, 66, 0.35);
 }
 :root[data-theme="light"] .series-state-badge[data-state="completed"] {
-  background: rgba(31, 95, 102, 0.15);
-  /* Teal darkened by the same step the old blue took here, to hold the
-     contrast the badge had before on the same 15% tint. */
-  color: #1A555B;
-  border: 1px solid rgba(31, 95, 102, 0.35);
+  background: rgba(43, 83, 152, 0.15);
+  /* Blue, not Teal. See the token note: the completed state must not sit in
+     the same hue quarter as the ongoing green. */
+  color: #2b5398;
+  border: 1px solid rgba(43, 83, 152, 0.35);
 }
 :root[data-theme="light"] .series-state-badge[data-state="cancelled"] {
   background: rgba(212, 61, 80, 0.15);
@@ -729,14 +735,11 @@ main {
   border-color: #28a745;
 }
 .state-btn.active[data-state="completed"] {
-  /* The completed state was the only blue of the four; it now carries the
-     accent. Reading it from the token rather than a literal keeps the label
-     legible in both themes: the light theme paints this button white on Teal,
-     and the dark one near-black on the lifted tint — Teal itself would fail at
-     2.08:1 and the lifted tint cannot take white at 2.11:1. */
-  background: var(--accent);
+  /* Blue, not the accent. Teal sits in the same green-cyan quarter as the
+     ongoing green, and the two states have to be told apart at badge size. */
+  background: var(--completed);
   color: var(--on-fill);
-  border-color: var(--accent);
+  border-color: var(--completed);
 }
 .state-btn.active[data-state="cancelled"] {
   background: #dc3545;
@@ -775,11 +778,10 @@ main {
   border: 1px solid rgba(40, 167, 69, 0.3);
 }
 .series-state-badge[data-state="completed"] {
-  /* Tint is lighter than the green/red/yellow siblings: the lifted accent is
-     brighter, and at 20% it only left 4.21:1 under 10px label text. */
-  background: rgba(111, 191, 199, 0.15);
-  color: #6FBFC7;
-  border: 1px solid rgba(111, 191, 199, 0.3);
+  /* Blue, not the lifted Teal accent — same reason as the button above. */
+  background: rgba(122, 162, 247, 0.15);
+  color: #7aa2f7;
+  border: 1px solid rgba(122, 162, 247, 0.3);
 }
 .series-state-badge[data-state="cancelled"] {
   background: rgba(220, 53, 79, 0.2);
