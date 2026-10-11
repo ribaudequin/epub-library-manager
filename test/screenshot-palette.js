@@ -16,6 +16,7 @@ const { _electron: electron } = require('playwright');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
+const { execSync } = require('child_process');
 
 const MAIN_JS = path.join(__dirname, '..', 'src', 'main.js');
 const TEST_LIBRARY = path.join(__dirname, 'test-library');
@@ -225,7 +226,8 @@ async function capture(window, { file, theme, selector, scope }) {
 
 async function run() {
   if (!fs.existsSync(TEST_LIBRARY)) {
-    throw new Error(`Test library not found at ${TEST_LIBRARY} — run node test/generate-test-library.js first`);
+    console.log('Generating test library...');
+    execSync(`node ${path.join(__dirname, 'generate-test-library.js')} ${TEST_LIBRARY}`);
   }
   fs.mkdirSync(OUT_DIR, { recursive: true });
 

@@ -11,6 +11,17 @@ promps/
 # These are copies of gitignored working notes and must not be committed.
 .memory-snapshots/
 
+# The scanned library used for testing. Local only: it holds the user's own
+# EPUBs, which must never reach GitHub. test/generate-test-library.js rebuilds
+# the fixture when test-cache.js needs one.
+test/test-library/
+
+# Chromium/Electron caches written by a test run. Machine-local state, never
+# source. The test scripts create their own user-data dirs under the tmp dir.
+test/test-userdata-*/
+test/ud-test*/
+test/screenshot-out/
+
 squashfs-root/
 *.png.bak
 tint*.png
