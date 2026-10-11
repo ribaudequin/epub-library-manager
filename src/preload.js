@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('api', {
   unwatchLibrary: () => ipcRenderer.invoke('library:unwatch'),
   getLocale: () => ipcRenderer.invoke('app:getLocale'),
   getVersion: () => ipcRenderer.invoke('app:getVersion'),
+  setWindowTheme: (theme) => ipcRenderer.send('theme:set-window-color', theme),
   openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
   onLibraryChanged: (callback) => {
     ipcRenderer.on('library:changed', (_event, data) => callback(data));

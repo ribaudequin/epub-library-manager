@@ -217,16 +217,41 @@ ipcMain.handle('app:getLocale', () => {
 
 ipcMain.handle('app:getVersion', () => app.getVersion());
 
+// The window paints this colour for the fraction of a second before the
+// renderer applies its stylesheet, so it has to track the chosen theme or the
+// launch flashes the wrong surface. The renderer calls this whenever the
+// theme changes; the value is remembered for the next start.
+ipcMain.on('theme:set-window-color', (_event, theme) => {
+  launchTheme = theme === 'light' ? 'light' : 'dark';
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.setBackgroundColor(WINDOW_BACKGROUND[launchTheme]);
+  }
+});
+
 ipcMain.handle('shell:openExternal', async (_event, url) => {
   await shell.openExternal(url);
 });
+
+// Must match --bg in styles.css. Deep is the default theme; a light session
+// is only known once the renderer has read its stored preference, which is
+// after the window exists.
+const WINDOW_BACKGROUND = {
+  dark: '#0F2A2E',
+  light: '#F2F5EE',
+};
+let launchTheme = 'dark';
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     title: 'EPUB Shelf',
-    backgroundColor: '#1e1e2e',
+    // Deep, the Bandua dark surface. This is the window colour for the
+    // fraction of a second before the renderer paints, so it must match
+    // --bg or the launch flashes the old surface. It was still the Tokyo
+    // Night #1e1e2e after the palette change. A light session starts dark
+    // and corrects itself the moment the renderer reports its stored theme.
+    backgroundColor: WINDOW_BACKGROUND[launchTheme],
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

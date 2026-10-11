@@ -145,6 +145,7 @@ function getPreferredTheme() {
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('theme', theme);
+  if (window.api && window.api.setWindowTheme) window.api.setWindowTheme(theme);
   const btn = document.getElementById('btn-theme-toggle');
   if (btn) {
     btn.textContent = theme === 'dark' ? '☀️' : '🌙';
@@ -939,8 +940,10 @@ $('#sort-select').value = currentSort;
   const themeBtn = document.getElementById('btn-theme-toggle');
   if (themeBtn) {
     themeBtn.addEventListener('click', toggleTheme);
-    applyTheme(getPreferredTheme());
   }
+  // Outside the guard: the main process needs the stored theme to colour the
+  // window on the next launch, and that must not depend on the button existing.
+  applyTheme(getPreferredTheme());
 
   const statsBtn = document.getElementById('btn-stats');
   const statsCloseBtn = document.getElementById('btn-stats-close');
