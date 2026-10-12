@@ -1,6 +1,6 @@
 const TRANSLATIONS = {
   pt: {
-    app_title: "EPUB Shelf",
+    app_title: "EPUBShelf",
     search_placeholder: "Ctrl+K  Pesquisar…",
     sort_name_asc: "Nome A–Z",
     sort_name_desc: "Nome Z–A",
@@ -75,7 +75,7 @@ const TRANSLATIONS = {
     crypto_sol: 'SOL'
   },
   en: {
-    app_title: "EPUB Library",
+    app_title: "EPUBShelf",
     search_placeholder: "Ctrl+K  Search…",
     sort_name_asc: "Name A–Z",
     sort_name_desc: "Name Z–A",

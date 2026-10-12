@@ -245,7 +245,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    title: 'EPUB Shelf',
+    title: 'EPUBShelf',
     // Deep, the Bandua dark surface. This is the window colour for the
     // fraction of a second before the renderer paints, so it must match
     // --bg or the launch flashes the old surface. It was still the Tokyo

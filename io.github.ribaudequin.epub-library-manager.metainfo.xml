@@ -3,11 +3,11 @@
   <id>io.github.ribaudequin.epub-library-manager</id>
   <metadata_license>MIT</metadata_license>
   <project_license>MIT</project_license>
-  <name>EPUB Shelf</name>
+  <name>EPUBShelf</name>
   <summary>EPUB library manager organized by series</summary>
   <description>
     <p>
-      EPUB Shelf is a desktop application for managing and organizing
+      EPUBShelf is a desktop application for managing and organizing
       your EPUB ebook collection by series, with automatic metadata extraction,
       cover art, reading progress tracking, and intelligent search.
     </p>

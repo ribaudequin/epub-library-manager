@@ -5,7 +5,7 @@
   </picture>
 </p>
 
-<h1 align="center">epub shelf</h1>
+<h1 align="center">EPUBShelf</h1>
 
 <p align="center">Organise your EPUB library by series.</p>
 
@@ -15,7 +15,7 @@
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v1.9.11** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.9.11) · Linux (AppImage) · Windows (Installer + Portable)
+**v1.9.12** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.9.12) · Linux (AppImage) · Windows (Installer + Portable)
 
 ---
 
