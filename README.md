@@ -55,12 +55,12 @@ A desktop application for managing your EPUB library, organized by series — wi
 
 ### Install & Run
 
-#### Linux (AppImage)
-
 #### Linux (Flatpak)
 
 **Build files for Flatpak submission**:
 Download `BibliotecaEpub-1.8.1-flatpak.tar.gz` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.8.1).
+
+> This archive was published with **v1.8.1** and has not been rebuilt since. It is the only release carrying Flatpak build files, so the filename and the tag below are correct as written — do not update them to the current version.
 
 ```bash
 # Extract the build archive
@@ -91,12 +91,12 @@ npm start
 #### Windows
 
 **Option A: Installer (recommended)**
-Download `BibliotecaEpub Setup 1.8.0.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.8.0), double-click to install.
+Download `EPUBShelf-Setup-1.9.12.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.9.12), double-click to install.
 
 > **Windows SmartScreen note**: Since this app is unsigned, Windows may show a warning. Click **"More info"** → **"Run anyway"** to proceed. This is normal for unsigned open-source apps.
 
 **Option B: Portable (no installation, no SmartScreen warning)**
-Download `BibliotecaEpub 1.8.0.exe`, double-click to run directly. No installation required.
+Download `EPUBShelf-1.9.12.exe`, double-click to run directly. No installation required.
 
 ### Build AppImage
 
@@ -104,7 +104,7 @@ Download `BibliotecaEpub 1.8.0.exe`, double-click to run directly. No installati
 npm run dist
 ```
 
-The built AppImage appears in `dist/BibliotecaEpub-1.8.0.AppImage`.
+The built AppImage appears in `dist/EPUBShelf-1.9.12.AppImage`.
 
 ### Build for Windows
 
@@ -120,7 +120,7 @@ npm run dist:all              # AppImage + NSIS + portable
 npm run dist:flatpak          # Flatpak dir build
 ```
 
-### Features Highlights v1.8.0
+### Features Highlights v1.9.12
 
 - **🌍 Multi-language (PT/EN)** — Automatic system language detection via `app.getLocale()`. Translation engine inline in `translations.js` (no `fetch()` failures on `file://`)
 - **🔄 Auto-refresh** — File watcher (`fs.watch` + 2s debounce) automatically rescans when you add/remove/edit EPUBs
@@ -229,22 +229,30 @@ npm run dist:all     # Build all platforms
 
 ---
 
-## Author
+## Support
 
-**Marcelo Salvador** — [@ribaudequin](https://github.com/ribaudequin)
+EPUBShelf is free and open source. If it's useful to you, you can support the work:
 
-Project home: [https://github.com/ribaudequin/epub-library-manager](https://github.com/ribaudequin/epub-library-manager)
+<p>
+  <a href="https://ko-fi.com/A0383T5"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-ff5f5f?style=flat&logo=ko-fi&logoColor=white" alt="Ko-fi"></a>
+  <a href="https://www.patreon.com/banduastudio"><img src="https://img.shields.io/badge/Patreon-Support-f96854?style=flat&logo=patreon&logoColor=white" alt="Patreon"></a>
+</p>
 
----
+**Cryptocurrency** — the ETH address accepts any EVM-compatible chain:
 
-## Donate
-
-If you find this project useful, consider supporting its development:
-
-![Ko-fi](https://storage.ko-fi.com/cdn/logomarkLogo.png) [ko-fi.com/A0383T5](https://ko-fi.com/A0383T5)
-
-**Cryptocurrency (any EVM-compatible chain):**
-- **ETH:** `0x466f0c3ee495a3dc851fafa5c4720ab2fdcd4af4`
-- **SOL:** `Hnw5z47sk1hS6FsnCLfgX8pZhDryQVnZpzWJjSSRV5Nf`
+| Coin | Address | Explorer |
+|---|---|---|
+| ETH | `0x466f0c3ee495a3dc851fafa5c4720ab2fdcd4af4` | [Etherscan](https://etherscan.io/address/0x466f0c3ee495a3dc851fafa5c4720ab2fdcd4af4) |
+| SOL | `Hnw5z47sk1hS6FsnCLfgX8pZhDryQVnZpzWJjSSRV5Nf` | [Solscan](https://solscan.io/account/Hnw5z47sk1hS6FsnCLfgX8pZhDryQVnZpzWJjSSRV5Nf) |
 
 These addresses are also available in the app's **About** modal (click the ❤️ icon in the header).
+
+## Elsewhere
+
+<p>
+  <a href="https://github.com/ribaudequin">GitHub</a> ·
+  <a href="https://x.com/banduastudio">X</a> ·
+  <a href="https://www.linkedin.com/in/bandua-marcelo-salvador">LinkedIn</a> ·
+  <a href="https://ko-fi.com/A0383T5">Ko-fi</a> ·
+  <a href="https://www.patreon.com/banduastudio">Patreon</a>
+</p>
