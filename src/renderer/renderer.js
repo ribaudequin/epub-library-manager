@@ -960,14 +960,41 @@ $('#sort-select').value = currentSort;
   if (aboutBackdrop) aboutBackdrop.addEventListener('click', closeAbout);
 
   const kofiLink = document.getElementById('about-kofi-link');
+  const patreonLink = document.getElementById('about-patreon-link');
   const githubLink = document.getElementById('about-github-link');
+  const xLink = document.getElementById('about-x-link');
+  const linkedinLink = document.getElementById('about-linkedin-link');
   if (kofiLink) kofiLink.addEventListener('click', (e) => {
     e.preventDefault();
     window.api.openExternal('https://ko-fi.com/A0383T5');
   });
+  if (patreonLink) patreonLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.api.openExternal('https://www.patreon.com/banduastudio');
+  });
   if (githubLink) githubLink.addEventListener('click', (e) => {
     e.preventDefault();
     window.api.openExternal('https://github.com/ribaudequin/epub-library-manager');
+  });
+  if (xLink) xLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.api.openExternal('https://x.com/banduastudio');
+  });
+  if (linkedinLink) linkedinLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.api.openExternal('https://www.linkedin.com/in/bandua-marcelo-salvador');
+  });
+
+  document.querySelectorAll('.crypto-copy').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const addr = btn.dataset.addr;
+      if (addr && navigator.clipboard) {
+        navigator.clipboard.writeText(addr).then(() => {
+          btn.classList.add('copied');
+          setTimeout(() => btn.classList.remove('copied'), 1500);
+        });
+      }
+    });
   });
 
   const root = testRoot || await window.api.getRoot();

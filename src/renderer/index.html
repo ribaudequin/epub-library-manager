@@ -52,6 +52,10 @@
           <div class="loading-progress" id="loading-progress"></div>
         </div>
       </div>
+      <div class="loading-brand">
+        <img src="bandua-icon.svg" alt="Bandua Studio" class="loading-logo" />
+        <p class="loading-tagline">Built by Bandua Studio.</p>
+      </div>
     </div>
 
         <section id="series-view" class="hidden">
@@ -103,36 +107,60 @@
     <div class="about-backdrop"></div>
     <div class="about-panel">
       <div class="about-header">
-        <h2 id="about-title">Sobre / About</h2>
+        <h2 id="about-title">About</h2>
         <button id="btn-about-close" aria-label="Close">✕</button>
       </div>
       <div class="about-body">
-        <div class="about-logo">📚</div>
         <h3 class="about-app-name">EPUBShelf</h3>
-        <p class="about-version">v1.9.1</p>
-        <p class="about-desc">EPUB library manager organized by series.</p>
+        <p class="about-version">v1.9.12</p>
+        <p class="about-desc">Organise your EPUB library by series.</p>
+        <p class="about-license">MIT License · <a href="https://github.com/ribaudequin/epub-library-manager/blob/master/LICENSE" id="about-license-link">View license</a></p>
 
         <div class="about-credits">
-          <h4>Credits</h4>
-          <p>Developed by <strong>Marcelo Salvador</strong></p>
-          <p class="about-links">
-            <a href="#" id="about-kofi-link" class="about-kofi">
-              ☕ Support on Ko-fi
-            </a>
-          </p>
-          <p class="about-links">
-            <a href="#" id="about-github-link" class="about-github">
-              GitHub
-            </a>
-          </p>
-          <div class="about-crypto">
-            <h5>Crypto Support</h5>
-            <p class="crypto-addr">ETH: <span>0x466f0c3ee495a3dc851fafa5c4720ab2fdcd4af4</span></p>
-            <p class="crypto-addr">SOL: <span>Hnw5z47sk1hS6FsnCLfgX8pZhDryQVnZpzWJjSSRV5Nf</span></p>
+          <div class="about-studio">
+            <img src="bandua-icon.svg" alt="Bandua Studio" class="about-studio-logo" />
+            <p class="about-studio-line">A <strong>Bandua Studio</strong> app · by <strong>Marcelo Salvador</strong></p>
+          </div>
+          <div class="about-studio-profiles">
+            <a href="#" id="about-x-link" class="about-chip"><img src="x.svg" alt="" class="about-chip-icon" />@banduastudio</a>
+            <a href="#" id="about-linkedin-link" class="about-chip"><img src="linkedin.svg" alt="" class="about-chip-icon" />LinkedIn</a>
           </div>
         </div>
 
-        <p class="about-footer">Made with ❤️ for ebook readers</p>
+        <div class="about-support">
+          <p class="about-support-text">These tools are free and open source. If one of them is useful to you, you can support the work.</p>
+          <div class="about-support-buttons">
+            <a href="#" id="about-kofi-link" class="about-cta"><img src="kofi-light.svg" alt="" class="about-cta-icon" />Ko-fi</a>
+            <a href="#" id="about-patreon-link" class="about-cta"><img src="patreon.svg" alt="" class="about-cta-icon" />Patreon</a>
+          </div>
+        </div>
+
+        <div class="about-crypto">
+          <h5>Cryptocurrency</h5>
+          <p class="about-crypto-note">The ETH address accepts any EVM-compatible chain.</p>
+          <div class="crypto-row">
+            <span class="crypto-label">ETH</span>
+            <code class="crypto-addr" translate="no">0x466f0c3ee495a3dc851fafa5c4720ab2fdcd4af4</code>
+            <button class="crypto-copy" data-addr="0x466f0c3ee495a3dc851fafa5c4720ab2fdcd4af4" aria-label="Copy ETH address">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="crypto-copy-icon"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="crypto-copy-check"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+          </div>
+          <p class="crypto-explorer"><a href="https://etherscan.io/address/0x466f0c3ee495a3dc851fafa5c4720ab2fdcd4af4" id="about-etherscan-link">Etherscan</a></p>
+          <div class="crypto-row">
+            <span class="crypto-label">SOL</span>
+            <code class="crypto-addr" translate="no">Hnw5z47sk1hS6FsnCLfgX8pZhDryQVnZpzWJjSSRV5Nf</code>
+            <button class="crypto-copy" data-addr="Hnw5z47sk1hS6FsnCLfgX8pZhDryQVnZpzWJjSSRV5Nf" aria-label="Copy SOL address">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="crypto-copy-icon"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="crypto-copy-check"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+          </div>
+          <p class="crypto-explorer"><a href="https://solscan.io/account/Hnw5z47sk1hS6FsnCLfgX8pZhDryQVnZpzWJjSSRV5Nf" id="about-solscan-link">Solscan</a></p>
+        </div>
+
+        <div class="about-links-row">
+          <a href="#" id="about-github-link" class="about-chip"><img src="github-dark.svg" alt="" class="about-chip-icon" />GitHub</a>
+        </div>
       </div>
     </div>
   </div>

@@ -502,6 +502,26 @@ main {
   transition: width 0.2s ease;
 }
 
+.loading-brand {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.loading-logo {
+  width: 48px;
+  height: 48px;
+  opacity: 0.9;
+}
+
+.loading-tagline {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
 #series-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -1151,10 +1171,6 @@ main {
 .about-body {
   text-align: center;
 }
-.about-logo {
-  font-size: 48px;
-  margin-bottom: 8px;
-}
 .about-app-name {
   font-size: 20px;
   font-weight: 700;
@@ -1164,13 +1180,25 @@ main {
 .about-version {
   font-size: 13px;
   color: var(--text-dim);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .about-desc {
   font-size: 14px;
   color: var(--text-dim);
   line-height: 1.5;
+  margin-bottom: 8px;
+}
+.about-license {
+  font-size: 12px;
+  color: var(--text-dim);
   margin-bottom: 20px;
+}
+.about-license a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.about-license a:hover {
+  text-decoration: underline;
 }
 .about-credits {
   background: var(--bg-card);
@@ -1179,78 +1207,180 @@ main {
   padding: 16px;
   margin-bottom: 16px;
 }
-.about-credits h4 {
-  font-size: 14px;
-  color: var(--text);
-  margin-bottom: 8px;
+.about-studio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
 }
-.about-credits p {
+.about-studio-logo {
+  width: 32px;
+  height: 32px;
+}
+.about-studio-line {
   font-size: 13px;
   color: var(--text-dim);
-  margin-bottom: 6px;
+  margin: 0;
 }
-.about-credits strong {
-  color: var(--accent);
+.about-studio-line strong {
+  color: var(--text);
 }
-.about-links {
-  margin-top: 10px;
+.about-studio-profiles {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
 }
-.about-kofi,
-.about-github {
+.about-chip {
   display: inline-block;
-  padding: 8px 16px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--bg-card-hover);
+  color: var(--text);
+  border: 1px solid var(--border);
+  transition: border-color 0.15s;
+}
+.about-chip:hover {
+  border-color: var(--accent);
+}
+.about-chip-icon {
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.about-support {
+  margin-bottom: 16px;
+}
+.about-support-text {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.about-support-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.about-cta {
+  display: inline-block;
+  padding: 10px 24px;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
   transition: filter 0.15s, transform 0.15s;
-  margin: 4px;
+  flex: 1;
+  max-width: 140px;
 }
-.about-kofi {
-  background: #ff5e5b;
-  color: #fff;
-}
-.about-kofi:hover {
+.about-cta:hover {
   filter: brightness(1.1);
   transform: translateY(-1px);
 }
-.about-github {
-  background: var(--bg-card-hover);
-  color: var(--text);
-  border: 1px solid var(--border);
+#about-kofi-link {
+  background: #ff5e5b;
+  color: #fff;
 }
-.about-github:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--accent);
+#about-patreon-link {
+  background: #f96854;
+  color: #fff;
 }
-.about-footer {
-  font-size: 12px;
-  color: var(--text-dim);
-  margin-top: 12px;
+.about-cta-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 6px;
 }
 .about-crypto {
   background: var(--bg-card-hover);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
-  margin-top: 16px;
+  margin-bottom: 16px;
   text-align: left;
 }
 .about-crypto h5 {
-  margin: 0 0 12px 0;
+  margin: 0 0 4px 0;
   color: var(--text);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
 }
-.about-crypto .crypto-addr {
-  margin: 8px 0;
-  font-size: 13px;
+.about-crypto-note {
+  font-size: 11px;
   color: var(--text-dim);
-  word-break: break-all;
+  margin: 0 0 12px 0;
 }
-.about-crypto .crypto-addr span {
+.crypto-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+.crypto-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  width: 28px;
+  flex-shrink: 0;
+}
+.crypto-addr {
+  flex: 1;
+  font-size: 11px;
   color: var(--accent);
   font-family: 'JetBrains Mono', 'DejaVu Sans Mono', ui-monospace, monospace;
+  word-break: break-all;
+}
+.crypto-copy {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+.crypto-copy:hover {
+  background: var(--bg-card-hover);
+}
+.crypto-copy-icon {
+  width: 14px;
+  height: 14px;
+}
+.crypto-copy.copied .crypto-copy-icon {
+  display: none;
+}
+.crypto-copy-check {
+  display: none;
+  width: 14px;
+  height: 14px;
+  color: #28a745;
+}
+.crypto-copy.copied .crypto-copy-check {
+  display: block;
+}
+.crypto-explorer {
+  margin: 4px 0 8px 0;
+  font-size: 11px;
+}
+.crypto-explorer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.crypto-explorer a:hover {
+  text-decoration: underline;
+}
+.about-links-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
 }
 
 /* Light theme about modal override */
