@@ -364,6 +364,146 @@ function observeLazyImages(container) {
   imgs.forEach((img) => coverObserver.observe(img));
 }
 
+/* --- Volume cover preview -------------------------------------------------
+   Volume rows only fit a 42px thumbnail, which is too small to read a cover.
+   Hovering or focusing one floats the full-size image above the list, anchored
+   to the thumbnail and flipped when it would run past the right edge. The
+   element is created once and reused across every hover — hiding only drops the
+   `visible` class, so the decoded image stays in the browser cache. */
+const VOLUME_PREVIEW_DELAY = 220;
+const VOLUME_PREVIEW_HIDE_DELAY = 120;
+const VOLUME_PREVIEW_RESUME_DELAY = 350;
+let volumePreview = null;
+let volumePreviewAnchor = null;
+let volumePreviewShowTimer = null;
+let volumePreviewHideTimer = null;
+let volumePreviewResumeTimer = null;
+
+function getVolumePreview() {
+  if (volumePreview) return volumePreview;
+  volumePreview = document.createElement('div');
+  volumePreview.className = 'volume-preview';
+  volumePreview.setAttribute('aria-hidden', 'true');
+  const img = document.createElement('img');
+  img.alt = '';
+  img.draggable = false;
+  volumePreview.appendChild(img);
+  document.body.appendChild(volumePreview);
+
+  // Hover-through: moving from the thumbnail onto the preview keeps it open, so
+  // the cover can be inspected instead of vanishing as the pointer chases it.
+  volumePreview.addEventListener('mouseenter', () => clearTimeout(volumePreviewHideTimer));
+  volumePreview.addEventListener('mouseleave', scheduleHideVolumePreview);
+  return volumePreview;
+}
+
+function positionVolumePreview(anchor) {
+  const el = volumePreview;
+  el.style.left = '0px';
+  el.style.top = '0px';
+  el.classList.add('visible');
+
+  const rect = anchor.getBoundingClientRect();
+  const gap = 14;
+  const margin = 10;
+  const w = el.offsetWidth;
+  const h = el.offsetHeight;
+
+  let left = rect.right + gap;
+  if (left + w > window.innerWidth - margin) left = rect.left - gap - w;
+  if (left < margin) left = Math.min(rect.right + gap, window.innerWidth - w - margin);
+
+  let top = rect.top + rect.height / 2 - h / 2;
+  top = Math.min(Math.max(margin, top), Math.max(margin, window.innerHeight - h - margin));
+
+  el.style.left = Math.round(left) + 'px';
+  el.style.top = Math.round(top) + 'px';
+}
+
+function showVolumePreview(anchor) {
+  // coverObserver removes data-src once the thumbnail has lazy-loaded, so by the
+  // time the pointer arrives only the resolved src is left. currentSrc is the
+  // absolute URL after load; dataset.src covers a thumbnail that never loaded.
+  const src = anchor.currentSrc || anchor.dataset.src || anchor.getAttribute('src');
+  if (!src) return;
+  volumePreviewAnchor = anchor;
+  const el = getVolumePreview();
+  const img = el.firstChild;
+  if (img.getAttribute('src') !== src) img.setAttribute('src', src);
+  positionVolumePreview(anchor);
+}
+
+function hideVolumePreview() {
+  clearTimeout(volumePreviewShowTimer);
+  clearTimeout(volumePreviewHideTimer);
+  if (volumePreview) volumePreview.classList.remove('visible');
+}
+
+// Escape is an explicit dismissal, so it also drops the anchor: the preview must
+// not spring back while focus is still sitting on the cover.
+function dismissVolumePreview() {
+  volumePreviewAnchor = null;
+  hideVolumePreview();
+}
+
+// Scrolling is an incidental dismissal — the pointer never left the cover, so
+// mouseenter will not fire again and the preview would stay gone. Re-open it if
+// the cover is still hovered or focused once the scrolling settles.
+function resumeVolumePreview() {
+  clearTimeout(volumePreviewResumeTimer);
+  volumePreviewResumeTimer = setTimeout(() => {
+    const anchor = volumePreviewAnchor;
+    if (!anchor || !anchor.isConnected) return;
+    if (anchor === document.activeElement || anchor.matches(':hover')) {
+      showVolumePreview(anchor);
+    }
+  }, VOLUME_PREVIEW_RESUME_DELAY);
+}
+
+function scheduleHideVolumePreview() {
+  clearTimeout(volumePreviewHideTimer);
+  volumePreviewHideTimer = setTimeout(() => {
+    if (volumePreview) volumePreview.classList.remove('visible');
+  }, VOLUME_PREVIEW_HIDE_DELAY);
+}
+
+function bindVolumePreview(coverEl, name) {
+  if (!coverEl || coverEl.tagName !== 'IMG' || !coverEl.dataset.src) return;
+  // Keyboard parity: a hover-only preview is unreachable without a mouse.
+  coverEl.tabIndex = 0;
+  coverEl.setAttribute('role', 'img');
+  coverEl.setAttribute('aria-label', name);
+
+  coverEl.addEventListener('mouseenter', () => {
+    volumePreviewAnchor = coverEl;
+    clearTimeout(volumePreviewShowTimer);
+    volumePreviewShowTimer = setTimeout(() => showVolumePreview(coverEl), VOLUME_PREVIEW_DELAY);
+  });
+  coverEl.addEventListener('mouseleave', () => {
+    volumePreviewAnchor = null;
+    scheduleHideVolumePreview();
+  });
+  coverEl.addEventListener('focus', () => {
+    volumePreviewAnchor = coverEl;
+    showVolumePreview(coverEl);
+  });
+  coverEl.addEventListener('blur', () => {
+    volumePreviewAnchor = null;
+    hideVolumePreview();
+  });
+}
+
+// A fixed preview would otherwise float over unrelated rows once the list
+// scrolls under it. Capture phase catches scrolling in any descendant.
+window.addEventListener('resize', () => {
+  hideVolumePreview();
+  resumeVolumePreview();
+});
+document.addEventListener('scroll', () => {
+  hideVolumePreview();
+  resumeVolumePreview();
+}, true);
+
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, '&amp;')
@@ -529,6 +669,7 @@ function openSeries(id) {
         renderSeriesGrid();
       });
     });
+    bindVolumePreview(row.querySelector('.volume-cover'), v.name);
     list.appendChild(row);
   }
   observeLazyImages(list);
@@ -907,6 +1048,7 @@ $('#search-clear').addEventListener('keydown', (e) => {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
+    dismissVolumePreview();
     const statsModal = document.getElementById('stats-modal');
     const aboutModal = document.getElementById('about-modal');
     if (statsModal && !statsModal.classList.contains('hidden')) {

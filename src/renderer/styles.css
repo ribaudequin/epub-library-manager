@@ -884,6 +884,57 @@ main {
   font-size: 18px;
 }
 
+/* Full-size preview of a volume cover, floated above the list on hover/focus.
+   The rows only have room for a 42px thumbnail, which is too small to read a
+   cover. position:fixed escapes #volume-list — no ancestor between it and
+   <body> sets transform/filter/will-change, so it is never clipped or
+   re-anchored. z-index 50 clears the sticky header (10) and stays under the
+   modals (100). */
+.volume-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  display: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 64px var(--shadow);
+}
+
+.volume-preview.visible {
+  display: block;
+  animation: volume-preview-in 0.14s ease-out;
+}
+
+/* width/height auto keeps the cover's own aspect — unlike the 2/3
+   object-fit:cover thumbnail, nothing is cropped in the preview. */
+.volume-preview img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 360px;
+  max-height: 70vh;
+}
+
+@keyframes volume-preview-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .volume-preview.visible {
+    animation: none;
+  }
+}
+
 .volume-name {
   flex: 1;
   min-width: 0;
