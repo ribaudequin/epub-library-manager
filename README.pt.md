@@ -23,11 +23,11 @@ A desktop application for managing your EPUB library, organized by series — wi
 
 ## Screenshots
 
-> Screenshots will be added here. Place them in `docs/assets/` or link to GitHub releases.
-
 | Series Grid | Volume Detail |
 |---|---|
-| `docs/assets/grid-view.png` | `docs/assets/detail-view.png` |
+| [![Series Grid](docs/assets/grid-view_low.jpg)](docs/assets/grid-view.png) | [![Volume Detail](docs/assets/detail-view_low.jpg)](docs/assets/detail-view.png) |
+
+Click a screenshot for the full-resolution version.
 
 ---
 
