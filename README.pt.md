@@ -2,7 +2,7 @@
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v1.5.0** · [Download AppImage](https://github.com/ribaudequin/epub-library-manager/releases) · `npm run dist`
+**v2.0.0** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.0.0) · Linux (AppImage) · Windows (Installer + Portable)
 
 ---
 
@@ -54,7 +54,7 @@ npm start
 npm run dist
 ```
 
-The built AppImage appears in `dist/BibliotecaEpub-1.5.0.AppImage`.
+The built AppImage appears in `dist/EPUBShelf-2.0.0.AppImage`.
 
 ---
 
@@ -66,7 +66,7 @@ The built AppImage appears in `dist/BibliotecaEpub-1.5.0.AppImage`.
 | **Renderer** | Vanilla JavaScript |
 | **UI** | HTML5, CSS Grid/Flex, CSS Custom Properties (themes) |
 | **EPUB Parsing** | `adm-zip` (ZIP extraction), `@xmldom/xmldom` (XML metadata) |
-| **Testing** | Vitest, Playwright |
+| **Testing** | Playwright (Electron), Node test scripts |
 | **Packaging** | electron-builder (AppImage) |
 
 ---
@@ -139,7 +139,7 @@ Contributions are welcome! Please follow these guidelines:
 ```bash
 npm install      # Install dependencies
 npm start        # Launch app in development mode
-npm test         # Run test suite (validate-modules.js + Vitest)
+npm test         # Run test suite (validate-modules.js)
 npm run dist     # Build AppImage for Linux
 ```
 

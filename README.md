@@ -15,7 +15,7 @@
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v1.9.12** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.9.12) · Linux (AppImage) · Windows (Installer + Portable)
+**v2.0.0** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.0.0) · Linux (AppImage) · Windows (Installer + Portable)
 
 ---
 
@@ -91,12 +91,12 @@ npm start
 #### Windows
 
 **Option A: Installer (recommended)**
-Download `EPUBShelf-Setup-1.9.12.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.9.12), double-click to install.
+Download `EPUBShelf-Setup-2.0.0.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.0.0), double-click to install.
 
 > **Windows SmartScreen note**: Since this app is unsigned, Windows may show a warning. Click **"More info"** → **"Run anyway"** to proceed. This is normal for unsigned open-source apps.
 
 **Option B: Portable (no installation, no SmartScreen warning)**
-Download `EPUBShelf-1.9.12.exe`, double-click to run directly. No installation required.
+Download `EPUBShelf-2.0.0.exe`, double-click to run directly. No installation required.
 
 ### Build AppImage
 
@@ -104,7 +104,7 @@ Download `EPUBShelf-1.9.12.exe`, double-click to run directly. No installation r
 npm run dist
 ```
 
-The built AppImage appears in `dist/EPUBShelf-1.9.12.AppImage`.
+The built AppImage appears in `dist/EPUBShelf-2.0.0.AppImage`.
 
 ### Build for Windows
 
@@ -120,8 +120,10 @@ npm run dist:all              # AppImage + NSIS + portable
 npm run dist:flatpak          # Flatpak dir build
 ```
 
-### Features Highlights v1.9.12
+### Features Highlights v2.0.0
 
+- **🖼️ Volume Cover Preview** — Hovering or tabbing to a volume thumbnail floats the full-size cover above the list, so a 42×63 px thumbnail never has to stand in for the real artwork. Keeps each cover's own proportions, flips to the left near the right edge, and dismisses on `Esc`
+- **🎨 Bandua Studio Branding** — Loading screen carries the Pixel Arc and a "Built by Bandua Studio" line; the About modal was rebuilt with the studio identity, X and LinkedIn profiles, Ko-fi and Patreon calls to action with copy-to-clipboard buttons, explorer links for the ETH and SOL addresses, and the MIT licence
 - **🌍 Multi-language (PT/EN)** — Automatic system language detection via `app.getLocale()`. Translation engine inline in `translations.js` (no `fetch()` failures on `file://`)
 - **🔄 Auto-refresh** — File watcher (`fs.watch` + 2s debounce) automatically rescans when you add/remove/edit EPUBs
 - **📅 Localized Dates** — Relative dates adapt to locale (e.g., "21 months ago" / "há 21 meses")
@@ -139,7 +141,7 @@ npm run dist:flatpak          # Flatpak dir build
 | **Renderer** | Vanilla JavaScript |
 | **UI** | HTML5, CSS Grid/Flex, CSS Custom Properties (themes) |
 | **EPUB Parsing** | `adm-zip` (ZIP extraction), `@xmldom/xmldom` (XML metadata) |
-| **Testing** | Vitest, Playwright |
+| **Testing** | Playwright (Electron), Node test scripts |
 | **Packaging** | electron-builder (AppImage, NSIS, Portable) |
 | **Flatpak** | Flatpak manifest + build files (Flathub submission ready) |
 
@@ -213,7 +215,7 @@ Contributions are welcome! Please follow these guidelines:
 ```bash
 npm install          # Install dependencies
 npm start            # Launch app in development mode
-npm test             # Run test suite (validate-modules.js + Vitest)
+npm test             # Run test suite (validate-modules.js)
 npm run dist         # Build AppImage for Linux
 npm run dist:win     # Build NSIS installer for Windows
 npm run dist:all     # Build all platforms
