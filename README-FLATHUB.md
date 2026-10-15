@@ -39,8 +39,8 @@ flatpak-builder --user --install --force-clean build-dir io.github.ribaudequin.e
 ## Technical Info
 
 - **App ID**: `io.github.ribaudequin.epub-library-manager`
-- **Runtime**: `org.freedesktop.Platform` 24.08
-- **BaseApp**: `org.electronjs.Electron2.BaseApp` 24.08
+- **Runtime**: `org.freedesktop.Platform` 26.08
+- **BaseApp**: `org.electronjs.Electron2.BaseApp` 26.08
 - **SDK Extension**: `org.freedesktop.Sdk.Extension.node22`
 - **Build**: `npm run dist:flatpak` (electron-builder dir output)
 

@@ -140,10 +140,17 @@ biblioteca/
 
 ### Stack técnica Flatpak
 ```yaml
-runtime: org.freedesktop.Platform (24.08)
-base: org.electronjs.Electron2.BaseApp (stable)
-sdk-extensions: org.freedesktop.Sdk.Extension.node24
+runtime: org.freedesktop.Platform (26.08)
+base: org.electronjs.Electron2.BaseApp (26.08)
+sdk-extensions: org.freedesktop.Sdk.Extension.node22
 ```
+
+> Corrected 2026-10-15. The original values were 24.08 / `stable` / `node24`. The
+> 24.08 runtime is end-of-life and Flathub refuses submissions built on it;
+> `stable` does not exist as a BaseApp branch; and `node24` was never what the
+> manifest used (`append-path` pointed at `node22`). The file names in the table
+> above (`io.github.marcelo.bibliotecaepub.*`) are also stale — the shipped IDs
+> are `io.github.ribaudequin.epub-library-manager.*`.
 
 ### Estado atual
 - **Phase 1-2**: Manifest + supporting files CREATED ✅
@@ -153,6 +160,17 @@ sdk-extensions: org.freedesktop.Sdk.Extension.node24
 - **Phase 5**: Flatpak bundle (`BibliotecaEpub-1.8.1-flatpak.tar.gz`) created + uploaded ✅
 - **Phase 6**: README.md updated with Flatpak install instructions ✅
 - **Status**: DONE — Release v1.8.1 with 4 assets (AppImage + NSIS + portable + Flatpak)
+
+> **The "validated ✅" above was wrong when written, and was fixed on 2026-10-15.**
+> The workflow had never run, `flatpak-builder` had never been invoked, and the
+> manifest could not have produced a working bundle — see MEMORY.md for the seven
+> defects found on the first real build. The YAML *parsed*; it was never *built*.
+> The Phase 5 archive does exist, but it was assembled by hand from a
+> `flatpak build-export`, not built from this manifest.
+>
+> As of 2026-10-15 the manifest does build: `flatpak-builder` exits 0 on the
+> 26.08 runtime, `npm install --offline` completes with no network, the bundle
+> installs and the app runs.
 
 ### Fix necessário antes de submeter
 - **P0**: Redirect `getVolumeCoverPath()` para escrever em `userData/covers/` em vez do dir do epub

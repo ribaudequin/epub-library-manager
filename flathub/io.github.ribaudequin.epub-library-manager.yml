@@ -1,13 +1,17 @@
 id: io.github.ribaudequin.epub-library-manager
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'
+# 24.08 is end-of-life ("no longer receiving fixes and security updates") and
+# Flathub will not accept a submission built on it. 26.08 is the branch the
+# other Electron apps on Flathub use, and the one the Electron2 BaseApp
+# publishes alongside it.
+runtime-version: '26.08'
 sdk: org.freedesktop.Sdk
 # The build runs npm and electron-builder, and append-path below points into
 # this extension's tree — without it declared, that path does not exist.
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.node22
 base: org.electronjs.Electron2.BaseApp
-base-version: '24.08'
+base-version: '26.08'
 command: epub-shelf
 separate-locales: false
 
@@ -80,6 +84,11 @@ modules:
           - test/test-library
           - .git
           - .memory-snapshots
+          # flatpak-builder writes its own build tree and ccache into the
+          # project directory. Without this the source copies itself on every
+          # run: it reached 6.6 GB across four nested copies before this line
+          # existed.
+          - .flatpak-builder
       - type: file
         path: run.sh
       - generated-sources.json

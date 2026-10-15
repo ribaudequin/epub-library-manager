@@ -13,8 +13,9 @@ Manual Build Instructions:
 2. Add Flathub remote:
    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 3. Install dependencies:
-   flatpak install -y org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08
-   flatpak install -y org.freedesktop.Sdk.Extension.node22
+   flatpak install -y org.freedesktop.Platform//26.08 org.freedesktop.Sdk//26.08
+   flatpak install -y org.freedesktop.Sdk.Extension.node22//26.08
+   flatpak install -y org.electronjs.Electron2.BaseApp//26.08
 4. Install flatpak-builder-tools:
    pip install flatpak-builder-tools
 5. Generate sources (if needed):
