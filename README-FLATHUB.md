@@ -1,6 +1,6 @@
-# EPUB Shelf - Flathub Packaging
+# EPUBShelf — Flathub Packaging
 
-Flatpak packaging for [EPUB Shelf](https://github.com/ribaudequin/epub-library-manager) — an EPUB library manager organized by series with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
+Flatpak packaging for [EPUBShelf](https://github.com/ribaudequin/epub-library-manager) — an EPUB library manager organized by series with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
 ## Installation
 
@@ -34,15 +34,29 @@ flatpak-builder --user --install --force-clean build-dir io.github.ribaudequin.e
 | `io.github.ribaudequin.epub-library-manager.desktop` | Desktop entry |
 | `io.github.ribaudequin.epub-library-manager.metainfo.xml` | AppStream metadata |
 | `run.sh` | Application launcher (zypak-wrapper) |
-| `generated-sources.json` | Pre-fetched NPM dependencies |
+| `generated-sources.json` | Pre-fetched NPM dependencies and Electron binaries |
 
 ## Technical Info
 
 - **App ID**: `io.github.ribaudequin.epub-library-manager`
 - **Runtime**: `org.freedesktop.Platform` 24.08
-- **BaseApp**: `org.electronjs.Electron2.BaseApp`
-- **SDK Extension**: `org.freedesktop.Sdk.Extension.node24`
+- **BaseApp**: `org.electronjs.Electron2.BaseApp` 24.08
+- **SDK Extension**: `org.freedesktop.Sdk.Extension.node22`
 - **Build**: `npm run dist:flatpak` (electron-builder dir output)
+
+## Regenerating `generated-sources.json`
+
+The build runs with no network, so every npm package, the Electron binaries and
+the Electron headers must be listed as sources before the build starts:
+
+```bash
+flatpak-node-generator --retries 3 -o generated-sources.json npm package-lock.json
+```
+
+Run it from the repository root, after any `package-lock.json` change. Use the
+generator from [flatpak-builder-tools](https://github.com/flatpak/flatpak-builder-tools);
+an older release of that tool silently omits the Electron binaries, which makes
+the build fail at `npm install --offline`.
 
 ## Submission Status
 

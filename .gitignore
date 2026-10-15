@@ -31,6 +31,11 @@ real*.png
 /flathub/build/
 target/
 tauri-app/src-tauri/gen/
+# flatpak-builder's own state and build directories, created by a local build.
+.flatpak-builder/
+build-dir/
+repo/
+*.flatpak
 *.md
 !README*.md
 !docs/**/*.md

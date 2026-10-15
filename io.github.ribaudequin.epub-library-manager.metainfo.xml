@@ -5,19 +5,22 @@
   <project_license>MIT</project_license>
   <name>EPUBShelf</name>
   <summary>EPUB library manager organized by series</summary>
+  <developer id="io.github.ribaudequin">
+    <name>Bandua Studio</name>
+  </developer>
   <description>
     <p>
-      EPUBShelf is a desktop application for managing and organizing
-      your EPUB ebook collection by series, with automatic metadata extraction,
-      cover art, reading progress tracking, and intelligent search.
+      EPUBShelf is a desktop application for managing and organizing your EPUB
+      ebook collection by series, with automatic metadata extraction, cover art,
+      reading progress tracking, and intelligent search.
     </p>
     <p>
-      Features include recursive EPUB scanning with localStorage cache,
-      metadata extraction (title, author, series state), series grid with
-      dominant-tint coloring and reading progress bars, volume detail view
-      with read/unread/pending status tracking, fuzzy search (Ctrl+K),
-      smart sorting, dark and light themes, statistics dashboard, and
-      persistent state management.
+      Features include recursive EPUB scanning with a localStorage cache,
+      metadata extraction (title, author, series state), a series grid with
+      dominant-tint coloring and reading progress bars, a volume detail view
+      with read/unread/pending status tracking, fuzzy search (Ctrl+K), smart
+      sorting, dark and light themes, a statistics dashboard, and persistent
+      state management.
     </p>
   </description>
   <url type="homepage">https://github.com/ribaudequin/epub-library-manager</url>
@@ -27,7 +30,7 @@
   <categories>
     <category>Office</category>
     <category>Utility</category>
-    <category>Reader</category>
+    <category>Viewer</category>
   </categories>
   <keywords>
     <keyword>epub</keyword>
@@ -43,32 +46,57 @@
   <icon type="remote">https://raw.githubusercontent.com/ribaudequin/epub-library-manager/master/build/icon-128.png</icon>
   <content_rating type="oars-1.1" />
   <screenshots>
-    <screenshot type="normal" id="series-grid">
+    <screenshot type="default" id="series-grid">
       <caption>Series grid with cover art, reading progress, and tinted cards</caption>
-      <image>https://github.com/ribaudequin/epub-library-manager/releases/download/v1.8.0/screenshot-grid.png</image>
+      <image>https://raw.githubusercontent.com/ribaudequin/epub-library-manager/master/docs/assets/grid-view.png</image>
     </screenshot>
     <screenshot type="normal" id="volume-detail">
-      <caption>Volume detail view with status tracking and bulk actions</caption>
-      <image>https://github.com/ribaudequin/epub-library-manager/releases/download/v1.8.0/screenshot-detail.png</image>
-    </screenshot>
-    <screenshot type="normal" id="statistics">
-      <caption>Statistics dashboard with charts and library overview</caption>
-      <image>https://github.com/ribaudequin/epub-library-manager/releases/download/v1.8.0/screenshot-stats.png</image>
+      <caption>Volume detail view with per-volume status tracking</caption>
+      <image>https://raw.githubusercontent.com/ribaudequin/epub-library-manager/master/docs/assets/detail-view.png</image>
     </screenshot>
   </screenshots>
   <releases>
+    <release version="2.0.0" date="2026-10-14">
+      <description>
+        <ul>
+          <li>Volume cover preview — hovering or tabbing to a volume thumbnail floats the full-size cover above the list, keeping each cover's own proportions.</li>
+          <li>Bandua Studio branding — the loading screen carries the Pixel Arc, and the About modal was rebuilt with the studio identity, social profiles, support links with copy-to-clipboard, and explorer links for the wallet addresses.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.12" date="2026-10-11">
+      <description>
+        <ul>
+          <li>New application icon, dark-dominant so it stays legible at taskbar sizes.</li>
+          <li>Bandua palette throughout — Deep, Mist and Teal replace every hardcoded purple and blue.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.9.3" date="2026-08-30">
+      <description>
+        <ul>
+          <li>Renamed the product to EPUBShelf (was BibliotecaEpub).</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.8.2" date="2026-08-29">
+      <description>
+        <ul>
+          <li>About modal with system information and credits.</li>
+          <li>External links open in the default browser instead of inside the Electron container.</li>
+          <li>Removed the default Electron menu bar.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.8.1" date="2026-08-20">
       <description>
-        <p>
-          <ul>
-            <li><strong>Light Theme</strong> — Toggle between dark and light themes with persistent localStorage. Anti-flash script prevents flicker on load.</li>
-            <li><strong>Statistics Dashboard</strong> — Modal with 4 summary cards (series, volumes, read, progress), state breakdown chart, largest series ranking, and 30-day activity timeline (pure CSS/SVG).</li>
-            <li><strong>WCAG Fixes</strong> — Button contrast improved (accent darkened, white text on primary buttons), state badges darkened for white card backgrounds, detail view tint gradient boosted.</li>
-            <li><strong>Ghost Toolbar Buttons</strong> — Stats, folder select, and refresh buttons now use transparent/ghost style matching the theme toggle for visual consistency.</li>
-            <li><strong>Windows Builds</strong> — NSIS installer + portable .exe available, validated on Windows 11.</li>
-            <li><strong>i18n</strong> — 41 total keys (PT/EN), automatic system language detection.</li>
-          </ul>
-        </p>
+        <ul>
+          <li>Light theme toggle with persistent localStorage and an anti-flash script.</li>
+          <li>Statistics dashboard — summary cards, state breakdown, largest series, and 30-day activity, all pure CSS/SVG.</li>
+          <li>WCAG fixes — button and badge contrast, detail view tint gradient.</li>
+          <li>Windows builds — NSIS installer and portable executable.</li>
+          <li>Multi-language interface (PT/EN) with automatic system language detection.</li>
+        </ul>
       </description>
     </release>
   </releases>

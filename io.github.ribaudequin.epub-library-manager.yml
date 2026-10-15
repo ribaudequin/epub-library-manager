@@ -2,9 +2,13 @@ id: io.github.ribaudequin.epub-library-manager
 runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
+# The build runs npm and electron-builder, and append-path below points into
+# this extension's tree — without it declared, that path does not exist.
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node22
 base: org.electronjs.Electron2.BaseApp
-base-version: stable
-command: biblioteca-epub
+base-version: '24.08'
+command: epub-shelf
 separate-locales: false
 
 finish-args:
@@ -21,33 +25,61 @@ finish-args:
   - --filesystem=xdg-documents:ro
   # Environment
   - --env=ELECTRON_TRASH=gio
+  # On a Wayland session flatpak passes WAYLAND_DISPLAY but not DISPLAY, and
+  # Electron 31 still defaults to the X11 backend: without this the app dies on
+  # startup with "Missing X server or $DISPLAY" (exit 139) on every Wayland
+  # desktop. Verified: with the hint the process stays up, without it it exits
+  # immediately. 'auto' lets Electron pick Wayland and fall back to X11.
+  - --env=ELECTRON_OZONE_PLATFORM_HINT=auto
 
 modules:
-  - name: biblioteca-epub
+  - name: epub-shelf
     buildsystem: simple
     build-options:
       append-path: /usr/lib/sdk/node22/bin
       env:
-        XDG_CACHE_HOME: /run/build/biblioteca-epub/flatpak-node/cache
-        npm_config_cache: /run/build/biblioteca-epub/flatpak-node/npm-cache
+        XDG_CACHE_HOME: /run/build/epub-shelf/flatpak-node/cache
+        npm_config_cache: /run/build/epub-shelf/flatpak-node/npm-cache
         npm_config_nodedir: /usr/lib/sdk/node22
     build-commands:
-      # Install dependencies from pre-downloaded cache
+      # Install dependencies from the pre-downloaded cache. The Electron
+      # headers and ffmpeg prebuilts arrive as generated sources, so the
+      # postinstall step must not reach for the network.
       - npm install --offline
       # Build with electron-builder targeting directory output
       - npm run dist:flatpak
-      # Copy app files to Flatpak location
-      - cp -r dist/linux-unpacked /app/lib/biblioteca-epub
-      # Install wrapper script
-      - install -Dm755 run.sh /app/bin/biblioteca-epub
+      # Copy the unpacked build into the app. The directory keeps the name
+      # electron-builder gives it (linux-unpacked); the launcher points here.
+      - mkdir -p /app/lib/epub-shelf
+      - cp -r dist/linux-unpacked/. /app/lib/epub-shelf/
+      # Install the wrapper script
+      - install -Dm755 run.sh /app/bin/epub-shelf
+      # Install the desktop entry and the AppStream metadata. Both were listed
+      # as sources but never installed, so the app shipped without either.
+      - install -Dm644 io.github.ribaudequin.epub-library-manager.desktop
+        /app/share/applications/io.github.ribaudequin.epub-library-manager.desktop
+      - install -Dm644 io.github.ribaudequin.epub-library-manager.metainfo.xml
+        /app/share/metainfo/io.github.ribaudequin.epub-library-manager.metainfo.xml
+      # Install the icons at every size the build produces
+      - |
+        for size in 16 20 24 32 48 64 128 256 512; do
+          install -Dm644 "build/icon-${size}.png" \
+            "/app/share/icons/hicolor/${size}x${size}/apps/io.github.ribaudequin.epub-library-manager.png"
+        done
     sources:
+      # The local tree. A dir source copies everything and does not honour
+      # .gitignore, so the heavy build output has to be excluded by hand —
+      # dist/ alone is ~3.8 GB and would be copied into every build.
       - type: dir
         path: .
-      - type: file
-        path: generated-sources.json
+        skip:
+          - dist
+          - node_modules
+          - flathub/build
+          - tauri-app
+          - test/test-library
+          - .git
+          - .memory-snapshots
       - type: file
         path: run.sh
-      - type: file
-        path: io.github.ribaudequin.epub-library-manager.desktop
-      - type: file
-        path: io.github.ribaudequin.epub-library-manager.metainfo.xml
+      - generated-sources.json

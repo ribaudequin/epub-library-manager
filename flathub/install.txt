@@ -1,4 +1,4 @@
-Flatpak Build Files for EPUB Shelf
+Flatpak Build Files for EPUBShelf
 ============================================
 
 Files included:
@@ -14,7 +14,7 @@ Manual Build Instructions:
    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 3. Install dependencies:
    flatpak install -y org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08
-   flatpak install -y org.freedesktop.Sdk.Extension.node24
+   flatpak install -y org.freedesktop.Sdk.Extension.node22
 4. Install flatpak-builder-tools:
    pip install flatpak-builder-tools
 5. Generate sources (if needed):

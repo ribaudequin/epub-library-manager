@@ -1,4 +1,4 @@
-# Biblioteca de EPUBs
+# EPUBShelf
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 

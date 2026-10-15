@@ -1,13 +1,24 @@
-name: Build and package Flatpak
+name: Build Flatpak bundle
 
+# Deliberately NOT triggered by 'v*' tags: release.yml already publishes a
+# release for every version tag, and two workflows racing to create the same
+# release would collide. This one builds the bundle on demand and on pushes to
+# the flathub branch that touch the packaging files.
 on:
+  workflow_dispatch:
   push:
     branches:
       - flathub
-    tags:
-      - 'v*-flathub'
-  release:
-    types: [created]
+    paths:
+      - 'io.github.ribaudequin.epub-library-manager.yml'
+      - 'io.github.ribaudequin.epub-library-manager.desktop'
+      - 'io.github.ribaudequin.epub-library-manager.metainfo.xml'
+      - 'generated-sources.json'
+      - 'run.sh'
+      - '.github/workflows/build-flatpak.yml'
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -16,64 +27,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      # The previous version of this workflow never called flatpak-builder at
+      # all: it copied files into /app by hand and ran `flatpak build-export` on
+      # that, which is not a build and could never produce a working bundle.
+      # This action runs flatpak-builder properly, in a sandbox with no network,
+      # and uploads the bundle as an artifact itself.
+      - name: Build the Flatpak bundle
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          node-version: '18'
-          cache: 'npm'
+          manifest-path: io.github.ribaudequin.epub-library-manager.yml
+          bundle: EPUBShelf.flatpak
+          arch: x86_64
+          cache-key: flatpak-builder-${{ github.sha }}
+          artifact-name: EPUBShelf-flatpak
+          verbose: true
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Flatpak
+      # A bundle whose metadata does not validate would be rejected by Flathub.
+      # Cheap to check here, and it keeps the manifest honest.
+      - name: Validate AppStream metadata
         run: |
-          sudo apt install -y flatpak flatpak-builder locales-all
-          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-      - name: Generate sources
-        run: |
-          pip3 install flatpak-builder-tools
-          flatpak-node-generator --output generated-sources.json npm package-lock.json || true
-
-      - name: Build directory
-        run: npm run dist:flatpak
-
-      - name: Copy files to app dir
-        run: |
-          mkdir -p /app/lib/bibliotecaepub
-          cp -r dist/linux-unpacked/* /app/lib/bibliotecaepub/
-          install -Dm755 run.sh /app/bin/biblioteca-epub
-          
-      - name: Build Flatpak repo
-        run: |
-          mkdir -p /app/share/applications
-          mkdir -p /app/share/icons/hicolor/128x128/apps
-          mkdir -p /app/share/metainfo
-          cp io.github.ribaudequin.epub-library-manager.desktop /app/share/applications/
-          cp build/icon-128.png /app/share/icons/hicolor/128x128/apps/io.github.ribaudequin.epub-library-manager.png
-          cp io.github.ribaudequin.epub-library-manager.metainfo.xml /app/share/metainfo/
-
-      - name: Create bundle
-        run: |
-          flatpak build-export /tmp/repo /app
-          flatpak build-bundle --app /tmp/repo BibliotecaEpub-${{ github.ref_name || '1.8.0' }}.flatpak io.github.ribaudequin.epub-library-manager
-
-      - name: Upload bundle
-        uses: actions/upload-artifact@v3
-        with:
-          name: flatpak-bundle
-          path: BibliotecaEpub-*.flatpak
-
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/v')
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: BibliotecaEpub ${{ github.ref_name }}
-          body: |
-            ## Flatpak Bundle
-            Install via terminal:
-            ```bash
-            flatpak install --user BibliotecaEpub-${{ github.ref_name }}.flatpak
-            ```
-          files: BibliotecaEpub-*.flatpak
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq appstream
+          appstreamcli validate --no-net \
+            io.github.ribaudequin.epub-library-manager.metainfo.xml

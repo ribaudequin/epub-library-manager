@@ -1,4 +1,4 @@
-# EPUB Shelf — Documentation
+# EPUBShelf — Documentation
 
 A cross-platform desktop application for managing your EPUB library, organized by series. Automatically extracts metadata and cover art from EPUBs, tracks reading progress, and provides intelligent search and sorting.
 

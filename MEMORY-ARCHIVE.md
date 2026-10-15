@@ -1,10 +1,44 @@
-# Memory Archive — Biblioteca de Epubs
+# Memory Archive — EPUBShelf
 
-Versões anteriores a v1.7.0. Detalhes completos preservados para referência.
+Releases older than v1.9.12, kept in full for reference. The two most recent
+releases stay in `MEMORY.md`; anything older lives here.
 
 ---
 
 ## 🚀 Releases Arquivadas
+
+### v1.9.11
+- About: crypto addresses **visible** (real mono font `JetBrains Mono`/`DejaVu Sans Mono` instead of the generic `monospace`) + **dynamic version** (`app.getVersion()` over the `app:getVersion` IPC). Docs: ETH/SOL addresses corrected in `README.md` and `docs/README.md`.
+
+### v1.9.10
+- UI: `font-family: inherit` on `button/input/select/textarea` (fixes invisible buttons and placeholders). CI: `Protect Sensitive Files` fixed (`fetch-depth: 0` + `before..after` range + `workflow_dispatch`).
+
+### v1.9.9
+- Included `app.disableHardwareAcceleration()` in the release (fixes the blank window on machines with a problematic GPU). Also pushed `master` with the WebKitGTK bug write-up.
+
+### v1.9.3
+- Renamed the product to "EPUBShelf", fixed the About modal link, added Ko-fi + crypto donations (ETH/SOL), README updated with the correct links.
+
+### v1.9.2
+- Loading screen grid doubled to 400px (6 cols), per-image randomized animation (delay, Y-offset, rotateX/Y). Builds pushed and tagged.
+
+### v1.9.1
+- Animated cover collage grid (3×3 = 9 slots), progressive loading + cache-first, marquee scroll.
+
+### v1.9.0
+- Initial animated loading screen replacing the spinner.
+
+### v1.8.3
+- About modal forced to English, ETH/SOL addresses, app renamed → "EPUB Shelf".
+
+### v1.8.2
+- About modal added, default menu bar removed (`Menu.setApplicationMenu(null)`).
+
+### v1.8.1
+- Flathub packaging (manifest, desktop entry, metainfo, Flatpak builds).
+
+### v1.8.0
+- Light theme, statistics dashboard, WCAG fixes, Windows builds.
 
 ### v1.6.0 (2026-08-20)
 - Feature: i18n multi-language (PT/EN) with automatic system locale detection

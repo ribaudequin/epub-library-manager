@@ -1,4 +1,4 @@
-# EPUB Shelf - Flatpak Installation
+# EPUBShelf — Flatpak Installation
 
 ## Quick Start
 
@@ -9,7 +9,7 @@ flatpak install flathub io.github.ribaudequin.epub-library-manager
 
 ### Option 2: Install local bundle
 ```bash
-flatpak install --user BibliotecaEpub-1.8.0.flatpak
+flatpak install --user EPUBShelf.flatpak
 ```
 
 ## Usage
@@ -60,11 +60,12 @@ flatpak uninstall --delete-data io.github.ribaudequin.epub-library-manager
 
 To build the Flatpak bundle locally:
 ```bash
-npm install
-npm run dist:flatpak
 flatpak-builder --user --install --force-clean build-dir io.github.ribaudequin.epub-library-manager.yml
-flatpak build-bundle repo BibliotecaEpub-1.8.0.flatpak io.github.ribaudequin.epub-library-manager
+flatpak build-bundle repo EPUBShelf.flatpak io.github.ribaudequin.epub-library-manager
 ```
+
+`flatpak-builder` runs `npm install` and `npm run dist:flatpak` itself, inside
+the sandbox — there is no need to build with npm first.
 
 ## Support
 
