@@ -1,15 +1,21 @@
 # EPUBShelf — Flatpak Installation
 
-## Quick Start
+> **EPUBShelf is not published on Flathub.** The manifest builds and runs locally,
+> but there is no Flathub listing, so `flatpak install flathub …` cannot work for
+> this app. Everything below is the local build path.
+>
+> Flathub submission is **pending and undecided** — the packaging is ready and
+> builds, but whether it is submitted has not been settled. If that changes, a
+> "Install from Flathub" section belongs here; until then, this file does not
+> claim one.
 
-### Option 1: Install from Flathub (Recommended)
-```bash
-flatpak install flathub io.github.ribaudequin.epub-library-manager
-```
+## Quick Start — build and install locally
 
-### Option 2: Install local bundle
 ```bash
-flatpak install --user EPUBShelf.flatpak
+git clone https://github.com/ribaudequin/epub-library-manager.git
+cd epub-library-manager
+flatpak-builder --user --install --force-clean build-dir io.github.ribaudequin.epub-library-manager.yml
+flatpak run io.github.ribaudequin.epub-library-manager
 ```
 
 ## Usage

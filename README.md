@@ -15,7 +15,7 @@
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v2.0.0** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.0.0) · Linux (AppImage) · Windows (Installer + Portable)
+**v2.0.0** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.0.0) · Linux (AppImage) · Windows (Installer + Portable) · macOS (Apple silicon)
 
 ---
 
@@ -49,44 +49,37 @@ Click a screenshot for the full-resolution version.
 
 ### Prerequisites
 
-- **Operating System**: Linux (AppImage) or Windows (NSIS installer / portable)
+- **Operating System**: Linux (AppImage or `.deb`), Windows (NSIS installer / portable) or macOS (Apple silicon)
 - **Node.js**: 18+ (for building from source)
 - **npm**: 9+
 
 ### Install & Run
 
-#### Linux (Flatpak)
-
-**Build files for Flatpak submission**:
-Download `BibliotecaEpub-1.8.1-flatpak.tar.gz` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v1.8.1).
-
-> This archive was published with **v1.8.1** and has not been rebuilt since. It is the only release carrying Flatpak build files, so the filename and the tag below are correct as written — do not update them to the current version.
-
-```bash
-# Extract the build archive
-tar -xzf BibliotecaEpub-1.8.1-flatpak.tar.gz
-cd flathub/
-
-# Build and install via Flatpak
-flatpak-builder --user --install --force-clean build-dir io.github.ribaudequin.epub-library-manager.yml
-
-# Run the app
-flatpak run io.github.ribaudequin.epub-library-manager
-```
-
-Once the app is approved on Flathub, you can install directly:
-```bash
-flatpak install flathub io.github.ribaudequin.epub-library-manager
-```
-
 #### Linux (AppImage)
+
+Download `EPUBShelf-2.0.0.AppImage` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.0.0), then:
+
+```bash
+chmod +x EPUBShelf-2.0.0.AppImage
+./EPUBShelf-2.0.0.AppImage
+```
+
+A Debian package is published alongside it: `epub-shelf_2.0.0_amd64.deb`.
+
+#### Linux (Flatpak — build from source)
+
+**EPUBShelf is not on Flathub.** The manifest builds and runs locally, but there is no published Flathub listing, so there is nothing to `flatpak install` from a remote.
+
+To build it yourself:
 
 ```bash
 git clone https://github.com/ribaudequin/epub-library-manager.git
 cd epub-library-manager
-npm install
-npm start
+flatpak-builder --user --install --force-clean build-dir io.github.ribaudequin.epub-library-manager.yml
+flatpak run io.github.ribaudequin.epub-library-manager
 ```
+
+See [`docs/FLATHUB-INSTALL.md`](docs/FLATHUB-INSTALL.md) for permissions and troubleshooting.
 
 #### Windows
 
@@ -97,6 +90,14 @@ Download `EPUBShelf-Setup-2.0.0.exe` from [GitHub Releases](https://github.com/r
 
 **Option B: Portable (no installation, no SmartScreen warning)**
 Download `EPUBShelf-2.0.0.exe`, double-click to run directly. No installation required.
+
+#### macOS
+
+Download `EPUBShelf-2.0.0-arm64.dmg` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.0.0), open it and drag the app to Applications.
+
+The published build is **Apple silicon (arm64)**. There is no Intel `.dmg`.
+
+> **Gatekeeper note**: The build is unsigned, so macOS may refuse the first launch. Right-click the app and choose **Open**, then confirm — after that it launches normally.
 
 ### Build AppImage
 
@@ -142,8 +143,8 @@ npm run dist:flatpak          # Flatpak dir build
 | **UI** | HTML5, CSS Grid/Flex, CSS Custom Properties (themes) |
 | **EPUB Parsing** | `adm-zip` (ZIP extraction), `@xmldom/xmldom` (XML metadata) |
 | **Testing** | Playwright (Electron), Node test scripts |
-| **Packaging** | electron-builder (AppImage, NSIS, Portable) |
-| **Flatpak** | Flatpak manifest + build files (Flathub submission ready) |
+| **Packaging** | electron-builder (AppImage, deb, NSIS, Portable, dmg) |
+| **Flatpak** | Flatpak manifest — builds locally; not published on Flathub |
 
 ---
 

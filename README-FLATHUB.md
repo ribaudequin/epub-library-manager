@@ -4,9 +4,12 @@ Flatpak packaging for [EPUBShelf](https://github.com/ribaudequin/epub-library-ma
 
 ## Installation
 
-Once published on Flathub:
+**Not yet available on Flathub.** The listing below is what it will be once
+published; there is no Flathub listing today, so the command cannot work yet.
+For now, build locally — see below.
 
 ```bash
+# Once published on Flathub:
 flatpak install flathub io.github.ribaudequin.epub-library-manager
 ```
 
@@ -60,7 +63,12 @@ the build fail at `npm install --offline`.
 
 ## Submission Status
 
-This branch contains all the files required for Flathub submission. The submission process:
+**Not submitted.** The packaging is ready — the manifest builds, installs and runs
+locally, and the files below are everything a Flathub PR needs. Whether to submit
+it is **undecided** by the maintainer, so nothing in this repository should claim
+a pending or in-review submission.
+
+If it is submitted, the process is:
 
 1. Fork `flathub/flathub` repository
 2. Create a branch with the naming convention: `io.github.ribaudequin.epub-library-manager`

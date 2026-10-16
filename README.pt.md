@@ -2,7 +2,7 @@
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v2.0.0** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.0.0) · Linux (AppImage) · Windows (Installer + Portable)
+**v2.0.0** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.0.0) · Linux (AppImage) · Windows (Installer + Portable) · macOS (Apple silicon)
 
 ---
 
@@ -35,7 +35,7 @@ Click a screenshot for the full-resolution version.
 
 ### Prerequisites
 
-- **Operating System**: Linux (AppImage)
+- **Operating System**: Linux (AppImage or `.deb`), Windows (NSIS installer / portable) or macOS (Apple silicon)
 - **Node.js**: 18+
 - **npm**: 9+
 
@@ -67,7 +67,7 @@ The built AppImage appears in `dist/EPUBShelf-2.0.0.AppImage`.
 | **UI** | HTML5, CSS Grid/Flex, CSS Custom Properties (themes) |
 | **EPUB Parsing** | `adm-zip` (ZIP extraction), `@xmldom/xmldom` (XML metadata) |
 | **Testing** | Playwright (Electron), Node test scripts |
-| **Packaging** | electron-builder (AppImage) |
+| **Packaging** | electron-builder (AppImage, deb, NSIS, Portable, dmg) |
 
 ---
 
@@ -143,7 +143,7 @@ npm test         # Run test suite (validate-modules.js)
 npm run dist     # Build AppImage for Linux
 ```
 
-> **Note**: The AppImage is built with `electron-builder` targeting Linux. Cross-platform support is not currently planned.
+> **Note**: The desktop builds target Linux, Windows and macOS — CI builds all three, and the release publishes an AppImage, a `.deb`, an NSIS installer, a portable `.exe` and an arm64 `.dmg`. Windows builds are cross-compiled from Linux using Wine.
 
 ---
 
