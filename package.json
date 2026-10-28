@@ -24,7 +24,8 @@
   "license": "MIT",
   "dependencies": {
     "@xmldom/xmldom": "^0.9.10",
-    "adm-zip": "^0.5.16"
+    "adm-zip": "^0.5.16",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",

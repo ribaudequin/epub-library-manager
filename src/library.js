@@ -3,6 +3,7 @@ const fsp = require('fs/promises');
 const crypto = require('crypto');
 const AdmZip = require('adm-zip');
 const { DOMParser } = require('@xmldom/xmldom');
+const sharp = require('sharp');
 
 const coverCache = new Map();
 const COVER_CACHE_MAX = 50;
@@ -220,7 +221,7 @@ async function scanVolume(filePath, coverCacheDir) {
   const stat = await fsp.stat(filePath);
   const id = safeId(filePath);
   const name = path.basename(filePath, '.epub');
-  const coverFile = path.join(coverCacheDir, id + '.png');
+  const coverFile = path.join(coverCacheDir, id + '.jpg');
 
   let title = name;
   let author = null;
@@ -257,7 +258,11 @@ async function scanVolume(filePath, coverCacheDir) {
       }
       const data = extractCoverData(zip, entries, zipObj, opfPath);
       if (data) {
-        await fsp.writeFile(coverFile, data);
+        const compressed = await sharp(data)
+          .resize(600, 600, { fit: 'inside', withoutEnlargement: true })
+          .jpeg({ quality: 80, progressive: true })
+          .toBuffer();
+        await fsp.writeFile(coverFile, compressed);
         coverSrc = coverFile;
       }
     }
