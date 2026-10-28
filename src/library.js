@@ -259,7 +259,7 @@ async function scanVolume(filePath, coverCacheDir) {
       const data = extractCoverData(zip, entries, zipObj, opfPath);
       if (data) {
         const img = await Jimp.read(data);
-        img.resize({ w: 600, h: 600 });
+        img.resize({ w: 600 });
         const compressed = await img.getBuffer('image/jpeg', { quality: 80 });
         await fsp.writeFile(coverFile, compressed);
         coverSrc = coverFile;
