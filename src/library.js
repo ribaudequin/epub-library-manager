@@ -3,7 +3,7 @@ const fsp = require('fs/promises');
 const crypto = require('crypto');
 const AdmZip = require('adm-zip');
 const { DOMParser } = require('@xmldom/xmldom');
-const sharp = require('sharp');
+const { Jimp } = require('jimp');
 
 const coverCache = new Map();
 const COVER_CACHE_MAX = 50;
@@ -258,10 +258,9 @@ async function scanVolume(filePath, coverCacheDir) {
       }
       const data = extractCoverData(zip, entries, zipObj, opfPath);
       if (data) {
-        const compressed = await sharp(data)
-          .resize(600, 600, { fit: 'inside', withoutEnlargement: true })
-          .jpeg({ quality: 80, progressive: true })
-          .toBuffer();
+        const img = await Jimp.read(data);
+        img.resize({ w: 600, h: 600 });
+        const compressed = await img.getBuffer('image/jpeg', { quality: 80 });
         await fsp.writeFile(coverFile, compressed);
         coverSrc = coverFile;
       }
