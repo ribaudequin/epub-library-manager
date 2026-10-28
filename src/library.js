@@ -220,7 +220,7 @@ async function scanVolume(filePath, coverCacheDir) {
   const stat = await fsp.stat(filePath);
   const id = safeId(filePath);
   const name = path.basename(filePath, '.epub');
-  const coverFile = path.join(coverCacheDir, id + '.img');
+  const coverFile = path.join(coverCacheDir, id + '.png');
 
   let title = name;
   let author = null;
