@@ -1,11 +1,22 @@
 node_modules/
 dist/
 *.img
-MEMORY.md
-PLANO.md
-TODO.md
 .agents/
 promps/
+
+# Memory, planning and agent notes are the user's working context: local-only,
+# never committed. The `*.md` rule further down already covers them, but they
+# are named explicitly because a pattern cannot untrack a file Git already
+# tracks — MEMORY-ARCHIVE.md, PLAN.md and PLAN-LIGHT-THEME-STATS.md stayed
+# tracked after commit ccd4db6 and had to be cleaned up with `git rm --cached`.
+# Their only backup is .memory-snapshots/, which is gitignored too.
+MEMORY.md
+MEMORY-ARCHIVE.md
+TODO.md
+PLAN.md
+PLAN-*.md
+PLANO.md
+AGENTS.md
 
 # Dated snapshots of the local-only memory files (scripts/snapshot-memory.sh).
 # These are copies of gitignored working notes and must not be committed.

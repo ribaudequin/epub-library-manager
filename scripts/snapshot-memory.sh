@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Dated snapshot of the unversioned memory files.
 #
-# MEMORY.md, TODO.md, PLAN.md and AGENTS.md are gitignored (see .gitignore), so
-# this script is the only thing standing between a bad edit and losing the
-# project's working context. There is no other backup.
+# MEMORY.md, MEMORY-ARCHIVE.md, TODO.md, PLAN.md, PLAN-*.md and AGENTS.md are
+# gitignored (see .gitignore), so this script is the only thing standing between
+# a bad edit and losing the project's working context. There is no other backup —
+# not even the archive, which was untracked from Git on 2026-11-02.
 #
 # Adapted from clavis's scripts/snapshot-memory.sh. Differences here:
 #   - no SUMMARY.md and no MEMORY/ partition folder in this project
@@ -23,7 +24,7 @@ DEST=".memory-snapshots/$STAMP"
 
 mkdir -p "$DEST"
 
-for f in MEMORY.md TODO.md PLAN.md AGENTS.md MEMORY-ARCHIVE.md; do
+for f in MEMORY.md TODO.md PLAN.md PLAN-LIGHT-THEME-STATS.md AGENTS.md MEMORY-ARCHIVE.md; do
   [ -f "$f" ] && cp "$f" "$DEST/"
 done
 
