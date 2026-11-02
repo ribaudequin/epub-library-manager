@@ -607,7 +607,7 @@ main {
 .series-author {
   font-size: 0.8rem;
   color: var(--accent);
-  opacity: 0.85;
+  opacity: 1;
   margin-bottom: 2px;
 }
 
@@ -1438,3 +1438,6 @@ main {
 :root[data-theme="light"] .about-panel {
   box-shadow: 0 24px 64px rgba(0,0,0,0.15);
 }
+#btn-favorite { background: rgba(122,162,247,0.08); border: 1.5px solid rgba(122,162,247,0.35); color: #7aa2f7; font-size: 1.1rem; cursor: pointer; padding: 0.15rem 0.5rem; border-radius: 6px; font-weight: 600; letter-spacing: 0.02em; }
+#btn-favorite.active, #btn-favorite[data-active="true"] { color: #7aa2f7; background: rgba(122,162,247,0.12); border-radius: 6px; }
+.series-card { position: relative; }

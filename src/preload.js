@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('library:bulk-status', { seriesId, updates }),
   setSeriesState: (seriesId, seriesState) =>
     ipcRenderer.invoke('library:set-series-state', { seriesId, seriesState }),
+  setFavorite: (seriesId, favorite) =>
+    ipcRenderer.invoke('library:set-favorite', { seriesId, favorite }),
   getRoot: () => ipcRenderer.invoke('library:get-root'),
   readCover: (coverPath) => ipcRenderer.invoke('cover:read', coverPath),
   watchLibrary: (rootPath) => ipcRenderer.invoke('library:watch', rootPath),

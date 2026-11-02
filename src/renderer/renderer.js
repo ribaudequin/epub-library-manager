@@ -117,6 +117,7 @@ function updateUI() {
     if (sortSelect.options[1]) sortSelect.options[1].textContent = t('sort_name_desc');
     if (sortSelect.options[2]) sortSelect.options[2].textContent = t('sort_progress');
     if (sortSelect.options[3]) sortSelect.options[3].textContent = t('sort_mtime');
+    if (sortSelect.options[4]) sortSelect.options[4].textContent = t('filter_favorites');
   }
   if ($('label[for="search-input"]')) $('label[for="search-input"]').textContent = t('search_label');
   if ($('label[for="sort-select"]')) $('label[for="sort-select"]').textContent = t('sort_label');
@@ -547,8 +548,10 @@ function applySort() {
 }
 
 function applyFilter() {
-  const q = filterText.toLowerCase().trim();
-  if (!q) {
+  const q = (filterText || '').toLowerCase().trim();
+  if (q === '__fav__') {
+    filteredSeries = currentSeries.filter((s) => s.favorite);
+  } else if (!q) {
     filteredSeries = [...currentSeries];
   } else {
     filteredSeries = currentSeries.filter(
@@ -590,7 +593,7 @@ function renderSeriesGrid() {
     card.innerHTML = `
       ${coverHtml(s.cover)}
       <div class="series-info">
-        <h3>${escapeHtml(s.name)}</h3>
+        <h3>${escapeHtml(s.name)} ${s.favorite ? '<span class="fav-star">★</span>' : ''}</h3>
         <p class="series-author">${authorText}</p>
         <p>${volText} · ${readText}</p>
         ${dateText}
@@ -675,6 +678,14 @@ function openSeries(id) {
   observeLazyImages(list);
 
   updateToggleAllBtn();
+
+  const favBtn = $('#btn-favorite');
+  if (favBtn) {
+    favBtn.textContent = s.favorite ? "★ Remover" : "★ Favorito";
+    favBtn.classList.toggle('active', s.favorite);
+    favBtn.title = s.favorite ? t('btn_unfavorite') : t('btn_favorite');
+    favBtn.setAttribute('aria-label', s.favorite ? t('btn_unfavorite') : t('btn_favorite'));
+  }
 
   $('#series-view').classList.add('hidden');
   $('#series-detail').classList.remove('hidden');
@@ -999,6 +1010,13 @@ $('#toggle-all-status').addEventListener('click', async () => {
 
 $('#sort-select').addEventListener('change', () => {
   currentSort = $('#sort-select').value;
+  if (currentSort === 'favorite') {
+    filterText = '__fav__';
+    applyFilter();
+    renderSeriesGrid();
+    return;
+  }
+  filterText = '';
   applySort();
   applyFilter();
   renderSeriesGrid();
@@ -1100,6 +1118,35 @@ $('#sort-select').value = currentSort;
   if (aboutBtn) aboutBtn.addEventListener('click', openAbout);
   if (aboutCloseBtn) aboutCloseBtn.addEventListener('click', closeAbout);
   if (aboutBackdrop) aboutBackdrop.addEventListener('click', closeAbout);
+
+  const favBtn = document.getElementById('btn-favorite');
+  if (favBtn) favBtn.addEventListener('click', async () => {
+    try {
+      const s = currentSeries.find((x) => x.id === detailSeriesId);
+      if (!s) return;
+      const newVal = !s.favorite;
+      await window.api.setFavorite(detailSeriesId, newVal);
+    s.favorite = newVal;
+    favBtn.textContent = newVal ? "★ Remover" : "★ Favorito";
+    favBtn.classList.toggle('active', newVal);
+    favBtn.title = newVal ? t('btn_unfavorite') : t('btn_favorite');
+    favBtn.setAttribute('aria-label', newVal ? t('btn_unfavorite') : t('btn_favorite'));
+    renderSeriesGrid();
+    try {
+      if (currentRoot && window.api?.getMtime) {
+        window.api.getMtime(currentRoot).then(({cacheKey}) => {
+          if (cacheKey) localStorage.removeItem(cacheKey);
+        });
+      }
+    } catch (_) {}
+    } catch (e) { console.error('fav save failed', e); }
+  });
+
+  const filterFavBtn = document.getElementById('btn-filter-fav');
+  if (filterFavBtn) filterFavBtn.addEventListener('click', () => {
+    filterText = filterFavBtn.classList.toggle('active') ? '__fav__' : '';
+    applyFilter(); renderSeriesGrid();
+  });
 
   const kofiLink = document.getElementById('about-kofi-link');
   const patreonLink = document.getElementById('about-patreon-link');

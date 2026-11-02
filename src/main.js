@@ -91,6 +91,7 @@ function buildLibraryView(series, state) {
       author: s.author || null,
       lastModified: s.lastModified || null,
       seriesState: sState.seriesState || 'ongoing',
+      favorite: !!sState.favorite,
       volumes,
     };
   });
@@ -163,6 +164,14 @@ ipcMain.handle('library:set-series-state', async (_event, { seriesId, seriesStat
   const state = await loadState();
   if (!state.series[seriesId]) state.series[seriesId] = {};
   state.series[seriesId].seriesState = seriesState;
+  await saveState(state);
+  return true;
+});
+
+ipcMain.handle('library:set-favorite', async (_event, { seriesId, favorite }) => {
+  const state = await loadState();
+  if (!state.series[seriesId]) state.series[seriesId] = {};
+  state.series[seriesId].favorite = !!favorite;
   await saveState(state);
   return true;
 });
