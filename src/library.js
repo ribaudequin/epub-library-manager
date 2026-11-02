@@ -1,5 +1,6 @@
 const path = require('path');
 const fsp = require('fs/promises');
+const fs = require('fs');
 const crypto = require('crypto');
 const AdmZip = require('adm-zip');
 const { DOMParser } = require('@xmldom/xmldom');
@@ -349,6 +350,7 @@ module.exports = {
   getVolumeCoverPath,
   extractVolumeCover,
   getMimeType,
+  extractExcerpt,
 };
 
 
@@ -433,6 +435,150 @@ async function extractVolumeCover(volumePath) {
   cacheCoverSet(cacheKey, coverPath);
   return coverPath;
 };
+
+function extractExcerpt(filePath) {
+  try {
+    const dataBuf = fs.readFileSync(filePath);
+    const zip = new AdmZip(dataBuf);
+    const entries = zip.getEntries();
+    const xhtmlEntries = entries.filter(
+      (e) => !e.isDirectory && /\.xhtml?$/i.test(e.entryName)
+    );
+    const ignoreNames = /cover|toc|nav|copyright/i;
+    const contentEntries = xhtmlEntries.filter(
+      (e) => !ignoreNames.test(e.entryName)
+    );
+    const chapterHeuristic = /cap[ií]?tulo\s*1|chapter\s*1|cap\.\s*1|c\.\s*1/i;
+    let chapterEntry = null;
+    for (const entry of contentEntries) {
+      let xml = null;
+      try { xml = zip.readAsText(entry.entryName); } catch {
+        try { xml = zip.readAsText(entry.entryName.replace(/^\//, '')); } catch {}
+      }
+      if (xml && chapterHeuristic.test(xml)) {
+        chapterEntry = entry;
+        break;
+      }
+    }
+    // Se o capítulo encontrado tem pouco conteúdo (< 200 chars), ignorar
+    if (chapterEntry) {
+      let testXml = null;
+      try { testXml = zip.readAsText(chapterEntry.entryName); } catch {
+        try { testXml = zip.readAsText(chapterEntry.entryName.replace(/^\//, '')); } catch {}
+      }
+      if (testXml) {
+        const pMatches = testXml.match(/<p[^>]*>([\s\S]*?)<\/p>/gi) || [];
+        const chunks = pMatches.map((m) => {
+          const inner = m.replace(/<p[^>]*>/i, '').replace(/<\/p>/i, '');
+          return inner.replace(/<[^>]+>/g, '').trim();
+        }).filter((t) => t.length > 0);
+        let testText = chunks.join(' ');
+        if (testText.length < 200) chapterEntry = null;
+      } else {
+        chapterEntry = null;
+      }
+    }
+    const fallbackEntries = contentEntries.length > 0 ? contentEntries : xhtmlEntries;
+    if (fallbackEntries.length === 0) return null;
+    let text = '';
+    const maxLen = 1500;
+    const minChars = 80;
+    const entriesToProcess = chapterEntry ? [chapterEntry] : (contentEntries.length > 0 ? contentEntries : xhtmlEntries);
+    for (const entry of entriesToProcess) {
+      if (text.length >= maxLen) break;
+      let xml = null;
+      try {
+        xml = zip.readAsText(entry.entryName);
+      } catch {
+        try {
+          xml = zip.readAsText(entry.entryName.replace(/^\//, ''));
+        } catch {}
+      }
+      if (!xml) continue;
+      const pMatches = xml.match(/<p[^>]*>([\s\S]*?)<\/p>/gi) || [];
+      let chunks = pMatches.map((m) => {
+        const inner = m.replace(/<p[^>]*>/i, '').replace(/<\/p>/i, '');
+        return inner.replace(/<[^>]+>/g, '').trim();
+      }).filter((t) => t.length > 0);
+      // Fallback: se não há <p>, extrair todo o texto do <body>
+      if (chunks.length === 0) {
+        const bodyMatch = xml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+        if (bodyMatch) {
+          const bodyText = bodyMatch[1].replace(/<[^>]+>/g, '').trim();
+          if (bodyText.length > 0) chunks = [bodyText];
+        }
+      }
+      for (const chunk of chunks) {
+        if (text.length >= maxLen) break;
+        if (text) text += ' ';
+        text += chunk;
+      }
+    }
+    // Se começa com "Table of Contents", tentar extrair dos ficheiros de conteúdo (sem .toc/.nav)
+    if (/^table\s*of\s*contents/i.test(text.trim())) {
+      const nonTocEntries = xhtmlEntries.filter(
+        (e) => !/cover|toc|nav|copyright/i.test(e.entryName)
+      );
+      if (nonTocEntries.length > 0) {
+        let text2 = '';
+        for (const entry of nonTocEntries) {
+          if (text2.length >= maxLen) break;
+          let xml = null;
+          try { xml = zip.readAsText(entry.entryName); } catch {
+            try { xml = zip.readAsText(entry.entryName.replace(/^\//, '')); } catch {}
+          }
+          if (!xml) continue;
+          const pMatches = xml.match(/<p[^>]*>([\s\S]*?)<\/p>/gi) || [];
+          let chunks = pMatches.map((m) => {
+            const inner = m.replace(/<p[^>]*>/i, '').replace(/<\/p>/i, '');
+            return inner.replace(/<[^>]+>/g, '').trim();
+          }).filter((t) => t.length > 0);
+          if (chunks.length === 0) {
+            const bodyMatch = xml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+            if (bodyMatch) {
+              const bodyText = bodyMatch[1].replace(/<[^>]+>/g, '').trim();
+              if (bodyText.length > 0) chunks = [bodyText];
+            }
+          }
+          for (const chunk of chunks) {
+            if (text2.length >= maxLen) break;
+            if (text2) text2 += ' ';
+            text2 += chunk;
+          }
+        }
+        if (text2.length >= minChars) text = text2;
+      }
+    }
+    // Isolar texto após "Chapter 1:" / "Capítulo 1:"
+    const chapterSplit = /chapter\s*1\s*[:\-]|cap[ií]?tulo\s*1\s*[:\-]/i;
+    const splitIndex = text.search(chapterSplit);
+    if (splitIndex !== -1) {
+      text = text.slice(splitIndex).trim();
+      // Limitar ao capítulo 1: cortar no próximo "Chapter 2:"
+      const nextChapterSplit = /chapter\s*2\s*[:\-]|cap[ií]?tulo\s*2\s*[:\-]/i;
+      const nextSplitIndex = text.search(nextChapterSplit);
+      if (nextSplitIndex !== -1) {
+        const trimmedNext = text.slice(0, nextSplitIndex).trim();
+        if (trimmedNext.length >= 200) {
+          text = trimmedNext;
+        }
+      }
+    }
+    if (text.length > maxLen) {
+      text = text.slice(0, maxLen).trim();
+      const lastSpace = text.lastIndexOf(' ');
+      if (lastSpace > maxLen * 0.7) text = text.slice(0, lastSpace) + '…';
+      else text = text + '…';
+    }
+    const result = (text && text.length >= minChars) ? text : (text || null);
+    if (!result || result.length < minChars) {
+      return text || null;
+    }
+    return result;
+  } catch {
+    return null;
+  }
+}
 
 function getMimeType(buffer) {
   if (!buffer || buffer.length < 4) return '';

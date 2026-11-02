@@ -3,7 +3,7 @@ const path = require('path');
 const fsp = require('fs/promises');
 const fs = require('fs');
 const crypto = require('crypto');
-const { scanLibrary, getMimeType } = require('./library');
+const { scanLibrary, getMimeType, extractExcerpt } = require('./library');
 
 let mainWindow = null;
 let stateFile = null;
@@ -78,6 +78,7 @@ function buildLibraryView(series, state) {
       name: v.name,
       title: v.title,
       coverSrc: v.coverSrc,
+      filePath: v.filePath,
       status: sState[v.id] || STATUS_DEFAULT,
     }));
     const readCount = volumes.filter((v) => v.status === 'lido').length;
@@ -179,6 +180,14 @@ ipcMain.handle('library:set-favorite', async (_event, { seriesId, favorite }) =>
 ipcMain.handle('library:get-root', async () => {
   const state = await loadState();
   return state.rootPath || null;
+});
+
+ipcMain.handle('library:excerpt', async (_event, filePath) => {
+  try {
+    return extractExcerpt(filePath);
+  } catch {
+    return null;
+  }
 });
 
 ipcMain.handle('cover:read', async (_event, coverPath) => {

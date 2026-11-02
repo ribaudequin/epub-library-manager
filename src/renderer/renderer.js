@@ -603,7 +603,7 @@ function renderSeriesGrid() {
   observeLazyImages(grid);
 }
 
-function openSeries(id) {
+async function openSeries(id) {
   const s = currentSeries.find((x) => x.id === id);
   if (!s) return;
   detailSeriesId = id;
@@ -668,6 +668,26 @@ function openSeries(id) {
   observeLazyImages(list);
 
   updateToggleAllBtn();
+
+  const excerptEl = $('#detail-excerpt');
+  if (excerptEl) {
+    excerptEl.textContent = 'A extrair…';
+    try {
+      const firstVol = s.volumes[0];
+      let filePath = firstVol && firstVol.filePath ? firstVol.filePath : null;
+      if (!filePath && firstVol && s.path && firstVol.name) {
+        filePath = s.path + '/' + firstVol.name + '.epub';
+      }
+      if (filePath) {
+        const excerpt = await window.api.getExcerpt(filePath);
+        excerptEl.textContent = excerpt || 'Excerto do volume 01';
+      } else {
+        excerptEl.textContent = 'Excerto do volume 01';
+      }
+    } catch {
+      excerptEl.textContent = 'Excerto do volume 01';
+    }
+  }
 
   const favBtn = $('#btn-favorite');
   if (favBtn) {

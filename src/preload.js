@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('api', {
   setFavorite: (seriesId, favorite) =>
     ipcRenderer.invoke('library:set-favorite', { seriesId, favorite }),
   getRoot: () => ipcRenderer.invoke('library:get-root'),
+  getExcerpt: (filePath) => ipcRenderer.invoke('library:excerpt', filePath),
   readCover: (coverPath) => ipcRenderer.invoke('cover:read', coverPath),
   watchLibrary: (rootPath) => ipcRenderer.invoke('library:watch', rootPath),
   unwatchLibrary: () => ipcRenderer.invoke('library:unwatch'),

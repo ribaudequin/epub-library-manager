@@ -772,6 +772,23 @@ main {
   margin-bottom: 4px;
 }
 
+#detail-excerpt {
+  width: 380px;
+  flex: none;
+  margin-left: auto;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid rgba(111, 191, 199, 0.15);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.55;
+  font-family: inherit;
+  height: 240px;
+  overflow: hidden;
+  overflow: hidden;
+}
+
 #series-state-selector {
   display: flex;
   gap: 8px;
