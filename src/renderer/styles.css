@@ -30,6 +30,11 @@
      completed badge then reads as an ongoing one at badge size. Blue was what
      separated them before the Bandua palette landed. */
   --completed: #7aa2f7;
+  /* Favorite marker. Gold because the star encodes a user decision, not a series
+     state, so it must not borrow --yellow (that token means "ongoing") nor the
+     brand accent. One value for both themes: the star always sits on a dark
+     scrim over the cover art, so its contrast does not depend on the theme. */
+  --fav: #f5c542;
   --border: rgba(242,245,238,0.10);
   --shadow: rgba(0,0,0,0.35);
   /* Label colour for text sitting ON a saturated fill (a state button, the
@@ -530,6 +535,7 @@ main {
 
 .series-card {
   --card-tint: var(--tint-fallback);
+  position: relative;
   background: linear-gradient(
     160deg,
     rgba(var(--card-tint), 0.85) 0%,
@@ -566,6 +572,26 @@ main {
 .series-card:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* Sits on the cover, not in the title row: the h3 is single-line with ellipsis,
+   so a star appended to the name is exactly what a long title clips first. */
+.fav-star {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--fav);
+  font-size: 16px;
+  line-height: 1;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
 }
 
 .series-cover {
@@ -1440,4 +1466,3 @@ main {
 }
 #btn-favorite { background: rgba(122,162,247,0.08); border: 1.5px solid rgba(122,162,247,0.35); color: #7aa2f7; font-size: 1.1rem; cursor: pointer; padding: 0.15rem 0.5rem; border-radius: 6px; font-weight: 600; letter-spacing: 0.02em; }
 #btn-favorite.active, #btn-favorite[data-active="true"] { color: #7aa2f7; background: rgba(122,162,247,0.12); border-radius: 6px; }
-.series-card { position: relative; }

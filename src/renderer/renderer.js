@@ -579,21 +579,11 @@ function renderSeriesGrid() {
   const volText = t('series_volume_count', { count: s.volumeCount });
   const readText = t('series_read_count', { count: s.readCount });
 
-  card.innerHTML = `
-    ${coverHtml(s.cover)}
-    <div class="series-info">
-      <h3>${escapeHtml(s.name)}</h3>
-      <p class="series-author">${authorText}</p>
-      <p>${volText} · ${readText}</p>
-      ${dateText}
-      ${readProgressHtml(s.readCount, s.volumeCount)}
-      ${badge}
-    </div>
-  `;
     card.innerHTML = `
       ${coverHtml(s.cover)}
+      ${s.favorite ? `<span class="fav-star" role="img" aria-label="${t('btn_favorite')}">★</span>` : ''}
       <div class="series-info">
-        <h3>${escapeHtml(s.name)} ${s.favorite ? '<span class="fav-star">★</span>' : ''}</h3>
+        <h3>${escapeHtml(s.name)}</h3>
         <p class="series-author">${authorText}</p>
         <p>${volText} · ${readText}</p>
         ${dateText}

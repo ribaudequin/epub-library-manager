@@ -17,6 +17,7 @@
     "test": "node test/validate-modules.js",
     "test:cache": "node test/test-cache.js",
     "test:preview": "node test/test-volume-preview.js",
+    "test:favorites": "node test/screenshot-favorites.js",
     "lint": "node test/lint.js",
     "memory:snapshot": "bash scripts/snapshot-memory.sh"
   },
