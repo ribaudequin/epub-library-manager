@@ -1,7 +1,7 @@
 {
   "name": "epub-shelf",
   "productName": "EPUBShelf",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "EPUB library manager organized by series",
   "main": "src/main.js",
   "scripts": {
@@ -17,6 +17,7 @@
     "test": "node test/validate-modules.js",
     "test:cache": "node test/test-cache.js",
     "test:preview": "node test/test-volume-preview.js",
+    "test:excerpt": "node test/test-excerpt.js",
     "test:favorites": "node test/screenshot-favorites.js",
     "lint": "node test/lint.js",
     "memory:snapshot": "bash scripts/snapshot-memory.sh"

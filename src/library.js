@@ -436,145 +436,202 @@ async function extractVolumeCover(volumePath) {
   return coverPath;
 };
 
+const TEXT_DOC_RE = /\.(?:xhtml|html|xht|htm)$/i;
+// Nomes de front/back matter que nunca são capítulo 1. "afterword" fica de
+// fora de propósito: é o último recurso quando o volume não tem prosa de
+// abertura (as notas do autor são aceitáveis como excerto).
+const FRONT_MATTER_RE = /cover|toc|nav|contents|title[ _-]?page|copyright|colophon|newsletter|signup|sign-up|jnovels|about[ _-]?the[ _-]?author|back[ _-]?matter|front[ _-]?matter|footnotes?|acknowledg/i;
+const AFTERWORD_RE = /afterword|author'?s?[ _-]?note|nota[s]?[ _-]?do[ _-]?autor/i;
+const PROLOGUE_RE = /\bprologue\b|\bpr[oó]logo\b/i;
+// O `(?!\d)` é essencial: sem ele "chapter 1" casa com "chapter 12" e "chapter 10".
+const CHAPTER_ONE_RE = /(?:^|[^a-z0-9])(?:chapter|cap[ií]tulo|cap\.|c\.)\s*0*1(?!\d)/i;
+const CHAPTER_ONE_PREFIX_RE = /^(?:part\s*\d+\s*[:\-–—]?\s*)?(?:chapter|cap[ií]tulo|cap\.|c\.)\s*0*1\b[\s:–—-]*/i;
+
+function decodeHtmlEntities(str) {
+  return str
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => {
+      try { return String.fromCodePoint(parseInt(hex, 16)); } catch { return ''; }
+    })
+    .replace(/&#(\d+);/g, (_, dec) => {
+      try { return String.fromCodePoint(parseInt(dec, 10)); } catch { return ''; }
+    })
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&mdash;/gi, '—')
+    .replace(/&ndash;/gi, '–')
+    .replace(/&hellip;/gi, '…')
+    .replace(/&rsquo;/gi, '’')
+    .replace(/&lsquo;/gi, '‘')
+    .replace(/&rdquo;/gi, '”')
+    .replace(/&ldquo;/gi, '“')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&amp;/gi, '&');
+}
+
+// Tags inline são removidas sem espaço (senão os drop-caps partem-se: "Y ouji").
+function stripTags(html) {
+  return decodeHtmlEntities(html.replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim();
+}
+
+function getTitleText(xml) {
+  const m = xml.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  return m ? stripTags(m[1]) : '';
+}
+
+function getHeadingText(xml) {
+  const m = xml.match(/<h[1-3]\b[^>]*>([\s\S]*?)<\/h[1-3]>/i);
+  return m ? stripTags(m[1]) : '';
+}
+
+function getParagraphChunks(xml) {
+  const bodyMatch = xml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  const body = bodyMatch ? bodyMatch[1] : xml;
+  const pMatches = body.match(/<p\b[^>]*>([\s\S]*?)<\/p>/gi) || [];
+  let chunks = pMatches
+    .map((m) => stripTags(m.replace(/<br\s*\/?>/gi, ' ')))
+    .filter((t) => t.length > 0);
+  if (chunks.length === 0) {
+    const whole = stripTags(
+      body
+        .replace(/<br\s*\/?>/gi, ' ')
+        .replace(/<\/(?:p|div|h[1-6]|li|tr|section|blockquote|figure|table)>/gi, ' ')
+    );
+    if (whole) chunks = [whole];
+  }
+  return chunks;
+}
+
+// TOC disfarçado de capítulo: nav semântico, título "Contents" ou uma página
+// curta feita sobretudo de links.
+function isTocDocument(xml, title, text, linkCount) {
+  if (/^\s*(?:table\s+of\s+contents|contents|sum[aá]rio)\b/i.test(title)) return true;
+  if (/^\s*(?:table\s+of\s+contents|contents|sum[aá]rio)\b/i.test(text)) return true;
+  if (/epub:type\s*=\s*["'][^"']*\btoc\b/i.test(xml)) return true;
+  if (/role\s*=\s*["']doc-toc["']/i.test(xml)) return true;
+  if (linkCount >= 5 && linkCount * 25 > text.length) return true;
+  return false;
+}
+
+// Ordem de leitura da spine do OPF. Sem isto, a ordem é a do ZIP, que pode
+// começar pelo afterword ou pelo capítulo 10.
+function getReadingOrder(zip, entries) {
+  const byPath = new Map();
+  for (const e of entries) {
+    if (!e.isDirectory) byPath.set(e.entryName.replace(/^\/+/, ''), e);
+  }
+  const opfEntry = entries.find((e) => !e.isDirectory && /\.opf$/i.test(e.entryName));
+  const ordered = [];
+  if (opfEntry) {
+    try {
+      const doc = parseXml(zip.readAsText(opfEntry.entryName));
+      const hrefById = new Map(getItems(doc).map((i) => [i.id, i.href]));
+      const refs = doc.getElementsByTagName('itemref');
+      for (let i = 0; i < refs.length; i++) {
+        const href = hrefById.get(refs[i].getAttribute('idref'));
+        if (!href) continue;
+        const full = resolveInOpf(opfEntry.entryName, safeDecode(href)).replace(/^\/+/, '');
+        const entry = byPath.get(full);
+        if (entry && !ordered.some((e) => e.entryName === entry.entryName)) {
+          ordered.push(entry);
+        }
+      }
+    } catch {}
+  }
+  if (ordered.length === 0) {
+    entries
+      .filter((e) => !e.isDirectory && TEXT_DOC_RE.test(e.entryName))
+      .sort((a, b) => naturalSort(a.entryName, b.entryName))
+      .forEach((e) => ordered.push(e));
+  }
+  return ordered;
+}
+
 function extractExcerpt(filePath) {
+  const maxLen = 1500;
+  const minChars = 80;
   try {
-    const dataBuf = fs.readFileSync(filePath);
-    const zip = new AdmZip(dataBuf);
+    const zip = new AdmZip(fs.readFileSync(filePath));
     const entries = zip.getEntries();
-    const xhtmlEntries = entries.filter(
-      (e) => !e.isDirectory && /\.xhtml?$/i.test(e.entryName)
-    );
-    const ignoreNames = /cover|toc|nav|copyright/i;
-    const contentEntries = xhtmlEntries.filter(
-      (e) => !ignoreNames.test(e.entryName)
-    );
-    const chapterHeuristic = /cap[ií]?tulo\s*1|chapter\s*1|cap\.\s*1|c\.\s*1/i;
-    let chapterEntry = null;
-    for (const entry of contentEntries) {
-      let xml = null;
-      try { xml = zip.readAsText(entry.entryName); } catch {
-        try { xml = zip.readAsText(entry.entryName.replace(/^\//, '')); } catch {}
-      }
-      if (xml && chapterHeuristic.test(xml)) {
-        chapterEntry = entry;
-        break;
-      }
-    }
-    // Se o capítulo encontrado tem pouco conteúdo (< 200 chars), ignorar
-    if (chapterEntry) {
-      let testXml = null;
-      try { testXml = zip.readAsText(chapterEntry.entryName); } catch {
-        try { testXml = zip.readAsText(chapterEntry.entryName.replace(/^\//, '')); } catch {}
-      }
-      if (testXml) {
-        const pMatches = testXml.match(/<p[^>]*>([\s\S]*?)<\/p>/gi) || [];
-        const chunks = pMatches.map((m) => {
-          const inner = m.replace(/<p[^>]*>/i, '').replace(/<\/p>/i, '');
-          return inner.replace(/<[^>]+>/g, '').trim();
-        }).filter((t) => t.length > 0);
-        let testText = chunks.join(' ');
-        if (testText.length < 200) chapterEntry = null;
-      } else {
-        chapterEntry = null;
-      }
-    }
-    const fallbackEntries = contentEntries.length > 0 ? contentEntries : xhtmlEntries;
-    if (fallbackEntries.length === 0) return null;
-    let text = '';
-    const maxLen = 1500;
-    const minChars = 80;
-    const entriesToProcess = chapterEntry ? [chapterEntry] : (contentEntries.length > 0 ? contentEntries : xhtmlEntries);
-    for (const entry of entriesToProcess) {
-      if (text.length >= maxLen) break;
-      let xml = null;
-      try {
-        xml = zip.readAsText(entry.entryName);
-      } catch {
+    const readEntry = (name) => {
+      const tries = [name, name.replace(/^\/+/, ''), '/' + name];
+      for (const n of tries) {
         try {
-          xml = zip.readAsText(entry.entryName.replace(/^\//, ''));
+          const xml = zip.readAsText(n);
+          if (xml) return xml;
         } catch {}
       }
+      return null;
+    };
+
+    const candidates = [];
+    const seen = new Set();
+    for (const entry of getReadingOrder(zip, entries)) {
+      const entryName = entry.entryName.replace(/^\/+/, '');
+      if (seen.has(entryName)) continue;
+      seen.add(entryName);
+      if (entry.isDirectory || !TEXT_DOC_RE.test(entryName)) continue;
+      const xml = readEntry(entryName);
       if (!xml) continue;
-      const pMatches = xml.match(/<p[^>]*>([\s\S]*?)<\/p>/gi) || [];
-      let chunks = pMatches.map((m) => {
-        const inner = m.replace(/<p[^>]*>/i, '').replace(/<\/p>/i, '');
-        return inner.replace(/<[^>]+>/g, '').trim();
-      }).filter((t) => t.length > 0);
-      // Fallback: se não há <p>, extrair todo o texto do <body>
-      if (chunks.length === 0) {
-        const bodyMatch = xml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-        if (bodyMatch) {
-          const bodyText = bodyMatch[1].replace(/<[^>]+>/g, '').trim();
-          if (bodyText.length > 0) chunks = [bodyText];
-        }
-      }
-      for (const chunk of chunks) {
-        if (text.length >= maxLen) break;
-        if (text) text += ' ';
-        text += chunk;
-      }
+      const base = entryName.toLowerCase();
+      if (FRONT_MATTER_RE.test(base)) continue;
+
+      const title = getTitleText(xml);
+      const heading = getHeadingText(xml);
+      const chunks = getParagraphChunks(xml);
+      if (chunks.length === 0) continue;
+      const text = chunks.join(' ').replace(/\s+/g, ' ').trim();
+      if (text.length < minChars) continue;
+      const linkCount = (xml.match(/<a\b/gi) || []).length;
+      if (isTocDocument(xml, title, text, linkCount)) continue;
+
+      const probe = [base, title, heading, text.slice(0, 200)].join('\n');
+      candidates.push({
+        chunks,
+        afterword: AFTERWORD_RE.test(base) || AFTERWORD_RE.test(title),
+        prologue: PROLOGUE_RE.test(base) || PROLOGUE_RE.test(title),
+        // Um cabeçalho explícito ("Chapter 1") vale mais do que o nome do
+        // ficheiro: há volumes com "chapter1.xhtml" a conter a introdução e
+        // o capítulo 1 real em "chapter3.xhtml".
+        titleChapterOne: CHAPTER_ONE_RE.test([title, heading, text.slice(0, 200)].join('\n')),
+        fileChapterOne: CHAPTER_ONE_RE.test(base),
+      });
     }
-    // Se começa com "Table of Contents", tentar extrair dos ficheiros de conteúdo (sem .toc/.nav)
-    if (/^table\s*of\s*contents/i.test(text.trim())) {
-      const nonTocEntries = xhtmlEntries.filter(
-        (e) => !/cover|toc|nav|copyright/i.test(e.entryName)
-      );
-      if (nonTocEntries.length > 0) {
-        let text2 = '';
-        for (const entry of nonTocEntries) {
-          if (text2.length >= maxLen) break;
-          let xml = null;
-          try { xml = zip.readAsText(entry.entryName); } catch {
-            try { xml = zip.readAsText(entry.entryName.replace(/^\//, '')); } catch {}
-          }
-          if (!xml) continue;
-          const pMatches = xml.match(/<p[^>]*>([\s\S]*?)<\/p>/gi) || [];
-          let chunks = pMatches.map((m) => {
-            const inner = m.replace(/<p[^>]*>/i, '').replace(/<\/p>/i, '');
-            return inner.replace(/<[^>]+>/g, '').trim();
-          }).filter((t) => t.length > 0);
-          if (chunks.length === 0) {
-            const bodyMatch = xml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-            if (bodyMatch) {
-              const bodyText = bodyMatch[1].replace(/<[^>]+>/g, '').trim();
-              if (bodyText.length > 0) chunks = [bodyText];
-            }
-          }
-          for (const chunk of chunks) {
-            if (text2.length >= maxLen) break;
-            if (text2) text2 += ' ';
-            text2 += chunk;
-          }
-        }
-        if (text2.length >= minChars) text = text2;
-      }
+
+    const content = candidates.filter((c) => !c.afterword);
+    const chosen =
+      content.find((c) => c.titleChapterOne) ||
+      content.find((c) => c.fileChapterOne) ||
+      content.find((c) => !c.prologue) ||
+      content.find((c) => c.prologue) ||
+      candidates.find((c) => c.afterword) ||
+      null;
+    if (!chosen) return null;
+
+    const chunks = chosen.chunks.slice();
+    const isChapterOne = chosen.titleChapterOne || chosen.fileChapterOne;
+    if (
+      chunks.length > 1 &&
+      chunks[0].length <= 120 &&
+      (CHAPTER_ONE_RE.test(chunks[0]) || /^(?:part|chapter|cap[ií]tulo)\b/i.test(chunks[0]))
+    ) {
+      chunks.shift();
     }
-    // Isolar texto após "Chapter 1:" / "Capítulo 1:"
-    const chapterSplit = /chapter\s*1\s*[:\-]|cap[ií]?tulo\s*1\s*[:\-]/i;
-    const splitIndex = text.search(chapterSplit);
-    if (splitIndex !== -1) {
-      text = text.slice(splitIndex).trim();
-      // Limitar ao capítulo 1: cortar no próximo "Chapter 2:"
-      const nextChapterSplit = /chapter\s*2\s*[:\-]|cap[ií]?tulo\s*2\s*[:\-]/i;
-      const nextSplitIndex = text.search(nextChapterSplit);
-      if (nextSplitIndex !== -1) {
-        const trimmedNext = text.slice(0, nextSplitIndex).trim();
-        if (trimmedNext.length >= 200) {
-          text = trimmedNext;
-        }
-      }
+
+    let text = chunks.join(' ').replace(/\s+/g, ' ').trim();
+    if (isChapterOne) {
+      text = text.replace(CHAPTER_ONE_PREFIX_RE, '').trim();
     }
+    if (!text || /^(?:table\s+of\s+contents|contents|sum[aá]rio)\b/i.test(text)) return null;
+
     if (text.length > maxLen) {
       text = text.slice(0, maxLen).trim();
       const lastSpace = text.lastIndexOf(' ');
       if (lastSpace > maxLen * 0.7) text = text.slice(0, lastSpace) + '…';
       else text = text + '…';
     }
-    const result = (text && text.length >= minChars) ? text : (text || null);
-    if (!result || result.length < minChars) {
-      return text || null;
-    }
-    return result;
+    return text.length >= minChars ? text : null;
   } catch {
     return null;
   }
