@@ -100,6 +100,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # Full history and tags: the notes step compares against the
+          # previous tag. A shallow checkout has neither.
+          fetch-depth: 0
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -112,10 +116,38 @@ jobs:
         shell: bash
         run: find dist -type f | sort
 
+      - name: Prepare release notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          CURATED="docs/releases/${TAG}.md"
+          if [ -f "$CURATED" ]; then
+            cp "$CURATED" release-notes.md
+            echo "Using curated notes: $CURATED"
+          else
+            PREV="$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)"
+            {
+              echo "## What's changed"
+              echo
+              if [ -n "$PREV" ]; then
+                git log --no-merges --reverse --pretty=format:'### %s%n%n%b%n' "${PREV}..${TAG}"
+                echo
+                echo "**Full changelog**: https://github.com/${GITHUB_REPOSITORY}/compare/${PREV}...${TAG}"
+              else
+                git log --no-merges --reverse --pretty=format:'### %s%n%n%b%n' "${TAG}"
+              fi
+            } > release-notes.md
+            echo "Generated notes from ${PREV:-the beginning}..${TAG}"
+          fi
+          cat release-notes.md
+
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: dist/**/*
-          generate_release_notes: true
+          # Never rely on generate_release_notes: this repo pushes straight to
+          # master (no PRs), so GitHub's generated notes came back empty.
+          body_path: release-notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
