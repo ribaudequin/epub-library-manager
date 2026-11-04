@@ -98,10 +98,10 @@ function buildLibraryView(series, state) {
   });
 }
 
-ipcMain.handle('dialog:select-library', async () => {
+ipcMain.handle('dialog:select-library', async (_event, title) => {
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory'],
-    title: 'Selecionar pasta raiz da biblioteca',
+    title: title || 'Selecionar pasta raiz da biblioteca',
   });
   if (result.canceled || result.filePaths.length === 0) return null;
   const rootPath = result.filePaths[0];
@@ -230,7 +230,8 @@ ipcMain.handle('library:unwatch', () => {
 
 ipcMain.handle('app:getLocale', () => {
   const locale = app.getLocale();
-  return { locale, isPt: locale.startsWith('pt') };
+  const code = locale.split('-')[0].toLowerCase(); // 'pt', 'en', 'ja', ...
+  return { locale, code };
 });
 
 ipcMain.handle('app:getVersion', () => app.getVersion());

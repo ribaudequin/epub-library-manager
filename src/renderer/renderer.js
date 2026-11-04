@@ -23,7 +23,7 @@ function formatRelativeDate(mtime) {
   const diffYears = Math.floor(diffDays / 365);
 
   const currentLang = window.i18n ? window.i18n.getLocale() : 'pt';
-  const localeTag = currentLang === 'pt' ? 'pt-PT' : 'en-GB';
+  const localeTag = window.i18n.SUPPORTED_LOCALES[currentLang]?.dateTag || 'en-GB';
 
   const date = new Date(mtime);
   const dateStr = date.toLocaleDateString(localeTag, {
@@ -88,10 +88,13 @@ const $ = (sel) => document.querySelector(sel);
 
 async function initI18n() {
   try {
-    const { locale, isPt } = await window.api.getLocale();
-    window.i18n.setLocale(isPt ? 'pt' : 'en');
+    const { code } = await window.api.getLocale();
+    const resolved = window.i18n.resolveLocale(code);
+    window.i18n.setLocale(resolved);
+    document.documentElement.lang = resolved;
   } catch {
     window.i18n.setLocale('pt');
+    document.documentElement.lang = 'pt';
   }
   updateUI();
   updateI18nLabels();
@@ -119,8 +122,71 @@ function updateUI() {
     if (sortSelect.options[3]) sortSelect.options[3].textContent = t('sort_mtime');
     if (sortSelect.options[4]) sortSelect.options[4].textContent = t('filter_favorites');
   }
-  if ($('label[for="search-input"]')) $('label[for="search-input"]').textContent = t('search_label');
-  if ($('label[for="sort-select"]')) $('label[for="sort-select"]').textContent = t('sort_label');
+  if ($('#search-label')) $('#search-label').textContent = t('search_label');
+  if ($('#sort-label')) $('#sort-label').textContent = t('sort_label');
+
+  // Header buttons
+  const themeBtn = $('#btn-theme-toggle');
+  if (themeBtn) {
+    const label = document.documentElement.getAttribute('data-theme') === 'dark'
+      ? t('theme_toggle_light') : t('theme_toggle_dark');
+    themeBtn.setAttribute('aria-label', label);
+    themeBtn.setAttribute('title', label);
+  }
+  const statsBtn = $('#btn-stats');
+  if (statsBtn) {
+    statsBtn.textContent = '📊';
+    statsBtn.setAttribute('aria-label', t('btn_stats_aria'));
+    statsBtn.setAttribute('title', t('btn_stats_title'));
+  }
+  const aboutBtn = $('#btn-about');
+  if (aboutBtn) {
+    aboutBtn.textContent = '❤️';
+    aboutBtn.setAttribute('aria-label', t('btn_about_aria'));
+    aboutBtn.setAttribute('title', t('btn_about_title'));
+  }
+
+  // Detail view elements
+  const excerptEl = $('#detail-excerpt');
+  if (excerptEl) excerptEl.setAttribute('aria-label', t('detail_excerpt_aria'));
+
+  // Toggle all status button
+  const toggleAllBtn = $('#toggle-all-status');
+  if (toggleAllBtn) toggleAllBtn.textContent = t('btn_toggle_all_read');
+
+  // Stats modal
+  const statsCloseBtn = $('#btn-stats-close');
+  if (statsCloseBtn) statsCloseBtn.setAttribute('aria-label', t('stats_close_aria'));
+
+  // About modal
+  const aboutTitleEl = $('#about-title');
+  if (aboutTitleEl) aboutTitleEl.textContent = t('about_title');
+  const aboutCloseBtn = $('#btn-about-close');
+  if (aboutCloseBtn) aboutCloseBtn.setAttribute('aria-label', t('about_close_aria'));
+  const aboutDescEl = $('#about-desc');
+  if (aboutDescEl) aboutDescEl.textContent = t('about_desc_pt');
+  const aboutLicenseLink = $('#about-license-link');
+  if (aboutLicenseLink) aboutLicenseLink.textContent = t('about_license_link');
+  const aboutSupportText = $('#about-support-text');
+  if (aboutSupportText) aboutSupportText.textContent = t('about_support_text');
+  const aboutKofiText = $('#about-kofi-text');
+  if (aboutKofiText) aboutKofiText.textContent = t('about_kofi');
+  const aboutPatreonText = $('#about-patreon-text');
+  if (aboutPatreonText) aboutPatreonText.textContent = t('about_patreon');
+  const aboutCryptoTitle = $('#about-crypto-title');
+  if (aboutCryptoTitle) aboutCryptoTitle.textContent = t('about_crypto_title');
+  const aboutCryptoNote = $('#about-crypto-note');
+  if (aboutCryptoNote) aboutCryptoNote.textContent = t('about_crypto_note');
+  const copyEthBtn = $('#copy-eth-btn');
+  if (copyEthBtn) copyEthBtn.setAttribute('aria-label', t('btn_copy') + ' ETH');
+  const copySolBtn = $('#copy-sol-btn');
+  if (copySolBtn) copySolBtn.setAttribute('aria-label', t('btn_copy') + ' SOL');
+  const aboutGithubText = $('#about-github-text');
+  if (aboutGithubText) aboutGithubText.textContent = t('about_github_link');
+
+  // App title in header
+  const appTitleEl = $('#app-title');
+  if (appTitleEl) appTitleEl.textContent = t('app_title');
 }
 
 function updateI18nLabels() {
@@ -671,7 +737,7 @@ async function openSeries(id) {
 
   const excerptEl = $('#detail-excerpt');
   if (excerptEl) {
-    excerptEl.textContent = 'A extrair…';
+    excerptEl.textContent = t('excerpt_loading');
     try {
       const firstVol = s.volumes[0];
       let filePath = firstVol && firstVol.filePath ? firstVol.filePath : null;
@@ -680,18 +746,18 @@ async function openSeries(id) {
       }
       if (filePath) {
         const excerpt = await window.api.getExcerpt(filePath);
-        excerptEl.textContent = excerpt || 'Excerto do volume 01';
+        excerptEl.textContent = excerpt || t('excerpt_volume_01');
       } else {
-        excerptEl.textContent = 'Excerto do volume 01';
+        excerptEl.textContent = t('excerpt_volume_01');
       }
     } catch {
-      excerptEl.textContent = 'Excerto do volume 01';
+      excerptEl.textContent = t('excerpt_volume_01');
     }
   }
 
   const favBtn = $('#btn-favorite');
   if (favBtn) {
-    favBtn.textContent = s.favorite ? "★ Remover" : "★ Favorito";
+    favBtn.textContent = s.favorite ? t('btn_unfavorite_star') : t('btn_favorite_star');
     favBtn.classList.toggle('active', s.favorite);
     favBtn.title = s.favorite ? t('btn_unfavorite') : t('btn_favorite');
     favBtn.setAttribute('aria-label', s.favorite ? t('btn_unfavorite') : t('btn_favorite'));
@@ -983,7 +1049,8 @@ window.api.onLibraryChanged((data) => {
 });
 
 $('#btn-select').addEventListener('click', async () => {
-  const root = await window.api.selectLibrary();
+  const title = t('dialog_select_library_title');
+  const root = await window.api.selectLibrary(title);
   if (root) {
     await scanAndRender(root);
   }
@@ -1137,7 +1204,7 @@ $('#sort-select').value = currentSort;
       const newVal = !s.favorite;
       await window.api.setFavorite(detailSeriesId, newVal);
     s.favorite = newVal;
-    favBtn.textContent = newVal ? "★ Remover" : "★ Favorito";
+    favBtn.textContent = newVal ? t('btn_unfavorite_star') : t('btn_favorite_star');
     favBtn.classList.toggle('active', newVal);
     favBtn.title = newVal ? t('btn_unfavorite') : t('btn_favorite');
     favBtn.setAttribute('aria-label', newVal ? t('btn_unfavorite') : t('btn_favorite'));

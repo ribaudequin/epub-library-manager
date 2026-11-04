@@ -1,7 +1,7 @@
 {
   "name": "epub-shelf",
   "productName": "EPUBShelf",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "EPUB library manager organized by series",
   "main": "src/main.js",
   "scripts": {
@@ -20,6 +20,8 @@
     "test:excerpt": "node test/test-excerpt.js",
     "test:favorites": "node test/screenshot-favorites.js",
     "lint": "node test/lint.js",
+    "i18n:validate": "node scripts/i18n-validate.js",
+    "i18n:test": "playwright test test/i18n.spec.js",
     "memory:snapshot": "bash scripts/snapshot-memory.sh"
   },
   "author": "Marcelo Salvador <marcelo@example.com>",

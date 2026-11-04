@@ -1,3 +1,20 @@
+// Locale registry — single source of truth for supported locales and metadata.
+// Adding a new locale: add entry here, add translation object below, no other code changes.
+const SUPPORTED_LOCALES = {
+  pt: { name: 'Portuguese', fallback: ['en'], dateTag: 'pt-PT' },
+  en: { name: 'English', fallback: ['pt'], dateTag: 'en-GB' },
+  // ja: { name: 'Japanese', fallback: ['en'], dateTag: 'ja-JP' }, // Phase 5
+};
+
+function resolveLocale(requested) {
+  if (SUPPORTED_LOCALES[requested]) return requested;
+  const chain = SUPPORTED_LOCALES[requested]?.fallback || [];
+  for (const fb of chain) {
+    if (SUPPORTED_LOCALES[fb]) return fb;
+  }
+  return 'pt'; // ultimate default
+}
+
 const TRANSLATIONS = {
   pt: {
     app_title: "EPUBShelf",
@@ -67,7 +84,7 @@ const TRANSLATIONS = {
     state_cancelled: 'Cancelada',
     state_hiatus: 'Hiatus',
     about_title: 'About / Sobre',
-    about_desc: 'EPUB library manager organized by series.',
+    about_desc: 'Gestor de biblioteca EPUB organizado por séries.',
     about_credits_title: 'Credits',
     about_developed_by: 'Developed by',
     about_support_kofi: 'Support on Ko-fi',
@@ -75,7 +92,28 @@ const TRANSLATIONS = {
     about_footer: 'Made with ❤️ for ebook readers',
     crypto_support_title: 'Crypto Support',
     crypto_eth: 'ETH',
-    crypto_sol: 'SOL'
+    crypto_sol: 'SOL',
+    // Phase 3: hardcoded strings moved from main.js/renderer.js/index.html
+    dialog_select_library_title: 'Selecionar pasta raiz da biblioteca',
+    excerpt_loading: 'A extrair…',
+    excerpt_volume_01: 'Excerto do volume 01',
+    btn_favorite_star: '★ Favorito',
+    btn_unfavorite_star: '★ Remover',
+    btn_stats_aria: 'Estatísticas',
+    btn_stats_title: 'Estatísticas',
+    btn_about_aria: 'Sobre',
+    btn_about_title: 'Sobre',
+    detail_excerpt_aria: 'Excerto do primeiro capítulo',
+    stats_close_aria: 'Fechar',
+    about_close_aria: 'Fechar',
+    about_desc_pt: 'Organize a sua biblioteca EPUB por séries.',
+    about_license_link: 'Ver licença',
+    about_support_text: 'Estas ferramentas são gratuitas e de código aberto. Se alguma for útil para si, pode apoiar o trabalho.',
+    about_kofi: 'Ko-fi',
+    about_patreon: 'Patreon',
+    about_crypto_title: 'Criptomoedas',
+    about_crypto_note: 'O endereço ETH aceita qualquer cadeia compatível com EVM.',
+    btn_copy: 'Copiar',
   },
   en: {
     app_title: "EPUBShelf",
@@ -140,6 +178,10 @@ const TRANSLATIONS = {
     chart_state_title: 'Series by State',
     chart_largest_title: 'Largest Series',
     chart_activity_title: 'Activity (last 30 days)',
+    state_ongoing: 'Ongoing',
+    state_completed: 'Completed',
+    state_cancelled: 'Cancelled',
+    state_hiatus: 'Hiatus',
     about_title: 'About / Sobre',
     about_desc: 'EPUB library manager organized by series.',
     about_credits_title: 'Credits',
@@ -149,15 +191,37 @@ const TRANSLATIONS = {
     about_footer: 'Made with ❤️ for ebook readers',
     crypto_support_title: 'Crypto Support',
     crypto_eth: 'ETH',
-    crypto_sol: 'SOL'
+    crypto_sol: 'SOL',
+    // Phase 3: hardcoded strings moved from main.js/renderer.js/index.html
+    dialog_select_library_title: 'Select library root folder',
+    excerpt_loading: 'Extracting…',
+    excerpt_volume_01: 'Volume 01 excerpt',
+    btn_favorite_star: '★ Favorite',
+    btn_unfavorite_star: '★ Remove',
+    btn_stats_aria: 'Statistics',
+    btn_stats_title: 'Statistics',
+    btn_about_aria: 'About',
+    btn_about_title: 'About',
+    detail_excerpt_aria: 'First chapter excerpt',
+    stats_close_aria: 'Close',
+    about_close_aria: 'Close',
+    about_desc_pt: 'EPUB library manager organized by series.',
+    about_license_link: 'View license',
+    about_support_text: 'These tools are free and open source. If one of them is useful to you, you can support the work.',
+    about_kofi: 'Ko-fi',
+    about_patreon: 'Patreon',
+    about_crypto_title: 'Cryptocurrency',
+    about_crypto_note: 'The ETH address accepts any EVM-compatible chain.',
+    btn_copy: 'Copy',
   }
 };
 
 let currentLocale = 'pt';
 
 function setLocale(locale) {
-  if (TRANSLATIONS[locale]) {
-    currentLocale = locale;
+  const resolved = resolveLocale(locale);
+  if (TRANSLATIONS[resolved]) {
+    currentLocale = resolved;
   }
 }
 
@@ -166,11 +230,16 @@ function getLocale() {
 }
 
 function t(key, params = {}) {
-  let str = TRANSLATIONS[currentLocale][key] || TRANSLATIONS.pt[key] || key;
+  // Fallback chain: current → en → pt (English is better intermediary than Portuguese)
+  let str = TRANSLATIONS[currentLocale]?.[key]
+         || TRANSLATIONS.en?.[key]
+         || TRANSLATIONS.pt[key]
+         || key;
   for (const [k, v] of Object.entries(params)) {
     str = str.replace(new RegExp(`\\{${k}\\}`, 'g'), v);
   }
   return str;
 }
 
-window.i18n = { setLocale, getLocale, t };
+// Expose registry and resolver for renderer/main consumers
+window.i18n = { setLocale, getLocale, t, SUPPORTED_LOCALES, resolveLocale };
