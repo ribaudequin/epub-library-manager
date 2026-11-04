@@ -229,6 +229,13 @@ ipcMain.handle('library:unwatch', () => {
 });
 
 ipcMain.handle('app:getLocale', () => {
+  // Allow forced locale for testing via --lang flag (Electron native)
+  const forcedLocale = process.argv.find(arg => arg.startsWith('--lang='))?.split('=')[1];
+  if (forcedLocale) {
+    const locale = forcedLocale.includes('-') ? forcedLocale : forcedLocale + '-' + forcedLocale.toUpperCase();
+    const code = forcedLocale.split('-')[0].toLowerCase();
+    return { locale, code };
+  }
   const locale = app.getLocale();
   const code = locale.split('-')[0].toLowerCase(); // 'pt', 'en', 'ja', ...
   return { locale, code };

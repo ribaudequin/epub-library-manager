@@ -15,7 +15,7 @@
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v2.2.1** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.1) · Linux (AppImage) · Windows (Installer + Portable) · macOS (Apple silicon)
+**v2.2.2** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.2) · Linux (AppImage) · Windows (Installer + Portable) · macOS (Apple silicon)
 
 ---
 
@@ -29,6 +29,7 @@ A desktop application for managing your EPUB library, organized by series — wi
 - **🔍 CTRL+K Search** — Fuzzy-match search across titles and authors with real-time result count
 - **⬆️ Smart Sorting** — Sort by A→Z, Z→A, reading progress, or last-updated date (persisted in localStorage)
 - **⭐ Favorites** — Mark series as favorites from the detail view, filter the grid to just favorites, and spot them at a glance by a gold star on the cover
+- **🌍 Multi-language (i18n)** — Portuguese (PT-PT), English (EN-GB), Japanese (JA-JP) with automatic OS locale detection, self-hosted fonts (Noto Sans JP for CJK), and full RTL-ready architecture
 - **🌓 Dark & Light Themes** — Toggle between themes with persistent localStorage. WCAG-accessible with colored-tint backgrounds derived from cover art
 - **📊 Statistics Dashboard** — Modal with library overview: total series/volumes, read count, progress %, state breakdown chart, largest series, and 30-day activity timeline (pure CSS/SVG)
 - **♿ Accessibility First** — Focus-visible outlines, `prefers-reduced-motion`, ARIA live regions, keyboard navigation, WCAG-compliant tooltips and contrast ratios
@@ -59,14 +60,14 @@ Click a screenshot for the full-resolution version.
 
 #### Linux (AppImage)
 
-Download `EPUBShelf-2.2.1.AppImage` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.1), then:
+Download `EPUBShelf-2.2.2.AppImage` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.2), then:
 
 ```bash
-chmod +x EPUBShelf-2.2.1.AppImage
-./EPUBShelf-2.2.1.AppImage
+chmod +x EPUBShelf-2.2.2.AppImage
+./EPUBShelf-2.2.2.AppImage
 ```
 
-A Debian package is published alongside it: `epub-shelf_2.2.1_amd64.deb`.
+A Debian package is published alongside it: `epub-shelf_2.2.2_amd64.deb`.
 
 #### Linux (Flatpak — build from source)
 
@@ -81,21 +82,21 @@ flatpak-builder --user --install --force-clean build-dir io.github.ribaudequin.e
 flatpak run io.github.ribaudequin.epub-library-manager
 ```
 
-See [`docs/FLATHUB-INSTALL.md`](docs/FLATHUB-INSTALL.md) for permissions and troubleshooting.
+See [`docs/deployment/FLATHUB-INSTALL.md`](docs/deployment/FLATHUB-INSTALL.md) for permissions and troubleshooting.
 
 #### Windows
 
 **Option A: Installer (recommended)**
-Download `EPUBShelf-Setup-2.2.1.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.1), double-click to install.
+Download `EPUBShelf-Setup-2.2.2.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.2), double-click to install.
 
 > **Windows SmartScreen note**: Since this app is unsigned, Windows may show a warning. Click **"More info"** → **"Run anyway"** to proceed. This is normal for unsigned open-source apps.
 
 **Option B: Portable (no installation, no SmartScreen warning)**
-Download `EPUBShelf-2.2.1.exe`, double-click to run directly. No installation required.
+Download `EPUBShelf-2.2.2.exe`, double-click to run directly. No installation required.
 
 #### macOS
 
-Download `EPUBShelf-2.2.1-arm64.dmg` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.1), open it and drag the app to Applications.
+Download `EPUBShelf-2.2.2-arm64.dmg` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.2), open it and drag the app to Applications.
 
 The published build is **Apple silicon (arm64)**. There is no Intel `.dmg`.
 
@@ -107,7 +108,7 @@ The published build is **Apple silicon (arm64)**. There is no Intel `.dmg`.
 npm run dist
 ```
 
-The built AppImage appears in `dist/EPUBShelf-2.2.1.AppImage`.
+The built AppImage appears in `dist/EPUBShelf-2.2.2.AppImage`.
 
 ### Build for Windows
 
@@ -123,17 +124,20 @@ npm run dist:all              # AppImage + NSIS + portable
 npm run dist:flatpak          # Flatpak dir build
 ```
 
+### What's new in v2.2.2
+
+- **🌍 Japanese (JA-JP) support** — Full i18n architecture complete: `SUPPORTED_LOCALES` registry, self-hosted Noto Sans JP subset (~1.3 MB/weight), Space Grotesk + JetBrains Mono self-hosted, Google Fonts CDN removed. Auto-detects OS locale, falls back `ja → en → pt`. Verified with Playwright visual tests (html lang, ARIA labels, CJK font rendering).
+- **📝 Translation keys expanded** — 96 keys across 3 locales (PT-PT, EN-GB, JA-JP). All hardcoded strings moved to `translations.js`: dialog titles, excerpt loading states, favorite button stars, modal ARIA labels, About modal content.
+- **🧪 i18n validation suite** — `npm run i18n:validate` checks key parity, placeholder syntax, empty values, machine-translation heuristic, registry sync. `npm run test:en-locale` / `npm run test:jp-locale` Playwright visual tests.
+- **✕ Modal close buttons fixed** — Statistics and About modals now show close `✕` button (were empty).
+- **🖼️ Header icons restored** — Statistics (📊) and About (❤️) buttons show emoji icons again.
+
 ### What's new in v2.2.1
-
-- **📖 Chapter excerpt in the series header** — Opening a series now shows the opening paragraphs of volume 01's first chapter in a fixed panel on the right. The text is read from the EPUB on demand, so startup is untouched
-- **🧭 Chapter detection that survives real libraries** — Prefers an explicit "Chapter 1" heading, then a `chapter1` file, then the opening text, then the prologue, and finally the author's afterword for volumes with no narrative opener. Reads `.html` as well as `.xhtml`, follows the OPF spine instead of ZIP order, distinguishes "chapter 1" from "chapter 10", and skips tables of contents whether they are named `toc`/`contents` or only look like one. HTML entities are decoded without breaking drop caps. Verified against 298 series, including *Berserk of Gluttony* and *Crest of the Stars*
-
-### Highlights from earlier releases
 
 - **⭐ Favorites** — Mark a series as a favorite from the detail view and filter the grid down to just favorites from the sort dropdown. The gold star sits on the cover's top-right corner, independent of title length, and is announced as "Favorite" rather than "black star"
 - **🖼️ Volume Cover Preview** — Hovering or tabbing to a volume thumbnail floats the full-size cover above the list, so a 42×63 px thumbnail never has to stand in for the real artwork. Keeps each cover's own proportions, flips to the left near the right edge, and dismisses on `Esc`
 - **🎨 Bandua Studio Branding** — Loading screen carries the Pixel Arc and a "Built by Bandua Studio" line; the About modal was rebuilt with the studio identity, X and LinkedIn profiles, Ko-fi and Patreon calls to action with copy-to-clipboard buttons, explorer links for the ETH and SOL addresses, and the MIT licence
-- **🌍 Multi-language (PT/EN)** — Automatic system language detection via `app.getLocale()`. Translation engine inline in `translations.js` (no `fetch()` failures on `file://`)
+- **🌍 Multi-language (PT/EN/JA)** — Automatic system language detection via `app.getLocale()`. Translation engine inline in `translations.js` (no `fetch()` failures on `file://`). Portuguese (PT-PT), English (EN-GB), Japanese (JA-JP) with Noto Sans JP self-hosted subset for CJK.
 - **🔄 Auto-refresh** — File watcher (`fs.watch` + 2s debounce) automatically rescans when you add/remove/edit EPUBs
 - **📅 Localized Dates** — Relative dates adapt to locale (e.g., "21 months ago" / "há 21 meses")
 - **🌓 Light Theme** — Toggle with persistent localStorage. Anti-flash script in `<head>`. Ghost-style toolbar buttons

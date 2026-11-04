@@ -156,13 +156,19 @@ function updateUI() {
 
   // Stats modal
   const statsCloseBtn = $('#btn-stats-close');
-  if (statsCloseBtn) statsCloseBtn.setAttribute('aria-label', t('stats_close_aria'));
+  if (statsCloseBtn) {
+    statsCloseBtn.textContent = '✕';
+    statsCloseBtn.setAttribute('aria-label', t('stats_close_aria'));
+  }
 
   // About modal
   const aboutTitleEl = $('#about-title');
   if (aboutTitleEl) aboutTitleEl.textContent = t('about_title');
   const aboutCloseBtn = $('#btn-about-close');
-  if (aboutCloseBtn) aboutCloseBtn.setAttribute('aria-label', t('about_close_aria'));
+  if (aboutCloseBtn) {
+    aboutCloseBtn.textContent = '✕';
+    aboutCloseBtn.setAttribute('aria-label', t('about_close_aria'));
+  }
   const aboutDescEl = $('#about-desc');
   if (aboutDescEl) aboutDescEl.textContent = t('about_desc_pt');
   const aboutLicenseLink = $('#about-license-link');
