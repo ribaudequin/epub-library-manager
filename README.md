@@ -22,9 +22,9 @@ A desktop application for managing your EPUB library, organized by series — wi
 ## Features
 
 - **📚 Recursive EPUB Scanner** — Index entire folder trees instantly with localStorage cache (scans that took 75s now run in <1s after first run)
-- **🏷️ Metadata Extraction** — Title, author, series state (Ongoing/Acabada/Cancelada/Hiatus), and cover art pulled from inside each EPUB
+- **🏷️ Metadata Extraction** — Title, author, series state (Ongoing/Completed/Cancelled/Hiatus), and cover art pulled from inside each EPUB
 - **🖼️ Series Grid** — Browse series as cards (100×140px covers) with dominant-tint coloring, reading progress bars, and skeleton shimmer loading
-- **📖 Volume Detail View** — Per-series view with all volumes, states (lido / não lido / pendente), and bulk status actions
+- **📖 Volume Detail View** — Per-series view with all volumes, states (read / unread / pending), and bulk status actions
 - **📖 Chapter Excerpt** — The series detail view previews the opening of volume 01's first chapter, read on demand from inside the EPUB (80–1500 chars, table-of-contents safe)
 - **🔍 CTRL+K Search** — Fuzzy-match search across titles and authors with real-time result count
 - **⬆️ Smart Sorting** — Sort by A→Z, Z→A, reading progress, or last-updated date (persisted in localStorage)
