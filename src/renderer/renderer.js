@@ -157,7 +157,7 @@ function updateUI() {
   // Stats modal
   const statsCloseBtn = $('#btn-stats-close');
   if (statsCloseBtn) {
-    statsCloseBtn.textContent = '✕';
+    statsCloseBtn.textContent = '×';
     statsCloseBtn.setAttribute('aria-label', t('stats_close_aria'));
   }
 
@@ -166,7 +166,7 @@ function updateUI() {
   if (aboutTitleEl) aboutTitleEl.textContent = t('about_title');
   const aboutCloseBtn = $('#btn-about-close');
   if (aboutCloseBtn) {
-    aboutCloseBtn.textContent = '✕';
+    aboutCloseBtn.textContent = '×';
     aboutCloseBtn.setAttribute('aria-label', t('about_close_aria'));
   }
   const aboutDescEl = $('#about-desc');
