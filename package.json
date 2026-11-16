@@ -39,7 +39,6 @@
   "build": {
     "appId": "io.github.ribaudequin.epub-library-manager",
     "productName": "EPUBShelf",
-    "artifactName": "${productName}-${version}-${arch}-${target}.${ext}",
     "directories": {
       "output": "dist"
     },
@@ -59,7 +58,8 @@
         }
       ],
       "icon": "build/icon.ico",
-      "requestedExecutionLevel": "asInvoker"
+      "requestedExecutionLevel": "asInvoker",
+      "artifactName": "${productName}-${version}-${arch}-${target}.${ext}"
     },
     "nsis": {
       "oneClick": false,
