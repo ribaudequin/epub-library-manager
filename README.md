@@ -15,7 +15,7 @@
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v2.2.4** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.4) · Linux (AppImage) · Windows (Installer + Portable) · macOS (Apple silicon)
+**v2.2.5** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.5) · Linux (AppImage) · Windows (Installer + Portable) · macOS (Apple silicon)
 
 ---
 
@@ -60,14 +60,14 @@ Click a screenshot for the full-resolution version.
 
 #### Linux (AppImage)
 
-Download `EPUBShelf-2.2.4.AppImage` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.4), then:
+Download `EPUBShelf-2.2.5.AppImage` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.5), then:
 
 ```bash
-chmod +x EPUBShelf-2.2.4.AppImage
-./EPUBShelf-2.2.4.AppImage
+chmod +x EPUBShelf-2.2.5.AppImage
+./EPUBShelf-2.2.5.AppImage
 ```
 
-A Debian package is published alongside it: `epub-shelf_2.2.4_amd64.deb`.
+A Debian package is published alongside it: `epub-shelf_2.2.5_amd64.deb`.
 
 #### Linux (Flatpak — build from source)
 
@@ -87,16 +87,16 @@ See [`docs/deployment/FLATHUB-INSTALL.md`](docs/deployment/FLATHUB-INSTALL.md) f
 #### Windows
 
 **Option A: Installer (recommended)**
-Download `EPUBShelf-Setup-2.2.4.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.4), double-click to install.
+Download `EPUBShelf-Setup-2.2.5.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.5), double-click to install.
 
 > **Windows SmartScreen note**: Since this app is unsigned, Windows may show a warning. Click **"More info"** → **"Run anyway"** to proceed. This is normal for unsigned open-source apps.
 
 **Option B: Portable (no installation, no SmartScreen warning)**
-Download `EPUBShelf-2.2.4.exe`, double-click to run directly. No installation required.
+Download `EPUBShelf-2.2.5.exe`, double-click to run directly. No installation required.
 
 #### macOS
 
-Download `EPUBShelf-2.2.4-arm64.dmg` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.4), open it and drag the app to Applications.
+Download `EPUBShelf-2.2.5-arm64.dmg` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.5), open it and drag the app to Applications.
 
 The published build is **Apple silicon (arm64)**. There is no Intel `.dmg`.
 
@@ -108,7 +108,7 @@ The published build is **Apple silicon (arm64)**. There is no Intel `.dmg`.
 npm run dist
 ```
 
-The built AppImage appears in `dist/EPUBShelf-2.2.4.AppImage`.
+The built AppImage appears in `dist/EPUBShelf-2.2.5.AppImage`.
 
 ### Build for Windows
 
@@ -124,11 +124,19 @@ npm run dist:all              # AppImage + NSIS + portable
 npm run dist:flatpak          # Flatpak dir build
 ```
 
+### What's new in v2.2.5
+
+- **🪟 Windows duplicate assets — actually fixed** — The duplicated pairs in v2.2.4 (`EPUBShelf-2.2.4.exe` / `EPUBShelf.2.2.4.exe`, `EPUBShelf-Setup-2.2.4.exe` / `EPUBShelf.Setup-2.2.4.exe`) had **identical SHA256**: two publishers were racing. `electron-builder` was auto-publishing from the build jobs (because `GH_TOKEN` is set and the tag matches) and rewriting spaces as hyphens, while `softprops/action-gh-release` uploaded the same files and GitHub stored them with dots. CI now builds with `--publish never` so the release job is the only publisher.
+- **🏷️ Deterministic artifact names** — Per-target `artifactName` in `package.json`: `EPUBShelf-Setup-<version>.exe` (NSIS) and `EPUBShelf-<version>.exe` (portable). No spaces, so no publisher can rename them. `${target}` is not a valid electron-builder macro, which is why the earlier attempts never worked.
+- **📦 Leaner CI artifacts** — `upload-artifact` now uploads only the files that are actually released (`.AppImage`, `.deb`, `.dmg`, `.exe`, `.blockmap`, `latest*.yml`) instead of the whole `dist/`, which carried 75–78 files including the `win-unpacked/` and `linux-unpacked/` trees.
+- **⬆️ GitHub Actions bumped** — `checkout@v7`, `setup-node@v7`, `upload-artifact@v7`, `download-artifact@v8`, `action-gh-release@v3` (all on the Node 24 runtime, ending the Node 20 deprecation warnings).
+- **🔧 Internal** — Version bump to 2.2.5; About modal fallback updated; `npm test`, `lint` and `i18n:validate` pass. Verified with a real local Windows build (wine): exactly two distinct `.exe` names plus the NSIS `.blockmap`, no twins.
+
 ### What's new in v2.2.4
 
 - **🇫🇷 French (FR-FR) locale added** — 96 translation keys in `translations.js`, based on community PR #1. Falls back `fr → en → pt`. Full key parity with PT/EN/JA.
 - **🖼️ Volume Cover Preview Fix** — Fixed race condition where preview positioned before image loaded, causing incorrect placement on first hover. Now waits for `img.onload` before positioning.
-- **🪟 Windows artifactName fix** — Distinct filenames for NSIS installer (`-nsis.exe`) and portable (`-portable.exe`) to eliminate duplicate assets in releases.
+- **🪟 Windows duplicate assets fixed** — NSIS installer (`EPUBShelf-Setup-<version>.exe`) and portable (`EPUBShelf-<version>.exe`) now have explicit, space-free `artifactName`s, and CI builds with `--publish never` so only the release job publishes. The duplicated pairs (same SHA256, hyphen vs dot names) are gone.
 - **🧹 Build Artifacts Cleanup** — `dist/` cleaned from ~2 GB of old builds (v1.0–v2.2.1) keeping only latest release; `build/base.png` (unreferenced) already removed.
 - **📚 Memory Documentation in English** — Translated Portuguese sections in `MEMORY.md` and `MEMORY-ARCHIVE.md` to English per project documentation standard.
 - **🔧 Internal** — Version bump to 2.2.4; fallback version in About modal updated; all tests passing (22 preview, 15 excerpt, 9 favorites, 5 cache).

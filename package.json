@@ -1,7 +1,7 @@
 {
   "name": "epub-shelf",
   "productName": "EPUBShelf",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "EPUB library manager organized by series",
   "main": "src/main.js",
   "scripts": {
@@ -66,7 +66,11 @@
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      "createStartMenuShortcut": true,
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}.${ext}"
     },
     "linux": {
       "target": [

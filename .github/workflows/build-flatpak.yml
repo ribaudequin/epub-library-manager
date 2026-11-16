@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # The previous version of this workflow never called flatpak-builder at
       # all: it copied files into /app by hand and ran `flatpak build-export` on
