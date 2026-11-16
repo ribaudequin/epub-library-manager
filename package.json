@@ -59,7 +59,7 @@
       ],
       "icon": "build/icon.ico",
       "requestedExecutionLevel": "asInvoker",
-      "artifactName": "${productName}-${version}-${arch}-${target}.${ext}"
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
     "nsis": {
       "oneClick": false,
