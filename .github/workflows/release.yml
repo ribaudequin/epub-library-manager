@@ -49,12 +49,16 @@ jobs:
         include:
           - os: ubuntu-latest
             target: '--linux AppImage --linux deb'
+            artifacts: 'dist/*.AppImage dist/*.deb dist/*.blockmap'
           - os: windows-latest
             target: '--win nsis'
+            artifacts: 'dist/*.exe dist/*.blockmap'
           - os: windows-latest
             target: '--win portable'
+            artifacts: 'dist/*.exe dist/*.blockmap'
           - os: macos-latest
             target: '--mac dmg'
+            artifacts: 'dist/*.dmg dist/*.zip dist/*.blockmap'
 
     runs-on: ${{ matrix.os }}
 
@@ -87,13 +91,13 @@ jobs:
 
       - name: List build output
         shell: bash
-        run: find dist -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.dmg" -o -name "*.exe" -o -name "*.zip" -o -name "*.nupkg" -o -name "*.blockmap" \) 2>/dev/null || true
+        run: find dist -maxdepth 1 -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.dmg" -o -name "*.exe" -o -name "*.zip" -o -name "*.nupkg" -o -name "*.blockmap" \) 2>/dev/null || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: biblioteca-${{ matrix.os }}-${{ matrix.target }}-${{ github.ref_name }}
-          path: dist/
+          path: ${{ matrix.artifacts }}
           if-no-files-found: error
 
   release:
@@ -147,7 +151,14 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/**/*
+          files: |
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.dmg
+            dist/*.zip
+            dist/*.exe
+            dist/*.blockmap
+          draft: false
           # Never rely on generate_release_notes: this repo pushes straight to
           # master (no PRs), so GitHub's generated notes came back empty.
           body_path: release-notes.md
