@@ -502,8 +502,16 @@ function showVolumePreview(anchor) {
   volumePreviewAnchor = anchor;
   const el = getVolumePreview();
   const img = el.firstChild;
-  if (img.getAttribute('src') !== src) img.setAttribute('src', src);
-  positionVolumePreview(anchor);
+  if (img.getAttribute('src') !== src) {
+    // Wait for image to load before positioning, otherwise offsetWidth/Height are wrong
+    img.onload = () => {
+      if (volumePreviewAnchor === anchor) positionVolumePreview(anchor);
+    };
+    img.setAttribute('src', src);
+  } else {
+    // Same image already loaded, position immediately
+    positionVolumePreview(anchor);
+  }
 }
 
 function hideVolumePreview() {
