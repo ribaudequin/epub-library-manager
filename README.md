@@ -15,7 +15,7 @@
 
 A desktop application for managing your EPUB library, organized by series — with automatic metadata extraction, cover art, reading progress tracking, and intelligent search.
 
-**v2.2.3** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.3) · Linux (AppImage) · Windows (Installer + Portable) · macOS (Apple silicon)
+**v2.2.4** · [Download](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.4) · Linux (AppImage) · Windows (Installer + Portable) · macOS (Apple silicon)
 
 ---
 
@@ -60,14 +60,14 @@ Click a screenshot for the full-resolution version.
 
 #### Linux (AppImage)
 
-Download `EPUBShelf-2.2.3.AppImage` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.3), then:
+Download `EPUBShelf-2.2.4.AppImage` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.4), then:
 
 ```bash
-chmod +x EPUBShelf-2.2.3.AppImage
-./EPUBShelf-2.2.3.AppImage
+chmod +x EPUBShelf-2.2.4.AppImage
+./EPUBShelf-2.2.4.AppImage
 ```
 
-A Debian package is published alongside it: `epub-shelf_2.2.3_amd64.deb`.
+A Debian package is published alongside it: `epub-shelf_2.2.4_amd64.deb`.
 
 #### Linux (Flatpak — build from source)
 
@@ -87,16 +87,16 @@ See [`docs/deployment/FLATHUB-INSTALL.md`](docs/deployment/FLATHUB-INSTALL.md) f
 #### Windows
 
 **Option A: Installer (recommended)**
-Download `EPUBShelf-Setup-2.2.3.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.3), double-click to install.
+Download `EPUBShelf-Setup-2.2.4.exe` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.4), double-click to install.
 
 > **Windows SmartScreen note**: Since this app is unsigned, Windows may show a warning. Click **"More info"** → **"Run anyway"** to proceed. This is normal for unsigned open-source apps.
 
 **Option B: Portable (no installation, no SmartScreen warning)**
-Download `EPUBShelf-2.2.3.exe`, double-click to run directly. No installation required.
+Download `EPUBShelf-2.2.4.exe`, double-click to run directly. No installation required.
 
 #### macOS
 
-Download `EPUBShelf-2.2.3-arm64.dmg` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.3), open it and drag the app to Applications.
+Download `EPUBShelf-2.2.4-arm64.dmg` from [GitHub Releases](https://github.com/ribaudequin/epub-library-manager/releases/tag/v2.2.4), open it and drag the app to Applications.
 
 The published build is **Apple silicon (arm64)**. There is no Intel `.dmg`.
 
@@ -108,7 +108,7 @@ The published build is **Apple silicon (arm64)**. There is no Intel `.dmg`.
 npm run dist
 ```
 
-The built AppImage appears in `dist/EPUBShelf-2.2.3.AppImage`.
+The built AppImage appears in `dist/EPUBShelf-2.2.4.AppImage`.
 
 ### Build for Windows
 
@@ -124,12 +124,14 @@ npm run dist:all              # AppImage + NSIS + portable
 npm run dist:flatpak          # Flatpak dir build
 ```
 
-### What's new in v2.2.3
+### What's new in v2.2.4
 
+- **🇫🇷 French (FR-FR) locale added** — 96 translation keys in `translations.js`, based on community PR #1. Falls back `fr → en → pt`. Full key parity with PT/EN/JA.
 - **🖼️ Volume Cover Preview Fix** — Fixed race condition where preview positioned before image loaded, causing incorrect placement on first hover. Now waits for `img.onload` before positioning.
+- **🪟 Windows artifactName fix** — Distinct filenames for NSIS installer (`-nsis.exe`) and portable (`-portable.exe`) to eliminate duplicate assets in releases.
 - **🧹 Build Artifacts Cleanup** — `dist/` cleaned from ~2 GB of old builds (v1.0–v2.2.1) keeping only latest release; `build/base.png` (unreferenced) already removed.
 - **📚 Memory Documentation in English** — Translated Portuguese sections in `MEMORY.md` and `MEMORY-ARCHIVE.md` to English per project documentation standard.
-- **🔧 Internal** — Version bump to 2.2.3; fallback version in About modal updated; all tests passing (22 preview, 15 excerpt, 9 favorites, 5 cache).
+- **🔧 Internal** — Version bump to 2.2.4; fallback version in About modal updated; all tests passing (22 preview, 15 excerpt, 9 favorites, 5 cache).
 
 ### What's new in v2.2.2
 
