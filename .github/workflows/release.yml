@@ -46,7 +46,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            target: '--linux AppImage --linux deb'
+            artifacts: 'dist/**/*.AppImage dist/**/*.deb'
+          - os: windows-latest
+            target: '--win nsis'
+            artifacts: 'dist/**/EPUBShelf-*-nsis.exe dist/**/EPUBShelf-*-nsis.exe.blockmap'
+          - os: windows-latest
+            target: '--win portable'
+            artifacts: 'dist/**/EPUBShelf-*-portable.exe dist/**/EPUBShelf-*-portable.exe.blockmap'
+          - os: macos-latest
+            target: '--mac dmg'
+            artifacts: 'dist/**/*.dmg dist/**/*.zip'
 
     runs-on: ${{ matrix.os }}
 
@@ -75,23 +87,17 @@ jobs:
           sudo apt-get install -y dpkg-dev fakeroot build-essential g++ make python3 python3-dev squashfs-tools
 
       - name: Build application
-        run: npx electron-builder
+        run: npx electron-builder ${{ matrix.target }}
 
       - name: List build output
         shell: bash
-        run: find dist -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.dmg" -o -name "*.exe" -o -name "*.zip" -o -name "*.nupkg" \) 2>/dev/null || true
+        run: find dist -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.dmg" -o -name "*.exe" -o -name "*.zip" -o -name "*.nupkg" -o -name "*.blockmap" \) 2>/dev/null || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: biblioteca-${{ matrix.os }}-${{ github.ref_name }}
-          path: |
-            dist/**/*.deb
-            dist/**/*.AppImage
-            dist/**/*.dmg
-            dist/**/*.exe
-            dist/**/*.zip
-            dist/**/*.nupkg
+          name: biblioteca-${{ matrix.os }}-${{ matrix.target }}-${{ github.ref_name }}
+          path: ${{ matrix.artifacts }}
           if-no-files-found: error
 
   release:
