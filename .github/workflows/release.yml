@@ -49,16 +49,12 @@ jobs:
         include:
           - os: ubuntu-latest
             target: '--linux AppImage --linux deb'
-            artifacts: 'dist/*.AppImage dist/*.deb dist/*.blockmap'
           - os: windows-latest
             target: '--win nsis'
-            artifacts: 'dist/*.exe dist/*.blockmap'
           - os: windows-latest
             target: '--win portable'
-            artifacts: 'dist/*.exe dist/*.blockmap'
           - os: macos-latest
             target: '--mac dmg'
-            artifacts: 'dist/*.dmg dist/*.zip dist/*.blockmap'
 
     runs-on: ${{ matrix.os }}
 
@@ -97,7 +93,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: biblioteca-${{ matrix.os }}-${{ matrix.target }}-${{ github.ref_name }}
-          path: ${{ matrix.artifacts }}
+          path: dist/
           if-no-files-found: error
 
   release:
