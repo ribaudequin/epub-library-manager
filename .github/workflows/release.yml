@@ -52,10 +52,10 @@ jobs:
             artifacts: 'dist/**/*.AppImage dist/**/*.deb'
           - os: windows-latest
             target: '--win nsis'
-            artifacts: 'dist/**/EPUBShelf-*-nsis.exe dist/**/EPUBShelf-*-nsis.exe.blockmap'
+            artifacts: 'dist/**/*.exe dist/**/*.blockmap'
           - os: windows-latest
             target: '--win portable'
-            artifacts: 'dist/**/EPUBShelf-*-portable.exe dist/**/EPUBShelf-*-portable.exe.blockmap'
+            artifacts: 'dist/**/*.exe dist/**/*.blockmap'
           - os: macos-latest
             target: '--mac dmg'
             artifacts: 'dist/**/*.dmg dist/**/*.zip'
