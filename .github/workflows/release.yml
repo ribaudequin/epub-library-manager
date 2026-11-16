@@ -167,6 +167,7 @@ jobs:
             dist/*.zip
             dist/*.exe
             dist/*.blockmap
+            dist/latest*.yml
           draft: false
           # Never rely on generate_release_notes: this repo pushes straight to
           # master (no PRs), so GitHub's generated notes came back empty.
